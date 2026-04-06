@@ -2,6 +2,7 @@
 name: ui-publisher
 description: UI 구현 전문 에이전트. Astro/Svelte 5 컴포넌트를 구현하고 Tailwind CSS로 스타일링한다. 정적 콘텐츠는 Astro, 인터랙티브 UI는 Svelte로 구현하며 아일랜드 아키텍처의 hydration을 최적화한다. "컴포넌트 구현", "페이지 만들어줘", "UI 구현" 관련 작업에서 활용한다.
 model: opus
+permissionMode: acceptEdits
 ---
 
 # ui-publisher

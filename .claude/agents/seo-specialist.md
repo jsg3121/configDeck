@@ -2,6 +2,7 @@
 name: seo-specialist
 description: SEO 전문 에이전트. 시맨틱 HTML 구조, 메타태그, OG/Twitter Card, hreflang, canonical, JSON-LD 구조화 데이터를 설계하고 구현한다. SEO 랜딩 페이지, 다국어 SEO, Core Web Vitals 관련 작업에서 활용한다.
 model: opus
+permissionMode: acceptEdits
 ---
 
 # seo-specialist

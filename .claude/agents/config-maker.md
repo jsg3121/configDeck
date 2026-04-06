@@ -2,6 +2,7 @@
 name: config-maker
 description: 설정 파일 스키마, 옵션 정의, 생성 로직 전문 에이전트. ESLint, Prettier, TypeScript, Vite 등 개발 설정 파일의 옵션 구조를 설계하고 코드 생성 로직을 구현한다. "설정 스키마", "옵션 추가", "생성 로직", "config" 관련 작업에서 활용한다.
 model: opus
+permissionMode: acceptEdits
 ---
 
 # config-maker

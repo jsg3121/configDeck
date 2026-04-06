@@ -2,6 +2,12 @@
 name: qa-agent
 description: 품질 검증 전문 에이전트. 생성된 설정 파일의 유효성 검증, 옵션 조합 테스트, 빌드 검증, 크로스 브라우저 확인을 담당한다. 코드 리뷰, 테스트, 검증 관련 작업에서 활용한다. "검증해줘", "테스트", "QA", "확인해줘" 관련 작업에서 활용한다.
 model: opus
+permissionMode: default
+tools:
+  - Read
+  - Glob
+  - Grep
+  - Bash
 ---
 
 # qa-agent
