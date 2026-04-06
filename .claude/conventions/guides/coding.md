@@ -1,0 +1,310 @@
+# 코딩 컨벤션
+
+## 디렉토리 구조
+
+Astro 공식 권장 구조를 기반으로 한다.
+
+```
+src/
+├── pages/           # 파일 기반 라우팅 (필수)
+├── components/      # 재사용 가능한 UI 컴포넌트
+│   ├── common/      # 공통 컴포넌트
+│   └── {feature}/   # 기능별 컴포넌트
+├── layouts/         # 페이지 레이아웃
+├── content/         # Content Collections (블로그, 문서)
+├── assets/          # Astro가 처리하는 이미지, 폰트 등
+├── styles/          # 글로벌 CSS
+├── lib/             # 유틸리티, 헬퍼, 설정 생성 로직
+│   ├── utils/       # 범용 유틸 함수
+│   ├── generators/  # 설정 파일 생성 로직
+│   └── schemas/     # 설정 파일 옵션 스키마
+├── i18n/            # 다국어 번역 파일
+└── types/           # 공유 TypeScript 타입 정의
+```
+
+> **Why:** Astro 공식 프로젝트 구조에서 `src/pages/`만 필수이고 나머지는 컨벤션이다. 기능별로 하위 폴더를 나누면 파일이 많아져도 탐색이 용이하다.
+
+**참고:** [Astro - Project Structure](https://docs.astro.build/en/basics/project-structure/)
+
+## 컴포넌트 작성 기준
+
+### Astro vs Svelte 사용 구분
+
+- **`.astro` 컴포넌트**: 정적 콘텐츠, 레이아웃, 페이지 셸. 클라이언트 JS가 불필요한 모든 UI.
+- **`.svelte` 컴포넌트**: 사용자 인터랙션이 필요한 UI. 체크박스, 실시간 미리보기, 코드 에디터 등.
+
+```astro
+<!-- BAD: 정적 콘텐츠에 Svelte를 사용 -->
+---
+import StaticCard from '../components/StaticCard.svelte';
+---
+<StaticCard client:load title="ESLint" />
+
+<!-- GOOD: 정적 콘텐츠는 Astro 컴포넌트로 -->
+---
+import StaticCard from '../components/StaticCard.astro';
+---
+<StaticCard title="ESLint" />
+```
+
+> **Why:** Astro 컴포넌트는 JS 0KB로 렌더링된다. 인터랙션이 없는 UI에 Svelte를 쓰면 불필요한 번들이 클라이언트에 전송된다.
+
+### client: 디렉티브 선택 기준
+
+Svelte 컴포넌트를 Astro에서 사용할 때, 최소한의 hydration 디렉티브를 선택한다.
+
+| 디렉티브 | 시점 | 사용 케이스 |
+|----------|------|------------|
+| (없음) | hydration 없음 | HTML만 필요한 경우 (정적 렌더링) |
+| `client:load` | 페이지 로드 즉시 | 즉시 인터랙션 필요한 핵심 UI (설정 생성기) |
+| `client:idle` | 브라우저 idle 시 | 중요하지 않은 인터랙티브 요소 |
+| `client:visible` | 뷰포트 진입 시 | 스크롤 아래 콘텐츠 |
+| `client:media="(쿼리)"` | 미디어 쿼리 매칭 시 | 특정 화면 크기에서만 필요한 UI |
+
+```astro
+<!-- BAD: 모든 Svelte 컴포넌트에 client:load -->
+<ConfigGenerator client:load />
+<Footer client:load />
+<NewsletterSignup client:load />
+
+<!-- GOOD: 각 컴포넌트에 적합한 디렉티브 선택 -->
+<ConfigGenerator client:load />
+<Footer />  <!-- 인터랙션 불필요 → hydration 없음 -->
+<NewsletterSignup client:visible />  <!-- 스크롤 아래 → visible -->
+```
+
+> **Why:** `client:load`를 남용하면 Astro의 아일랜드 아키텍처 장점이 사라진다. 가능한 한 hydration을 지연시켜 초기 로딩 성능을 최적화한다.
+
+**참고:** [Astro - Client Directives](https://docs.astro.build/en/reference/directives-reference/#client-directives)
+
+### Svelte 5 Runes 사용 규칙
+
+```svelte
+<!-- BAD: Svelte 4 레거시 문법 -->
+<script lang="ts">
+  export let title: string;
+  let count = 0;
+  $: doubled = count * 2;
+</script>
+
+<!-- GOOD: Svelte 5 Runes -->
+<script lang="ts">
+  let { title }: { title: string } = $props();
+  let count = $state(0);
+  let doubled = $derived(count * 2);
+</script>
+```
+
+- `$state()`: 컴포넌트 내부 상태. 불변 데이터는 `$state.raw()` 사용
+- `$derived()`: 순수 계산에만 사용. 부수효과 금지
+- `$effect()`: DOM 조작, 외부 라이브러리 연동 등 부수효과에만 사용. 남용 지양
+- `$props()`: 구조분해 할당과 함께 사용하여 기본값 지정
+
+> **Why:** Svelte 5의 Runes는 컴파일러가 의존성을 자동 추적한다. 레거시 문법(`$:`, `export let`)은 지양하고 Runes로 통일하여 코드베이스 일관성을 유지한다.
+
+**참고:** [Svelte 5 - What are runes?](https://svelte.dev/docs/svelte/what-are-runes)
+
+## 네이밍 컨벤션
+
+### 파일명
+
+| 대상 | 규칙 | 예시 |
+|------|------|------|
+| Astro/Svelte 컴포넌트 | PascalCase | `ConfigGenerator.svelte`, `FileCard.astro` |
+| 유틸 함수, 공통 함수 | camelCase | `generateEslintConfig.ts`, `formatCode.ts` |
+| 페이지 | kebab-case (Astro 라우팅) | `src/pages/files/eslint-config.astro` |
+| 타입 정의 | camelCase | `configTypes.ts` |
+| 상수/스키마 | camelCase | `eslintSchema.ts` |
+
+```
+# BAD
+src/components/config-generator.svelte    # 컴포넌트인데 kebab-case
+src/lib/utils/FormatCode.ts               # 유틸인데 PascalCase
+
+# GOOD
+src/components/ConfigGenerator.svelte     # 컴포넌트 → PascalCase
+src/lib/utils/formatCode.ts               # 유틸 함수 → camelCase
+```
+
+> **Why:** 파일명만으로 컴포넌트(.astro/.svelte)인지 유틸/로직 파일(.ts)인지 즉시 구분하기 위함이다.
+
+### 변수/함수/타입명
+
+| 대상 | 규칙 | 예시 |
+|------|------|------|
+| 변수, 함수 | camelCase | `configOptions`, `generateConfig` |
+| 타입, 인터페이스 | PascalCase | `ConfigOption`, `GeneratorState` |
+| 상수 (불변 값) | UPPER_SNAKE_CASE | `MAX_FILE_SIZE`, `DEFAULT_INDENT` |
+| 이벤트 핸들러 | handle + 동사 | `handleOptionChange`, `handleDownload` |
+
+## 공통 코드 분리 기준
+
+**두 곳 이상의 서로 다른 영역이나 기능에서 사용되면 공통으로 분리한다.**
+
+```
+# BAD: 한 곳에서만 쓰는 함수를 공통으로 분리
+src/lib/utils/formatEslintPreview.ts  ← ESLint 생성기에서만 사용
+
+# GOOD: 한 곳에서만 쓰는 로직은 해당 컴포넌트/모듈 내에 유지
+src/components/generator/eslint/formatPreview.ts
+
+# GOOD: 두 곳 이상에서 쓰이면 공통으로 분리
+src/lib/utils/formatCode.ts  ← ESLint, Prettier, TSConfig 미리보기에서 공통 사용
+```
+
+> **Why:** 과도한 추상화는 코드 탐색을 어렵게 한다. 실제로 재사용되는 시점에 분리해야 불필요한 추상화 계층을 방지할 수 있다.
+
+## TypeScript 규칙
+
+### strict 모드 필수
+
+`tsconfig.json`에서 `strict: true`를 활성화한다. 이는 `strictNullChecks`, `noImplicitAny`, `strictFunctionTypes` 등을 모두 포함한다.
+
+**참고:** [TypeScript - strict](https://www.typescriptlang.org/tsconfig/#strict)
+
+### any 타입 사용 금지
+
+`any`는 TypeScript의 타입 안전성을 완전히 무력화한다. 어떤 상황에서도 사용하지 않는다.
+
+```typescript
+// BAD: any 사용
+const processConfig = (options: any) => {
+  return options.rules;
+};
+
+// GOOD: 정확한 타입 정의
+interface EslintOptions {
+  rules: Record<string, RuleSeverity>;
+  extends: string[];
+}
+
+const processConfig = (options: EslintOptions) => {
+  return options.rules;
+};
+```
+
+타입을 모르는 외부 데이터는 `unknown`을 사용하고, 타입 가드로 좁힌다.
+
+```typescript
+// BAD
+const parseInput = (data: any) => data.value;
+
+// GOOD
+const parseInput = (data: unknown) => {
+  if (typeof data === 'object' && data !== null && 'value' in data) {
+    return (data as { value: string }).value;
+  }
+  throw new Error('Invalid input');
+};
+```
+
+### 타입 단언(as) 지양
+
+`as`를 사용한 타입 단언은 컴파일러의 타입 검사를 우회한다. 어쩔 수 없는 경우가 아니라면 사용하지 않는다.
+
+```typescript
+// BAD: as로 타입 단언
+const element = document.getElementById('app') as HTMLDivElement;
+element.textContent = 'hello';
+
+// GOOD: 타입 가드로 안전하게 좁히기
+const element = document.getElementById('app');
+if (element instanceof HTMLDivElement) {
+  element.textContent = 'hello';
+}
+```
+
+허용되는 예외:
+- 외부 라이브러리의 타입 정의가 불완전한 경우
+- Svelte의 `$props()` 등 프레임워크 API에서 타입 추론이 불가능한 경우
+
+이 경우에도 반드시 주석으로 이유를 명시한다.
+
+```typescript
+// as 허용 — Svelte $props()에서 제네릭 타입 추론 한계
+let { items } = $props() as { items: ConfigItem[] };
+```
+
+### const 우선 사용
+
+변수 선언 시 `const`를 기본으로 사용한다. 재할당이 반드시 필요한 경우에만 `let`을 사용한다. `var`는 사용하지 않는다.
+
+```typescript
+// BAD: 재할당이 없는데 let 사용
+let config = generateConfig(options);
+let items = [1, 2, 3];
+let user = { name: 'jsg3121' };
+
+// GOOD: 재할당이 없으면 const
+const config = generateConfig(options);
+const items = [1, 2, 3];
+const user = { name: 'jsg3121' };
+
+// GOOD: 재할당이 필요한 경우에만 let
+let count = 0;
+count += 1;
+
+let current = items[0];
+for (const item of items) {
+  current = item;
+}
+```
+
+> **Why:** `const`는 변수가 재할당되지 않음을 보장하여, 코드를 읽을 때 값의 변경 여부를 추적할 필요가 없다. 의도치 않은 재할당 버그도 방지한다. Svelte 5의 `$state()`는 `let`으로 선언해야 하므로 이 경우는 예외이다.
+
+### 화살표 함수 사용
+
+함수 선언 시 화살표 함수를 사용한다.
+
+```typescript
+// BAD: function 선언
+function generateConfig(options: ConfigOptions): string {
+  return JSON.stringify(options, null, 2);
+}
+
+// GOOD: 화살표 함수
+const generateConfig = (options: ConfigOptions): string => {
+  return JSON.stringify(options, null, 2);
+};
+```
+
+> **Why:** 화살표 함수는 `this` 바인딩이 렉시컬 스코프를 따르므로, 콜백이나 이벤트 핸들러에서의 `this` 혼란을 방지한다. 프로젝트 전체에서 함수 선언 스타일을 통일하여 일관성을 유지한다.
+
+### JSDoc으로 함수 설명
+
+모든 함수에는 JSDoc 주석으로 역할을 설명한다. 매개변수와 반환값의 의미가 명확하지 않은 경우 `@param`과 `@returns`도 포함한다.
+
+```typescript
+// BAD: 설명 없는 함수
+const mergeRules = (base: Rules, overrides: Rules): Rules => {
+  return { ...base, ...overrides };
+};
+
+// GOOD: JSDoc으로 함수 역할 설명
+/**
+ * 기본 ESLint 규칙에 사용자 오버라이드를 병합한다.
+ * 동일 키가 있으면 overrides가 우선한다.
+ */
+const mergeRules = (base: Rules, overrides: Rules): Rules => {
+  return { ...base, ...overrides };
+};
+
+// GOOD: 매개변수 의미가 불명확한 경우 @param 추가
+/**
+ * 설정 파일의 들여쓰기를 변환한다.
+ * @param content - 원본 설정 파일 문자열
+ * @param size - 들여쓰기 크기 (스페이스 수)
+ * @returns 들여쓰기가 변환된 문자열
+ */
+const convertIndent = (content: string, size: number): string => {
+  // ...
+};
+```
+
+## 참고 자료
+
+- [Astro - Project Structure](https://docs.astro.build/en/basics/project-structure/)
+- [Astro - Client Directives](https://docs.astro.build/en/reference/directives-reference/#client-directives)
+- [Astro + Svelte Integration](https://docs.astro.build/en/guides/integrations-guide/svelte/)
+- [Svelte 5 - What are runes?](https://svelte.dev/docs/svelte/what-are-runes)
+- [TypeScript - strict](https://www.typescriptlang.org/tsconfig/#strict)
