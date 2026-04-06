@@ -37,6 +37,10 @@
 ├── seo/                    # SEO/시맨틱 가이드라인
 │   ├── index.md
 │   └── guides/
+├── research/               # 리서치 보고서
+│   ├── index.md
+│   └── reports/
+├── hooks/                  # Hook 스크립트
 ├── skills/                 # 커스텀 스킬
 │   ├── index.md
 │   └── {skill-name}/
@@ -69,6 +73,16 @@
 - 목적: 시맨틱 HTML 구조, 메타태그, OG 태그, 구조화 데이터(JSON-LD), 다국어 SEO 등의 가이드라인을 정의한다.
 - 가이드: semantic-html.md, meta-tags.md, structured-data.md
 - 배경: ConfigDeck은 SEO 유입이 핵심 전략(파일별/스택별 랜딩, 다국어 SEO 페이지)이므로, 별도 폴더로 분리하여 가이드라인의 비중을 높이기 위해 독립
+
+**`research/`** — 리서치 보고서
+
+- 목적: 기술 비교, UI/UX 레퍼런스, 라이브러리 선택 등 외부 조사 결과를 보관한다. ADR이나 기획서에서 근거 자료로 참조한다.
+- 배경: 의사결정의 근거가 되는 리서치 자료를 기획(ia)이나 의사결정(decisions)과 독립적으로 관리하여, 참조 관계를 명확히 하기 위해 도입
+
+**`hooks/`** — Hook 스크립트
+
+- 목적: Claude Code의 자동화 Hook 중 복잡한 로직이 필요한 스크립트를 보관한다. 간단한 Hook은 settings.json에 인라인으로, 조건 분기가 있는 Hook은 `.sh` 파일로 분리한다.
+- 배경: PostToolUse(자동 포맷팅), Stop(빌드/lint 검증) 등의 Hook을 통해 코드 품질을 자동으로 보장하기 위해 도입
 
 **`skills/`** — 커스텀 스킬
 
@@ -168,3 +182,6 @@ SKILL.md와 가이드 문서는 500줄 이하로 유지한다. 상세 내용은 
 | ---------- | --------------------- | ---- | ---------------------------------------------------------------- |
 | 2026-04-06 | 초기 하네스 구성      | 전체 | 프로젝트 시작, 기술 스택 확정                                    |
 | 2026-04-06 | 하네스 전체 구성 완료 | 전체 | conventions(5), seo(3), skills(9), agents(5), settings.json 구성 |
+| 2026-04-06 | research/, hooks/ 폴더 추가 | 하네스 | 리서치 보고서 보관 및 Hook 스크립트 관리를 위해 추가 |
+| 2026-04-06 | 에이전트 permissionMode/tools 설정 | agents | 에이전트별 권한 모드 및 도구 제한 추가 |
+| 2026-04-06 | settings.json에 hooks, env 추가 | settings | PostToolUse 포맷팅, Stop 검증 Hook 및 에이전트 팀 환경변수 추가 |
