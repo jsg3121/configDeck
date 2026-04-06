@@ -1,0 +1,205 @@
+---
+import '@/styles/global.css'
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ConfigDeck — Prototype Home</title>
+  </head>
+  <body class="bg-surface-alt text-gray-900 font-sans">
+    <!-- Header -->
+    <header class="bg-surface border-b border-border">
+      <div class="mx-auto max-w-7xl flex items-center justify-between px-6 py-4">
+        <a href="/prototype/" class="text-xl font-bold tracking-tight">
+          <span class="text-primary">Config</span>Deck
+        </a>
+        <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-gray-600">
+          <a href="/prototype/generator" class="hover:text-gray-900">Generator</a>
+          <a href="#" class="hover:text-gray-900">Docs</a>
+          <a href="#" class="hover:text-gray-900">Blog</a>
+        </nav>
+        <div class="flex items-center gap-3">
+          <button class="text-sm text-gray-500 hover:text-gray-900">EN</button>
+          <a
+            href="/prototype/generator"
+            class="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-hover"
+          >
+            Get Started
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="mx-auto max-w-7xl px-6 py-24 text-center">
+      <h1 class="text-5xl font-extrabold tracking-tight lg:text-6xl">
+        Build your project config<br />
+        <span class="text-primary">in seconds.</span>
+      </h1>
+      <p class="mx-auto mt-6 max-w-2xl text-lg text-gray-500">
+        Generate ESLint, Prettier, TypeScript, and more config files with stack-based presets. No
+        more copy-pasting from docs.
+      </p>
+      <div class="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+        <a
+          href="/prototype/generator"
+          class="rounded-lg bg-primary px-8 py-3 text-base font-semibold text-white shadow-lg hover:bg-primary-hover"
+        >
+          Start Building
+        </a>
+        <a
+          href="/prototype/generator"
+          class="rounded-lg border border-border px-8 py-3 text-base font-semibold text-gray-700 hover:bg-gray-50"
+        >
+          Browse Presets
+        </a>
+      </div>
+    </section>
+
+    <!-- Presets -->
+    <section class="mx-auto max-w-7xl px-6 pb-20">
+      <h2 class="text-center text-2xl font-bold">Popular Presets</h2>
+      <p class="mt-2 text-center text-gray-500">
+        Pick a preset to start with pre-configured options
+      </p>
+      <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {
+          [
+            { name: 'React + Vite + TS', files: 7, icon: '⚛️' },
+            { name: 'Next.js + TS', files: 6, icon: '▲' },
+            { name: 'Astro + TS', files: 5, icon: '🚀' },
+            { name: 'Node API + TS', files: 5, icon: '🟢' },
+          ].map((preset) => (
+            <a
+              href="/prototype/generator-stack"
+              class="group rounded-xl border border-border bg-surface p-6 hover:border-primary hover:shadow-md transition-all"
+            >
+              <div class="text-3xl">{preset.icon}</div>
+              <h3 class="mt-3 font-semibold text-gray-900 group-hover:text-primary">
+                {preset.name}
+              </h3>
+              <p class="mt-1 text-sm text-gray-500">{preset.files} config files</p>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="bg-surface border-y border-border">
+      <div class="mx-auto max-w-7xl px-6 py-20">
+        <h2 class="text-center text-2xl font-bold">How It Works</h2>
+        <div class="mt-12 grid gap-8 md:grid-cols-3">
+          {
+            [
+              {
+                step: '1',
+                title: 'Choose a file or stack',
+                desc: 'Pick a config file or start with a preset stack',
+              },
+              {
+                step: '2',
+                title: 'Customize options',
+                desc: 'Toggle settings with checkboxes, dropdowns, and toggles',
+              },
+              {
+                step: '3',
+                title: 'Copy or Download',
+                desc: 'Get individual files or download everything as a ZIP',
+              },
+            ].map((item) => (
+              <div class="text-center">
+                <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-lg font-bold text-primary">
+                  {item.step}
+                </div>
+                <h3 class="mt-4 font-semibold">{item.title}</h3>
+                <p class="mt-2 text-sm text-gray-500">{item.desc}</p>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- Supported files -->
+    <section class="mx-auto max-w-7xl px-6 py-20">
+      <h2 class="text-center text-2xl font-bold">Supported Config Files</h2>
+      <div class="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          [
+            { name: '.gitignore', desc: 'Git ignore patterns for your OS, IDE, and framework' },
+            {
+              name: 'eslint.config.mjs',
+              desc: 'ESLint flat config with TypeScript and framework support',
+            },
+            { name: 'prettier.config.mjs', desc: 'Code formatting rules for consistent style' },
+            { name: 'tsconfig.json', desc: 'TypeScript compiler options and path aliases' },
+            { name: 'vite.config.ts', desc: 'Vite bundler configuration with plugins' },
+            { name: 'vitest.config.ts', desc: 'Vitest test runner configuration' },
+          ].map((file) => (
+            <a
+              href="/prototype/generator-file"
+              class="group flex items-start gap-4 rounded-lg border border-border bg-surface p-4 hover:border-primary/50 transition-colors"
+            >
+              <div class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded bg-gray-100 font-mono text-xs text-gray-500">
+                {'{}'}
+              </div>
+              <div>
+                <h3 class="font-mono text-sm font-semibold text-gray-900 group-hover:text-primary">
+                  {file.name}
+                </h3>
+                <p class="mt-1 text-xs text-gray-500">{file.desc}</p>
+              </div>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="bg-surface border-y border-border">
+      <div class="mx-auto max-w-3xl px-6 py-20">
+        <h2 class="text-center text-2xl font-bold">FAQ</h2>
+        <div class="mt-10 divide-y divide-border">
+          {
+            [
+              {
+                q: 'Are the generated files up to date?',
+                a: 'Yes. We follow the latest official documentation and best practices for each tool.',
+              },
+              {
+                q: 'Can I use these in production?',
+                a: 'Absolutely. The generated configs are production-ready and follow community standards.',
+              },
+              {
+                q: 'Do I need to download all files?',
+                a: 'No. You can copy individual files or download only what you need.',
+              },
+              {
+                q: 'Is my data sent to a server?',
+                a: 'No. Everything runs in your browser. No data is sent anywhere.',
+              },
+            ].map((item) => (
+              <div class="py-5">
+                <h3 class="font-semibold text-gray-900">{item.q}</h3>
+                <p class="mt-2 text-sm text-gray-500">{item.a}</p>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="mx-auto max-w-7xl px-6 py-10 text-center text-sm text-gray-400">
+      <p>ConfigDeck — Build project config files with stack-based presets.</p>
+      <div class="mt-3 flex justify-center gap-4">
+        <a href="#" class="hover:text-gray-600">GitHub</a>
+        <a href="#" class="hover:text-gray-600">Changelog</a>
+        <a href="#" class="hover:text-gray-600">Feedback</a>
+      </div>
+    </footer>
+  </body>
+</html>
