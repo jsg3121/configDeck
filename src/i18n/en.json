@@ -1,0 +1,103 @@
+{
+  "common": {
+    "getStarted": "Get Started",
+    "copy": "Copy",
+    "download": "Download",
+    "downloadAll": "Download All (ZIP)",
+    "backToGenerator": "Back to Generator",
+    "learnMore": "Learn More"
+  },
+  "nav": {
+    "generator": "Generator",
+    "docs": "Docs",
+    "blog": "Blog"
+  },
+  "home": {
+    "heroTitle": "Build your project config",
+    "heroTitleHighlight": "in seconds.",
+    "heroDescription": "Generate ESLint, Prettier, TypeScript, and more config files with stack-based presets. No more copy-pasting from docs.",
+    "startBuilding": "Start Building",
+    "browsePresets": "Browse Presets",
+    "popularPresets": "Popular Presets",
+    "popularPresetsDescription": "Pick a preset to start with pre-configured options",
+    "howItWorks": "How It Works",
+    "steps": [
+      {
+        "title": "Choose a file or stack",
+        "description": "Pick a config file or start with a preset stack"
+      },
+      {
+        "title": "Customize options",
+        "description": "Toggle settings with checkboxes, dropdowns, and toggles"
+      },
+      {
+        "title": "Copy or Download",
+        "description": "Get individual files or download everything as a ZIP"
+      }
+    ],
+    "supportedFiles": "Supported Config Files",
+    "faq": "FAQ",
+    "faqs": [
+      {
+        "question": "Are the generated files up to date?",
+        "answer": "Yes. We follow the latest official documentation and best practices for each tool."
+      },
+      {
+        "question": "Can I use these in production?",
+        "answer": "Absolutely. The generated configs are production-ready and follow community standards."
+      },
+      {
+        "question": "Do I need to download all files?",
+        "answer": "No. You can copy individual files or download only what you need."
+      },
+      {
+        "question": "Is my data sent to a server?",
+        "answer": "No. Everything runs in your browser. No data is sent anywhere."
+      }
+    ]
+  },
+  "generator": {
+    "title": "Config Generator",
+    "description": "Generate production-ready config files for your project. Start with a stack preset or pick individual files.",
+    "stackPresets": "Stack Presets",
+    "quickStart": "Quick Start",
+    "stackPresetsDescription": "Pre-configured bundles for popular stacks. Pick one to generate all config files at once.",
+    "individualFiles": "Individual Config Files",
+    "individualFilesDescription": "Generate a single config file with full option control and live preview.",
+    "categoryCommon": "Common",
+    "categoryFrontend": "Frontend / Node",
+    "configFiles": "config files",
+    "tabs": {
+      "generate": "Generate",
+      "migrate": "Migrate"
+    },
+    "preset": "Preset",
+    "presetMinimal": "Minimal",
+    "presetRecommended": "Recommended",
+    "presetStrict": "Strict",
+    "advancedOptions": "Advanced Options",
+    "includedFiles": "Included Files",
+    "migration": {
+      "title": "Migrate to latest format",
+      "dropzone": "Drop your config file here or paste code below",
+      "pasteLabel": "Or paste your config code",
+      "detectedFormat": "Detected format",
+      "detectedVersion": "Detected version",
+      "manualReview": "Manual review needed",
+      "alreadyLatest": "Already using the latest format",
+      "unsupportedFormat": "Unsupported file format"
+    }
+  },
+  "footer": {
+    "tagline": "Build project config files with stack-based presets.",
+    "github": "GitHub",
+    "changelog": "Changelog",
+    "feedback": "Feedback"
+  },
+  "seo": {
+    "homeTitle": "ConfigDeck — Build your project config in seconds",
+    "homeDescription": "Generate ESLint, Prettier, TypeScript, and more config files with stack-based presets. No more copy-pasting from docs.",
+    "generatorTitle": "Config Generator — ConfigDeck",
+    "generatorDescription": "Generate production-ready config files for your project. Start with a stack preset or pick individual files."
+  }
+}

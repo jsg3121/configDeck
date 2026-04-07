@@ -1,26 +1,80 @@
 ---
 import '@/styles/global.css'
 
+import { DEFAULT_LOCALE, getAllLocaleAlternates, type Locale } from '@/i18n'
+
+import Footer from '@/components/common/Footer.astro'
+import Header from '@/components/common/Header.astro'
+
 interface Props {
   title: string
   description?: string
+  locale?: Locale
+  /** Header/Footer를 포함하지 않는 전체 커스텀 레이아웃 (생성기 2분할 등) */
+  bare?: boolean
+  /** hreflang 생성에 사용할 locale 제외 경로 (예: "/generator") */
+  pagePath?: string
+  /** 현재 활성 네비게이션 경로 (예: "/generator") */
+  currentPath?: string
+  /** OG 이미지 URL */
+  ogImage?: string
 }
 
-const { title, description = 'Build project config files with stack-based presets' } = Astro.props
+const {
+  title,
+  description = 'Build project config files with stack-based presets',
+  locale = DEFAULT_LOCALE,
+  bare = false,
+  pagePath = '/',
+  currentPath,
+  ogImage,
+} = Astro.props
+
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? 'https://configdeck.dev')
+const localeAlternates = getAllLocaleAlternates(pagePath)
+const ogLocaleMap: Record<Locale, string> = { en: 'en_US', ko: 'ko_KR' }
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={locale}>
   <head>
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
+
+    <!-- SEO 기본 -->
     <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl.href} />
+
+    <!-- hreflang -->
+    {
+      localeAlternates.map(({ locale: altLocale, href }) => (
+        <link rel="alternate" hreflang={altLocale} href={href} />
+      ))
+    }
+    <link rel="alternate" hreflang="x-default" href={localeAlternates[0].href} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl.href} />
+    <meta property="og:locale" content={ogLocaleMap[locale]} />
+    <meta property="og:site_name" content="ConfigDeck" />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {ogImage && <meta name="twitter:image" content={ogImage} />}
   </head>
-  <body>
+  <body class="bg-surface-alt font-sans text-gray-900">
+    {!bare && <Header locale={locale} currentPath={currentPath ?? pagePath} />}
     <slot />
+    {!bare && <Footer locale={locale} />}
   </body>
 </html>

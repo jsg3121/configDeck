@@ -1,0 +1,103 @@
+{
+  "common": {
+    "getStarted": "시작하기",
+    "copy": "복사",
+    "download": "다운로드",
+    "downloadAll": "전체 다운로드 (ZIP)",
+    "backToGenerator": "생성기로 돌아가기",
+    "learnMore": "더 알아보기"
+  },
+  "nav": {
+    "generator": "생성기",
+    "docs": "문서",
+    "blog": "블로그"
+  },
+  "home": {
+    "heroTitle": "프로젝트 설정 파일을",
+    "heroTitleHighlight": "몇 초 만에.",
+    "heroDescription": "ESLint, Prettier, TypeScript 등 설정 파일을 스택 기반 프리셋으로 생성하세요. 더 이상 문서에서 복붙할 필요 없습니다.",
+    "startBuilding": "설정 파일 만들기",
+    "browsePresets": "프리셋 둘러보기",
+    "popularPresets": "인기 프리셋",
+    "popularPresetsDescription": "미리 구성된 옵션으로 빠르게 시작하세요",
+    "howItWorks": "이용 방법",
+    "steps": [
+      {
+        "title": "파일 또는 스택 선택",
+        "description": "설정 파일을 직접 고르거나 프리셋 스택으로 시작하세요"
+      },
+      {
+        "title": "옵션 커스터마이즈",
+        "description": "체크박스, 드롭다운, 토글로 설정을 조정하세요"
+      },
+      {
+        "title": "복사 또는 다운로드",
+        "description": "개별 파일을 복사하거나 전체를 ZIP으로 다운로드하세요"
+      }
+    ],
+    "supportedFiles": "지원하는 설정 파일",
+    "faq": "자주 묻는 질문",
+    "faqs": [
+      {
+        "question": "생성된 파일은 최신 버전인가요?",
+        "answer": "네. 각 도구의 최신 공식 문서와 모범 사례를 따릅니다."
+      },
+      {
+        "question": "프로덕션에서 사용해도 되나요?",
+        "answer": "물론입니다. 생성된 설정은 프로덕션에 바로 사용할 수 있으며 커뮤니티 표준을 따릅니다."
+      },
+      {
+        "question": "모든 파일을 다운로드해야 하나요?",
+        "answer": "아니요. 개별 파일을 복사하거나 필요한 것만 다운로드할 수 있습니다."
+      },
+      {
+        "question": "제 데이터가 서버로 전송되나요?",
+        "answer": "아니요. 모든 것이 브라우저에서 실행됩니다. 어떤 데이터도 외부로 전송되지 않습니다."
+      }
+    ]
+  },
+  "generator": {
+    "title": "설정 파일 생성기",
+    "description": "프로젝트에 필요한 설정 파일을 생성하세요. 스택 프리셋으로 시작하거나 개별 파일을 선택하세요.",
+    "stackPresets": "스택 프리셋",
+    "quickStart": "빠른 시작",
+    "stackPresetsDescription": "인기 스택에 맞춰 미리 구성된 번들입니다. 하나를 선택하면 모든 설정 파일을 한 번에 생성합니다.",
+    "individualFiles": "개별 설정 파일",
+    "individualFilesDescription": "단일 설정 파일을 옵션 제어와 실시간 미리보기로 생성합니다.",
+    "categoryCommon": "공통",
+    "categoryFrontend": "프론트엔드 / Node",
+    "configFiles": "개 설정 파일",
+    "tabs": {
+      "generate": "생성",
+      "migrate": "마이그레이션"
+    },
+    "preset": "프리셋",
+    "presetMinimal": "최소",
+    "presetRecommended": "권장",
+    "presetStrict": "엄격",
+    "advancedOptions": "고급 옵션",
+    "includedFiles": "포함 파일",
+    "migration": {
+      "title": "최신 형식으로 마이그레이션",
+      "dropzone": "설정 파일을 여기에 드래그하거나 아래에 코드를 붙여넣으세요",
+      "pasteLabel": "또는 설정 코드를 붙여넣으세요",
+      "detectedFormat": "감지된 형식",
+      "detectedVersion": "감지된 버전",
+      "manualReview": "수동 확인 필요",
+      "alreadyLatest": "이미 최신 형식입니다",
+      "unsupportedFormat": "지원하지 않는 파일 형식입니다"
+    }
+  },
+  "footer": {
+    "tagline": "스택 기반 프리셋으로 프로젝트 설정 파일을 생성하세요.",
+    "github": "GitHub",
+    "changelog": "변경 이력",
+    "feedback": "피드백"
+  },
+  "seo": {
+    "homeTitle": "ConfigDeck — 프로젝트 설정 파일을 몇 초 만에",
+    "homeDescription": "ESLint, Prettier, TypeScript 등 설정 파일을 스택 기반 프리셋으로 생성하세요. 더 이상 문서에서 복붙할 필요 없습니다.",
+    "generatorTitle": "설정 파일 생성기 — ConfigDeck",
+    "generatorDescription": "프로젝트에 필요한 설정 파일을 생성하세요. 스택 프리셋으로 시작하거나 개별 파일을 선택하세요."
+  }
+}

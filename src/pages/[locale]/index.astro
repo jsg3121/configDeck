@@ -1,0 +1,206 @@
+---
+import {
+  buildLocalizedPath,
+  getTranslation,
+  getTranslationRaw,
+  SUPPORTED_LOCALES,
+  type Locale,
+} from '@/i18n'
+
+import Layout from '@/layouts/Layout.astro'
+
+export const getStaticPaths = () => {
+  return SUPPORTED_LOCALES.map((locale) => ({ params: { locale } }))
+}
+
+const { locale } = Astro.params as { locale: Locale }
+
+const steps = getTranslationRaw(locale, 'home.steps') as Array<{
+  title: string
+  description: string
+}>
+
+const faqs = getTranslationRaw(locale, 'home.faqs') as Array<{
+  question: string
+  answer: string
+}>
+
+const presetCards = [
+  { name: 'React + Vite + TS', fileCount: 7, icon: '\u269B\uFE0F', slug: 'react-vite-ts' },
+  { name: 'Next.js + TS', fileCount: 6, icon: '\u25B2', slug: 'nextjs' },
+  { name: 'Astro + TS', fileCount: 5, icon: '\uD83D\uDE80', slug: 'astro' },
+  { name: 'Node API + TS', fileCount: 5, icon: '\uD83D\uDFE2', slug: 'node-api' },
+] as const
+
+const supportedFileCards = [
+  {
+    name: '.gitignore',
+    descKey: 'Git ignore patterns for your OS, IDE, and framework',
+    descKeyKo: 'OS, IDE, 프레임워크에 맞는 Git 무시 패턴',
+    slug: 'gitignore',
+  },
+  {
+    name: 'eslint.config.mjs',
+    descKey: 'ESLint flat config with TypeScript and framework support',
+    descKeyKo: 'TypeScript와 프레임워크를 지원하는 ESLint flat config',
+    slug: 'eslint-config',
+  },
+  {
+    name: 'prettier.config.mjs',
+    descKey: 'Code formatting rules for consistent style',
+    descKeyKo: '일관된 스타일을 위한 코드 포맷팅 규칙',
+    slug: 'prettier-config',
+  },
+  {
+    name: 'tsconfig.json',
+    descKey: 'TypeScript compiler options and path aliases',
+    descKeyKo: 'TypeScript 컴파일러 옵션과 경로 별칭',
+    slug: 'tsconfig',
+  },
+  {
+    name: 'vite.config.ts',
+    descKey: 'Vite bundler configuration with plugins',
+    descKeyKo: '플러그인이 포함된 Vite 번들러 설정',
+    slug: 'vite-config',
+  },
+  {
+    name: 'vitest.config.ts',
+    descKey: 'Vitest test runner configuration',
+    descKeyKo: 'Vitest 테스트 러너 설정',
+    slug: 'vitest-config',
+  },
+] as const
+
+/**
+ * locale에 따라 파일 설명을 반환한다.
+ */
+const getFileDescription = (file: (typeof supportedFileCards)[number]): string => {
+  return locale === 'ko' ? file.descKeyKo : file.descKey
+}
+---
+
+<Layout
+  title={getTranslation(locale, 'seo.homeTitle')}
+  description={getTranslation(locale, 'seo.homeDescription')}
+  locale={locale}
+  pagePath="/"
+>
+  <!-- 히어로 -->
+  <section class="mx-auto max-w-7xl px-6 py-24 text-center">
+    <h1 class="text-5xl font-extrabold tracking-tight lg:text-6xl">
+      {getTranslation(locale, 'home.heroTitle')}<br />
+      <span class="text-primary">{getTranslation(locale, 'home.heroTitleHighlight')}</span>
+    </h1>
+    <p class="mx-auto mt-6 max-w-2xl text-lg text-gray-500">
+      {getTranslation(locale, 'home.heroDescription')}
+    </p>
+    <div class="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+      <a
+        href={buildLocalizedPath(locale, '/generator')}
+        class="rounded-lg bg-primary px-8 py-3 text-base font-semibold text-white shadow-lg hover:bg-primary-hover"
+      >
+        {getTranslation(locale, 'home.startBuilding')}
+      </a>
+      <a
+        href={buildLocalizedPath(locale, '/generator')}
+        class="rounded-lg border border-border px-8 py-3 text-base font-semibold text-gray-700 hover:bg-gray-50"
+      >
+        {getTranslation(locale, 'home.browsePresets')}
+      </a>
+    </div>
+  </section>
+
+  <!-- 인기 프리셋 -->
+  <section class="mx-auto max-w-7xl px-6 pb-20">
+    <h2 class="text-center text-2xl font-bold">
+      {getTranslation(locale, 'home.popularPresets')}
+    </h2>
+    <p class="mt-2 text-center text-gray-500">
+      {getTranslation(locale, 'home.popularPresetsDescription')}
+    </p>
+    <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        presetCards.map((preset) => (
+          <a
+            href={buildLocalizedPath(locale, `/generator/${preset.slug}`)}
+            class="group rounded-xl border border-border bg-surface p-6 transition-all hover:border-primary hover:shadow-md"
+          >
+            <div class="text-3xl">{preset.icon}</div>
+            <h3 class="mt-3 font-semibold text-gray-900 group-hover:text-primary">{preset.name}</h3>
+            <p class="mt-1 text-sm text-gray-500">
+              {preset.fileCount} {getTranslation(locale, 'generator.configFiles')}
+            </p>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- 이용 방법 -->
+  <section class="border-y border-border bg-surface">
+    <div class="mx-auto max-w-7xl px-6 py-20">
+      <h2 class="text-center text-2xl font-bold">
+        {getTranslation(locale, 'home.howItWorks')}
+      </h2>
+      <div class="mt-12 grid gap-8 md:grid-cols-3">
+        {
+          steps.map((step, index) => (
+            <div class="text-center">
+              <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-lg font-bold text-primary">
+                {index + 1}
+              </div>
+              <h3 class="mt-4 font-semibold">{step.title}</h3>
+              <p class="mt-2 text-sm text-gray-500">{step.description}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- 지원 파일 -->
+  <section class="mx-auto max-w-7xl px-6 py-20">
+    <h2 class="text-center text-2xl font-bold">
+      {getTranslation(locale, 'home.supportedFiles')}
+    </h2>
+    <div class="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        supportedFileCards.map((file) => (
+          <a
+            href={buildLocalizedPath(locale, `/generator/${file.slug}`)}
+            class="group flex items-start gap-4 rounded-lg border border-border bg-surface p-4 transition-colors hover:border-primary/50"
+          >
+            <div class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded bg-gray-100 font-mono text-xs text-gray-500">
+              {'{}'}
+            </div>
+            <div>
+              <h3 class="font-mono text-sm font-semibold text-gray-900 group-hover:text-primary">
+                {file.name}
+              </h3>
+              <p class="mt-1 text-xs text-gray-500">{getFileDescription(file)}</p>
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="border-y border-border bg-surface">
+    <div class="mx-auto max-w-3xl px-6 py-20">
+      <h2 class="text-center text-2xl font-bold">
+        {getTranslation(locale, 'home.faq')}
+      </h2>
+      <div class="mt-10 divide-y divide-border">
+        {
+          faqs.map((faqItem) => (
+            <div class="py-5">
+              <h3 class="font-semibold text-gray-900">{faqItem.question}</h3>
+              <p class="mt-2 text-sm text-gray-500">{faqItem.answer}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</Layout>

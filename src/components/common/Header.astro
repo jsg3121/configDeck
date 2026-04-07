@@ -1,0 +1,130 @@
+---
+import { buildLocalizedPath, getTranslation, SUPPORTED_LOCALES, type Locale } from '@/i18n'
+
+interface Props {
+  locale: Locale
+  currentPath?: string
+}
+
+const { locale, currentPath = '/' } = Astro.props
+
+const navigationItems = [
+  { labelKey: 'nav.generator', path: '/generator' },
+  { labelKey: 'nav.docs', path: '/docs' },
+  { labelKey: 'nav.blog', path: '/blog' },
+] as const
+
+/**
+ * 현재 경로가 네비게이션 항목과 일치하는지 확인한다.
+ * /generator로 시작하면 generator 항목을 활성화한다.
+ */
+const isActiveNavItem = (itemPath: string): boolean => {
+  if (itemPath === '/') {
+    return currentPath === '/'
+  }
+  return currentPath.startsWith(itemPath)
+}
+
+/**
+ * 언어 전환 시 현재 페이지의 다른 locale 경로를 반환한다.
+ */
+const getLanguageSwitchPath = (targetLocale: Locale): string => {
+  return buildLocalizedPath(targetLocale, currentPath)
+}
+---
+
+<header class="bg-surface border-b border-border">
+  <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+    <!-- 로고 -->
+    <a href={buildLocalizedPath(locale, '/')} class="text-xl font-bold tracking-tight">
+      <span class="text-primary">Config</span>Deck
+    </a>
+
+    <!-- 데스크톱 네비게이션 -->
+    <nav class="hidden items-center gap-6 text-sm font-medium text-gray-600 md:flex">
+      {
+        navigationItems.map((item) => (
+          <a
+            href={buildLocalizedPath(locale, item.path)}
+            class:list={[
+              'hover:text-gray-900 transition-colors',
+              isActiveNavItem(item.path) && 'text-gray-900',
+            ]}
+          >
+            {getTranslation(locale, item.labelKey)}
+          </a>
+        ))
+      }
+    </nav>
+
+    <!-- 유틸리티 영역 -->
+    <div class="flex items-center gap-3">
+      <!-- 언어 전환 -->
+      <div class="flex items-center gap-1 text-sm">
+        {
+          SUPPORTED_LOCALES.map((targetLocale, index) => (
+            <>
+              {index > 0 && <span class="text-gray-300">/</span>}
+              <a
+                href={getLanguageSwitchPath(targetLocale)}
+                class:list={[
+                  'hover:text-gray-900 transition-colors',
+                  targetLocale === locale ? 'font-semibold text-gray-900' : 'text-gray-500',
+                ]}
+              >
+                {targetLocale.toUpperCase()}
+              </a>
+            </>
+          ))
+        }
+      </div>
+
+      <!-- CTA 버튼 -->
+      <a
+        href={buildLocalizedPath(locale, '/generator')}
+        class="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-hover"
+      >
+        {getTranslation(locale, 'common.getStarted')}
+      </a>
+
+      <!-- 모바일 메뉴 버튼 -->
+      <button
+        class="flex items-center justify-center text-gray-600 hover:text-gray-900 md:hidden"
+        aria-label="Toggle menu"
+        data-mobile-menu-toggle
+      >
+        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- 모바일 네비게이션 (기본 숨김) -->
+  <nav class="hidden border-t border-border md:hidden" data-mobile-menu>
+    <div class="flex flex-col gap-1 px-6 py-4">
+      {
+        navigationItems.map((item) => (
+          <a
+            href={buildLocalizedPath(locale, item.path)}
+            class:list={[
+              'rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-50',
+              isActiveNavItem(item.path) ? 'text-primary bg-primary/5' : 'text-gray-600',
+            ]}
+          >
+            {getTranslation(locale, item.labelKey)}
+          </a>
+        ))
+      }
+    </div>
+  </nav>
+</header>
+
+<script>
+  const mobileMenuToggleButton = document.querySelector('[data-mobile-menu-toggle]')
+  const mobileMenuPanel = document.querySelector('[data-mobile-menu]')
+
+  mobileMenuToggleButton?.addEventListener('click', () => {
+    mobileMenuPanel?.classList.toggle('hidden')
+  })
+</script>
