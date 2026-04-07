@@ -137,6 +137,28 @@ src/lib/utils/formatCode.ts               # 유틸 함수 → camelCase
 | 상수 (불변 값) | UPPER_SNAKE_CASE | `MAX_FILE_SIZE`, `DEFAULT_INDENT` |
 | 이벤트 핸들러 | handle + 동사 | `handleOptionChange`, `handleDownload` |
 
+### 명시적이고 직관적인 이름 사용
+
+변수명과 함수명은 축약어를 지양하고, 이름만으로 의도를 파악할 수 있도록 작성한다.
+
+```typescript
+// BAD: 축약어, 모호한 이름
+const t = (locale: Locale, key: string): string => { ... }
+const lp = (locale: Locale, path: string): string => { ... }
+const obj = { name: 'eslint' }
+const val = getConfig()
+const cb = () => {}
+
+// GOOD: 명시적이고 직관적인 이름
+const getTranslation = (locale: Locale, translationKey: string): string => { ... }
+const buildLocalizedPath = (locale: Locale, pagePath: string): string => { ... }
+const fileMetadata = { name: 'eslint' }
+const generatedConfigValue = getConfig()
+const onChangeCallback = () => {}
+```
+
+> **Why:** 1인 개발에서 시간이 지난 후 코드를 다시 볼 때, 이름만 보고 의도를 즉시 파악할 수 있어야 한다. 코드 리뷰나 유지보수 시 맥락 없이도 이해 가능한 코드가 좋은 코드다.
+
 ## 공통 코드 분리 기준
 
 **두 곳 이상의 서로 다른 영역이나 기능에서 사용되면 공통으로 분리한다.**
@@ -270,17 +292,21 @@ const generateConfig = (options: ConfigOptions): string => {
 
 > **Why:** 화살표 함수는 `this` 바인딩이 렉시컬 스코프를 따르므로, 콜백이나 이벤트 핸들러에서의 `this` 혼란을 방지한다. 프로젝트 전체에서 함수 선언 스타일을 통일하여 일관성을 유지한다.
 
-### JSDoc으로 함수 설명
+### JSDoc으로 함수 설명 (한글 최우선)
 
-모든 함수에는 JSDoc 주석으로 역할을 설명한다. 매개변수와 반환값의 의미가 명확하지 않은 경우 `@param`과 `@returns`도 포함한다.
+모든 함수에는 JSDoc 주석으로 역할을 설명한다. **JSDoc은 한글을 최우선으로 작성한다.** 기술 용어(locale, path, SEO, config 등)는 원문을 유지한다. 매개변수와 반환값의 의미가 명확하지 않은 경우 `@param`과 `@returns`도 포함한다.
 
 ```typescript
-// BAD: 설명 없는 함수
+// BAD: 영어로만 작성
+/**
+ * Merge base ESLint rules with user overrides.
+ * If the same key exists, overrides take precedence.
+ */
 const mergeRules = (base: Rules, overrides: Rules): Rules => {
   return { ...base, ...overrides };
 };
 
-// GOOD: JSDoc으로 함수 역할 설명
+// GOOD: 한글로 작성, 기술 용어는 원문 유지
 /**
  * 기본 ESLint 규칙에 사용자 오버라이드를 병합한다.
  * 동일 키가 있으면 overrides가 우선한다.
@@ -300,6 +326,8 @@ const convertIndent = (content: string, size: number): string => {
   // ...
 };
 ```
+
+> **Why:** 한국어 네이티브 개발자가 주 사용자이므로, JSDoc을 한글로 작성하면 함수의 역할과 의도를 가장 빠르게 파악할 수 있다. 기술 용어는 번역하면 오히려 혼란을 주므로 원문을 유지한다.
 
 ## 참고 자료
 
