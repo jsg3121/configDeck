@@ -1,5 +1,5 @@
 /**
- * MVP 지원 스택 프리셋 2개의 메타데이터를 정의한다.
+ * 스택 프리셋 메타데이터를 정의한다.
  * 스택별 생성기 페이지([stack].astro)와 생성기 허브, 홈 페이지에서 공통으로 사용한다.
  */
 export const STACK_DEFINITIONS = [
@@ -243,6 +243,231 @@ const nextConfig = {
 }
 
 module.exports = nextConfig`,
+    },
+  },
+  {
+    slug: 'astro',
+    name: 'Astro + TypeScript',
+    icon: '🚀',
+    descriptionEn:
+      'Generate config files for an Astro project with TypeScript. Includes ESLint with Astro plugin, Prettier, and TypeScript configuration.',
+    descriptionKo:
+      'TypeScript 기반 Astro 프로젝트에 필요한 설정 파일을 생성합니다. Astro 플러그인이 포함된 ESLint, Prettier, TypeScript 설정이 포함됩니다.',
+    includedFiles: [
+      {
+        fileName: '.gitignore',
+        slug: 'gitignore',
+        options: [
+          { label: 'Node (node_modules, npm-debug.log)', value: 'node', checked: true },
+          { label: 'Astro (dist/, .astro/)', value: 'astro', checked: true },
+          { label: 'macOS (.DS_Store)', value: 'macos', checked: true },
+        ],
+      },
+      {
+        fileName: 'tsconfig.json',
+        slug: 'tsconfig',
+        options: [
+          { label: 'Enable strict mode', value: 'strict', checked: true },
+          { label: 'Path alias (@/*)', value: 'path-alias', checked: true },
+        ],
+      },
+      {
+        fileName: 'eslint.config.mjs',
+        slug: 'eslint-config',
+        options: [
+          { label: 'TypeScript', value: 'typescript', checked: true },
+          { label: 'Astro plugin', value: 'astro', checked: true },
+          { label: 'Prettier integration', value: 'prettier', checked: true },
+        ],
+      },
+      {
+        fileName: 'prettier.config.mjs',
+        slug: 'prettier-config',
+        options: [
+          { label: 'singleQuote', value: 'single-quote', checked: true },
+          { label: 'semi', value: 'semi', checked: false },
+          { label: 'Astro plugin', value: 'astro-plugin', checked: true },
+        ],
+      },
+      {
+        fileName: '.editorconfig',
+        slug: 'editorconfig',
+        options: [
+          { label: 'Indent: 2 spaces', value: 'indent-2', checked: true },
+          { label: 'Trim trailing whitespace', value: 'trim-trailing', checked: true },
+        ],
+      },
+    ],
+    sampleFiles: {
+      '.gitignore': `# Dependencies
+node_modules/
+
+# Astro
+dist/
+.astro/
+
+# OS
+.DS_Store`,
+      'tsconfig.json': `{
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  }
+}`,
+      'eslint.config.mjs': `import eslintPluginAstro from 'eslint-plugin-astro'
+import tseslint from 'typescript-eslint'
+
+export default [
+  ...tseslint.configs.recommended,
+  ...eslintPluginAstro.configs.recommended,
+  {
+    rules: {
+      'no-console': 'warn',
+      'prefer-const': 'error',
+    },
+  },
+]`,
+      'prettier.config.mjs': `export default {
+  singleQuote: true,
+  semi: false,
+  trailingComma: 'all',
+  tabWidth: 2,
+  printWidth: 100,
+  plugins: ['prettier-plugin-astro'],
+  overrides: [
+    {
+      files: '*.astro',
+      options: { parser: 'astro' },
+    },
+  ],
+}`,
+      '.editorconfig': `root = true
+
+[*]
+indent_style = space
+indent_size = 2
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true`,
+    },
+  },
+  {
+    slug: 'node-api',
+    name: 'Node API + TypeScript',
+    icon: '🟢',
+    descriptionEn:
+      'Generate config files for a Node.js API project with TypeScript. Includes ESLint, Prettier, TypeScript, and environment configuration.',
+    descriptionKo:
+      'TypeScript 기반 Node.js API 프로젝트에 필요한 설정 파일을 생성합니다. ESLint, Prettier, TypeScript, 환경 설정이 포함됩니다.',
+    includedFiles: [
+      {
+        fileName: '.gitignore',
+        slug: 'gitignore',
+        options: [
+          { label: 'Node (node_modules, npm-debug.log)', value: 'node', checked: true },
+          { label: 'Environment files (.env)', value: 'env', checked: true },
+          { label: 'Build output (dist/)', value: 'build', checked: true },
+        ],
+      },
+      {
+        fileName: 'tsconfig.json',
+        slug: 'tsconfig',
+        options: [
+          { label: 'Enable strict mode', value: 'strict', checked: true },
+          { label: 'Path alias (@/*)', value: 'path-alias', checked: true },
+          { label: 'Declaration files (.d.ts)', value: 'declaration', checked: false },
+        ],
+      },
+      {
+        fileName: 'eslint.config.mjs',
+        slug: 'eslint-config',
+        options: [
+          { label: 'TypeScript', value: 'typescript', checked: true },
+          { label: 'Node environment', value: 'node', checked: true },
+          { label: 'Prettier integration', value: 'prettier', checked: true },
+        ],
+      },
+      {
+        fileName: 'prettier.config.mjs',
+        slug: 'prettier-config',
+        options: [
+          { label: 'singleQuote', value: 'single-quote', checked: true },
+          { label: 'semi', value: 'semi', checked: false },
+        ],
+      },
+      {
+        fileName: '.env.example',
+        slug: 'env-example',
+        options: [
+          { label: 'PORT', value: 'port', checked: true },
+          { label: 'DATABASE_URL', value: 'database', checked: true },
+          { label: 'JWT_SECRET', value: 'jwt', checked: false },
+        ],
+      },
+    ],
+    sampleFiles: {
+      '.gitignore': `# Dependencies
+node_modules/
+
+# Build
+dist/
+
+# Environment
+.env
+.env.local
+
+# OS
+.DS_Store`,
+      'tsconfig.json': `{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}`,
+      'eslint.config.mjs': `import tseslint from 'typescript-eslint'
+import globals from 'globals'
+
+export default [
+  ...tseslint.configs.recommended,
+  {
+    languageOptions: {
+      globals: globals.node,
+    },
+    rules: {
+      'no-console': 'warn',
+      'prefer-const': 'error',
+    },
+  },
+]`,
+      'prettier.config.mjs': `export default {
+  singleQuote: true,
+  semi: false,
+  trailingComma: 'all',
+  tabWidth: 2,
+  printWidth: 100,
+}`,
+      '.env.example': `# App
+PORT=3000
+NODE_ENV=development
+
+# Database
+DATABASE_URL=postgresql://user:password@localhost:5432/mydb`,
     },
   },
 ] as const

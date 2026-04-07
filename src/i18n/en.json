@@ -98,6 +98,34 @@
     "homeTitle": "ConfigDeck — Build your project config in seconds",
     "homeDescription": "Generate ESLint, Prettier, TypeScript, and more config files with stack-based presets. No more copy-pasting from docs.",
     "generatorTitle": "Config Generator — ConfigDeck",
-    "generatorDescription": "Generate production-ready config files for your project. Start with a stack preset or pick individual files."
+    "generatorDescription": "Generate production-ready config files for your project. Start with a stack preset or pick individual files.",
+    "docsTitle": "Documentation — ConfigDeck",
+    "docsDescription": "Learn how to use ConfigDeck to generate config files for your project. Guides, API reference, and more.",
+    "blogTitle": "Blog — ConfigDeck",
+    "blogDescription": "Updates, tutorials, and insights about developer tooling, config management, and ConfigDeck features."
+  },
+  "docs": {
+    "title": "Documentation",
+    "description": "Learn how to use ConfigDeck to generate and manage config files for your project.",
+    "comingSoon": "Documentation is coming soon.",
+    "comingSoonDescription": "We're working on comprehensive guides, tutorials, and API references. Stay tuned!",
+    "sections": {
+      "gettingStarted": "Getting Started",
+      "gettingStartedDescription": "Quick start guide to generate your first config files.",
+      "fileGuides": "File Guides",
+      "fileGuidesDescription": "In-depth guides for each supported config file.",
+      "stackPresets": "Stack Presets",
+      "stackPresetsDescription": "Pre-configured settings for popular tech stacks.",
+      "migration": "Migration",
+      "migrationDescription": "How to migrate legacy config files to modern formats."
+    }
+  },
+  "blog": {
+    "title": "Blog",
+    "description": "Updates, tutorials, and insights about developer tooling and ConfigDeck.",
+    "comingSoon": "Blog is coming soon.",
+    "comingSoonDescription": "We'll share tutorials, release notes, and insights about config management. Stay tuned!",
+    "latestPosts": "Latest Posts",
+    "noPosts": "No posts yet. Check back soon!"
   }
 }

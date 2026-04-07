@@ -98,6 +98,34 @@
     "homeTitle": "ConfigDeck — 프로젝트 설정 파일을 몇 초 만에",
     "homeDescription": "ESLint, Prettier, TypeScript 등 설정 파일을 스택 기반 프리셋으로 생성하세요. 더 이상 문서에서 복붙할 필요 없습니다.",
     "generatorTitle": "설정 파일 생성기 — ConfigDeck",
-    "generatorDescription": "프로젝트에 필요한 설정 파일을 생성하세요. 스택 프리셋으로 시작하거나 개별 파일을 선택하세요."
+    "generatorDescription": "프로젝트에 필요한 설정 파일을 생성하세요. 스택 프리셋으로 시작하거나 개별 파일을 선택하세요.",
+    "docsTitle": "문서 — ConfigDeck",
+    "docsDescription": "ConfigDeck을 사용하여 프로젝트 설정 파일을 생성하는 방법을 알아보세요. 가이드, API 레퍼런스 등.",
+    "blogTitle": "블로그 — ConfigDeck",
+    "blogDescription": "개발 도구, 설정 관리, ConfigDeck 기능에 대한 업데이트, 튜토리얼, 인사이트."
+  },
+  "docs": {
+    "title": "문서",
+    "description": "ConfigDeck을 사용하여 프로젝트 설정 파일을 생성하고 관리하는 방법을 알아보세요.",
+    "comingSoon": "문서가 곧 제공됩니다.",
+    "comingSoonDescription": "종합적인 가이드, 튜토리얼, API 레퍼런스를 준비 중입니다. 조금만 기다려 주세요!",
+    "sections": {
+      "gettingStarted": "시작하기",
+      "gettingStartedDescription": "첫 번째 설정 파일을 생성하기 위한 빠른 시작 가이드.",
+      "fileGuides": "파일 가이드",
+      "fileGuidesDescription": "지원하는 설정 파일별 상세 가이드.",
+      "stackPresets": "스택 프리셋",
+      "stackPresetsDescription": "인기 기술 스택에 맞춘 사전 구성 설정.",
+      "migration": "마이그레이션",
+      "migrationDescription": "레거시 설정 파일을 최신 형식으로 마이그레이션하는 방법."
+    }
+  },
+  "blog": {
+    "title": "블로그",
+    "description": "개발 도구와 ConfigDeck에 대한 업데이트, 튜토리얼, 인사이트.",
+    "comingSoon": "블로그가 곧 제공됩니다.",
+    "comingSoonDescription": "튜토리얼, 릴리스 노트, 설정 관리에 대한 인사이트를 공유할 예정입니다. 조금만 기다려 주세요!",
+    "latestPosts": "최신 글",
+    "noPosts": "아직 글이 없습니다. 조금만 기다려 주세요!"
   }
 }
