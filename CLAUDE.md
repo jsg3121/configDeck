@@ -152,9 +152,13 @@ SKILL.md와 가이드 문서는 500줄 이하로 유지한다. 상세 내용은 
 
 1. 이 CLAUDE.md를 읽고 프로젝트 맥락을 파악한다
 2. **메모리에서 프로젝트 진행 현황을 확인한다** — 이전 세션에서의 작업 상태, 다음 작업 등을 파악
-3. 관련 ADR을 확인하여 기존 의사결정을 존중한다 (`.claude/decisions/index.md`)
-4. 기획 문서를 참조하여 기능의 의도와 범위를 이해한다 (`.claude/ia/index.md`)
-5. 해당 영역의 컨벤션을 확인한다 (`.claude/conventions/index.md`, `.claude/seo/index.md`)
+
+아래는 **작업 내용과 관련된 경우에만** 참조한다. 매번 전부 읽지 않는다:
+
+- **의사결정 관련** 작업 시: `.claude/decisions/index.md`
+- **기능 구현** 작업 시: `.claude/ia/specs/configDeckIA.md` (필요 시 references/ 하위 문서)
+- **코드 작성** 작업 시: `.claude/conventions/index.md` (해당 가이드만 선택 로드)
+- **SEO 관련** 작업 시: `.claude/seo/index.md`
 
 ### 근거 기반 논의
 

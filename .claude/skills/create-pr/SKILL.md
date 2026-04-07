@@ -81,7 +81,6 @@ pnpm eslint {변경된 ts/svelte/astro 파일들}
 - 잠재적 이슈 검출 (런타임 에러, 로직 오류, 보안 취약점)
 - 코드 개선 제안 (복잡도, 중복, 가독성)
 - 타입 안전성 검증 (any 사용, as 단언, 타입 가드 누락)
-- 프로젝트 컨벤션 준수 (`.claude/conventions/` 기준)
 
 **이슈 발견 시:**
 - 심각도별(심각/권장/참고)로 분류하여 보고한다
@@ -185,7 +184,5 @@ feature/{version} → main:
 
 ## 참고
 
-- 워크플로우 컨벤션: `.claude/conventions/guides/workflow.md`
 - PR 템플릿: `.claude/conventions/templates/pr-template.md`
-- 린트 규칙: `.claude/conventions/guides/linting.md`
-- 코딩 컨벤션: `.claude/conventions/guides/coding.md`
+- 워크플로우 컨벤션: `.claude/conventions/guides/workflow.md`

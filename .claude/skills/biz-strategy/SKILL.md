@@ -56,4 +56,6 @@ market-intelligence → business-analyst → strategy-planner 파이프라인을
 - `.claude/ia/specs/configDeckIA.md` — 서비스 기획서
 - `references/frameworks.md` — 분석 프레임워크 (PESTLE, SWOT, Porter's 등)
 - `references/data-sources.md` — 신뢰할 수 있는 데이터 소스 목록
-- `references/output-templates.md` — 보고서 출력 템플릿
+- `references/template-mi.md` — MI 보고서 템플릿 (market-intelligence용)
+- `references/template-ba.md` — BA 보고서 템플릿 (business-analyst용)
+- `references/template-str.md` — STR 보고서 템플릿 (strategy-planner용)

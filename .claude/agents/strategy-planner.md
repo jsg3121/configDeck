@@ -45,7 +45,7 @@ market-intelligence와 business-analyst의 분석 결과를 종합하여 전략 
 - 모니터링 지표 (KPI)
 ```
 
-상세 템플릿: `.claude/skills/biz-strategy/references/output-templates.md` 참조
+상세 템플릿: `.claude/skills/biz-strategy/references/template-str.md` 참조
 
 ## 하지 않는 것
 
@@ -57,4 +57,4 @@ market-intelligence와 business-analyst의 분석 결과를 종합하여 전략 
 ## 참조 문서
 
 - `.claude/ia/specs/configDeckIA.md` — 서비스 기획서
-- `.claude/skills/biz-strategy/references/output-templates.md` — 전략 보고서 템플릿
+- `.claude/skills/biz-strategy/references/template-str.md` — 전략 보고서 템플릿
