@@ -41,21 +41,29 @@ git log {대상 브랜치}...HEAD --oneline
 
 ---
 
-## 품질 검증 단계
+## 품질 개선 및 검증 단계
 
-PR 생성 **전에** 아래 검증을 순차적으로 수행한다. 각 단계에서 이슈가 발견되면 사용자에게 보고하고 계속 여부를 확인한다.
+PR 생성 **전에** 아래 개선/검증을 순차적으로 수행한다. 각 단계에서 이슈가 발견되면 사용자에게 보고하고 계속 여부를 확인한다.
 
-### 4. Prettier / ESLint 검사
+### 4. 자동 포맷팅 (개선안 실행)
 
-변경된 파일을 대상으로 포맷팅과 린트를 검사한다:
+변경된 파일에 대해 Prettier 자동 포맷팅을 먼저 실행한다. PostToolUse Hook이 없으므로 PR 생성 시점에 일괄 정리한다:
 
 ```bash
 # 변경된 파일 목록 추출
-git diff {대상 브랜치}...HEAD --name-only --diff-filter=ACMR | grep -E '\.(ts|svelte|astro|css|json)$'
+git diff {대상 브랜치}...HEAD --name-only --diff-filter=ACMR | grep -E '\.(ts|svelte|astro|css|json|js|mjs|cjs|html)$'
 
-# Prettier 검사 (수정하지 않고 확인만)
-pnpm prettier --check {변경된 파일들}
+# Prettier 자동 수정
+pnpm prettier --write {변경된 파일들}
+```
 
+포맷팅으로 변경된 파일이 있으면 자동으로 스테이징하고 포맷팅 커밋을 생성한다.
+
+### 5. ESLint 검사
+
+변경된 파일을 대상으로 린트를 검사한다:
+
+```bash
 # ESLint 검사
 pnpm eslint {변경된 ts/svelte/astro 파일들}
 ```
@@ -66,7 +74,7 @@ pnpm eslint {변경된 ts/svelte/astro 파일들}
 - 사용자에게 수정 후 재실행할지, 이슈를 무시하고 진행할지 확인한다
 - **에러(error)가 있으면 PR 생성을 중단**한다. 경고(warn)는 사용자 판단에 맡긴다
 
-### 5. 코드 리뷰
+### 6. 코드 리뷰
 
 서브에이전트를 생성하여 **사전 맥락 없이** 변경된 코드만으로 리뷰한다:
 
@@ -79,7 +87,7 @@ pnpm eslint {변경된 ts/svelte/astro 파일들}
 - 심각도별(심각/권장/참고)로 분류하여 보고한다
 - 심각 이슈가 있으면 수정을 권고하고 계속 여부를 확인한다
 
-### 6. 테스트 (main 머지 시에만)
+### 7. 테스트 (main 머지 시에만)
 
 대상 브랜치가 `main`인 경우에만 실행한다:
 
@@ -101,7 +109,7 @@ pnpm build && pnpm playwright test
 
 모든 검증을 통과하면 PR을 생성한다.
 
-### 7. PR 본문 작성
+### 8. PR 본문 작성
 
 `.claude/conventions/templates/pr-template.md` 템플릿을 기반으로 작성한다.
 
@@ -123,7 +131,7 @@ pnpm build && pnpm playwright test
 - [ ] 🔨 Breaking Changes
 ```
 
-### 8. PR 라벨 매핑
+### 9. PR 라벨 매핑
 
 체크된 작업 유형에 맞는 라벨을 부여한다:
 
@@ -137,7 +145,7 @@ pnpm build && pnpm playwright test
 - 📝 문서 → `documentation`
 - 🔨 Breaking Changes → `breaking-change`
 
-### 9. PR 제목
+### 10. PR 제목
 
 Conventional Commits 형식을 따른다:
 
@@ -146,7 +154,7 @@ feat: 설정 생성기 ESLint 옵션 UI 구현
 fix: ZIP 다운로드 시 빈 파일이 포함되는 문제 수정
 ```
 
-### 10. PR 생성 실행
+### 11. PR 생성 실행
 
 사용자에게 제목, 본문, 라벨, 대상 브랜치를 보여주고 확인을 받은 후 실행한다:
 
@@ -161,7 +169,7 @@ EOF
   --label "{라벨1}" --label "{라벨2}"
 ```
 
-### 11. 완료 후
+### 12. 완료 후
 
 생성된 PR URL을 사용자에게 전달한다.
 
@@ -169,10 +177,10 @@ EOF
 
 ```
 feature → feature/{version}:
-  상태 확인 → lint 검사 → 코드 리뷰 → [이슈 보고] → PR 생성
+  상태 확인 → 자동 포맷팅 → ESLint 검사 → 코드 리뷰 → [이슈 보고] → PR 생성
 
 feature/{version} → main:
-  상태 확인 → lint 검사 → 코드 리뷰 → 단위 테스트 → E2E 테스트 → [이슈 보고] → PR 생성
+  상태 확인 → 자동 포맷팅 → ESLint 검사 → 코드 리뷰 → 단위 테스트 → E2E 테스트 → [이슈 보고] → PR 생성
 ```
 
 ## 참고

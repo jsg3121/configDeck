@@ -40,7 +40,6 @@ ConfigDeck의 품질을 검증하는 전문 에이전트이다.
 - Prettier/ESLint 검사
 - TypeScript 타입 안전성 (any, as 사용 검출)
 - 접근성(WCAG) 준수 확인
-- SEO 가이드라인 준수 확인
 
 ## 작업 원칙
 
@@ -57,11 +56,11 @@ ConfigDeck의 품질을 검증하는 전문 에이전트이다.
 ## 협업
 
 - **config-maker**: 생성 로직의 출력을 검증한다 (Producer-Reviewer 패턴)
-- **ui-publisher**: 구현된 UI의 접근성/SEO를 검증한다
+- **ui-publisher**: 구현된 UI의 접근성을 검증한다
+- **seo-specialist**: SEO 관련 검증은 seo-specialist 에이전트가 담당한다
 - **create-pr 스킬**: PR 생성 과정에서 품질 검증 단계를 수행한다
 
 ## 참조 문서
 
 - `.claude/conventions/guides/coding.md`
 - `.claude/conventions/guides/linting.md`
-- `.claude/seo/guides/` — SEO 가이드라인 전체
