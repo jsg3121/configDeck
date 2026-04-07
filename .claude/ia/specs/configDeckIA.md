@@ -177,7 +177,67 @@ ConfigDeck
 - 다른 옵션과 충돌하는지
 - 권장 조합은 무엇인지
 
-### 6-5. 다국어 기능
+### 6-5. 마이그레이션 기능
+
+사용자가 기존 설정 파일을 업로드하면, 파일의 형식과 내용을 분석하여 최신 버전/권장 형식으로 변환한다.
+
+**핵심 가치**
+
+- 기존 프로젝트의 레거시 설정을 최신 방식으로 전환하는 진입 장벽을 제거
+- "새 프로젝트 생성" 외에 "기존 프로젝트 업그레이드"라는 두 번째 사용 동기를 확보
+- 도구의 메이저 업데이트 시점마다 재방문 유인 제공
+
+**동작 흐름**
+
+```
+사용자가 기존 파일 업로드 (드래그앤드롭 또는 코드 붙여넣기)
+→ 파일 형식/버전 자동 감지
+→ 변환 결과 미리보기 (diff 뷰: 변경 전 vs 변경 후)
+→ 변환 사유 설명 (왜 이 옵션이 바뀌었는지)
+→ 수동 조정 가능 (변환 결과에서 옵션 수정)
+→ 복사 / 다운로드
+```
+
+**지원 마이그레이션 시나리오**
+
+| 도구 | 구 형식 | 신 형식 | 변환 내용 |
+|------|--------|--------|----------|
+| ESLint | `.eslintrc.json` / `.eslintrc.js` / `.eslintrc.yml` | `eslint.config.mjs` (flat config) | extends → 플러그인 직접 import, env → globals, rules 매핑, 플러그인 호환성 확인 |
+| Prettier | `.prettierrc` (JSON) | `prettier.config.mjs` (ESM) | JSON → ESM 모듈 변환, deprecated 옵션 제거/대체 |
+| TypeScript | 구 버전 tsconfig | 최신 권장 tsconfig | `moduleResolution: node` → `bundler`, `target` 최신화, 불필요한 옵션 정리 |
+| Vite | CJS 형식 config | ESM 형식 config | require → import 변환, deprecated 플러그인 API 업데이트 |
+
+**UI 구성**
+
+파일별 생성기 페이지(`/generator/{file-name}`)에 "마이그레이션" 탭을 추가한다.
+
+```
+┌─────────────────────────┬─────────────────────────┐
+│  좌측 패널              │  우측 패널 (diff 뷰)     │
+│                         │                         │
+│  [생성] [마이그레이션]   │  변경 전 (좌) │ 변경 후 (우) │
+│                         │  ─────────────────────  │
+│  파일 업로드 영역        │  - extends: ["..."]     │
+│  ┌───────────────────┐  │  + import eslint from   │
+│  │  파일을 여기에      │  │  - env: { browser }    │
+│  │  드래그하세요       │  │  + globals: { ...}     │
+│  │  또는 코드 붙여넣기  │  │                         │
+│  └───────────────────┘  │  변환 사유 설명           │
+│                         │  ├ "extends → import"   │
+│  감지된 형식: .eslintrc  │  ├ "env → globals"      │
+│  감지된 버전: ESLint 8   │  └ "규칙 호환성 확인"    │
+│                         │                         │
+│  [옵션 추가 조정]        │  ┌─────────────────┐    │
+│                         │  │ 복사 │ 다운로드   │    │
+│                         │  └─────────────────┘    │
+└─────────────────────────┴─────────────────────────┘
+```
+
+**반응형**: 모바일에서는 상하 배치. diff 뷰는 탭 전환(변경 전/후)으로 제공
+
+**SEO 요소**: `/generator/eslint-config` 페이지에서 "ESLint flat config migration" 키워드 자연 포함. 마이그레이션 가이드 콘텐츠가 페이지 SEO 가치를 강화
+
+### 6-6. 다국어 기능
 
 - UI, 설명, 문서 번역
 - 다국어 SEO 페이지 운영
@@ -353,6 +413,18 @@ ConfigDeck
 → 옵션 설정 → 미리보기 → 다운로드
 ```
 
+### 플로우 D: 마이그레이션
+
+```
+"eslint flat config migration" 검색 또는 생성기 페이지 내 [마이그레이션] 탭 클릭
+→ /generator/eslint-config (마이그레이션 탭)
+→ 기존 .eslintrc 파일 업로드 또는 코드 붙여넣기
+→ 파일 형식/버전 자동 감지
+→ diff 뷰로 변환 결과 확인 (변경 전 vs 변경 후 + 변환 사유 설명)
+→ 필요 시 옵션 추가 조정
+→ 복사 또는 다운로드
+```
+
 ---
 
 ## 10. 내비게이션 구조
@@ -404,6 +476,8 @@ ConfigDeck
 
 - `gitignore generator`, `eslint config generator`, `prettier config generator`
 - `tsconfig generator`, `vite config template`, `next.js config example`
+- `eslint flat config migration`, `eslintrc to flat config`, `migrate eslint config`
+- `cursorrules generator`, `copilot instructions template`
 - `react starter config`, `android gitignore template`
 
 ---
@@ -416,6 +490,7 @@ ConfigDeck
 - 생성기 허브 페이지
 - 파일별 생성기: `.gitignore`, `eslint.config.mjs`, `prettier.config.mjs`, `tsconfig.json`
 - 스택별 생성기: 프리셋 3~5개
+- **마이그레이션: ESLint (.eslintrc → eslint.config.mjs)**
 - 2분할 레이아웃 (옵션 + 실시간 미리보기)
 - 복사 / 다운로드 / ZIP 다운로드
 - 영어 / 한국어
@@ -423,8 +498,13 @@ ConfigDeck
 ### P1
 
 - 추가 파일: `vite.config.ts`, `next.config.js`, `vitest.config.ts`
+- **마이그레이션 확장: Prettier, tsconfig, Vite**
 - 문서/가이드 페이지
 - 일본어 / 포르투갈어 추가
+
+### P1.5
+
+- **AI 도구 설정 파일: `.cursorrules`, `copilot-instructions.md`, `CLAUDE.md` 등**
 
 ### P2
 
@@ -445,6 +525,16 @@ ConfigDeck
 | ESLint + Prettier 규칙 충돌 | Prettier 연동 옵션 선택 시 충돌 규칙 자동 비활성화 + 안내 메시지 |
 | tsconfig의 `module`과 `moduleResolution` 불일치 | 의존 관계에 따라 자동 보정 + 경고 표시 |
 | 프리셋 선택 후 개별 옵션 변경 | 프리셋 상태 해제되고 "커스텀" 상태로 전환. 원래 프리셋으로 복원 버튼 제공 |
+
+### 마이그레이션
+
+| 상황 | 처리 |
+|------|------|
+| 업로드된 파일 형식을 인식할 수 없음 | "지원하지 않는 파일 형식입니다" 안내 + 지원 파일 목록 표시 |
+| 이미 최신 형식인 파일을 업로드 | "이미 최신 형식입니다" 안내 + 생성기 탭으로 전환 유도 |
+| 구 형식에서 1:1 매핑이 불가능한 옵션 존재 | 해당 옵션을 "수동 확인 필요"로 표시하고 변환 사유와 대안을 설명 |
+| 커스텀 플러그인/규칙이 포함된 파일 | 알려진 플러그인은 자동 변환, 미지의 플러그인은 원본 유지 + 경고 표시 |
+| 파일 크기가 과도하게 큼 | 최대 크기 제한 (예: 50KB) + 안내 메시지 |
 
 ### 빈 상태
 
@@ -481,13 +571,14 @@ ConfigDeck
 - 파일 간 충돌을 자동으로 해결
 - 최신 권장 방식 반영
 - 각 옵션에 대한 설명 제공
+- **레거시 설정 → 최신 형식 마이그레이션**
 - 다국어 지원
 - 파일/스택별 SEO 랜딩 겸용 구조
 
 ### 핵심 메시지
 
 > "개발 설정 파일 하나를 만드는 서비스"가 아니라
-> **"프로젝트 시작에 필요한 설정을 한 번에 정리해주는 서비스"**
+> **"프로젝트 설정을 만들고, 기존 설정도 최신으로 업그레이드해주는 서비스"**
 
 ---
 
@@ -498,12 +589,15 @@ ConfigDeck
 - 생성기 페이지 진입 수
 - 파일 다운로드 / ZIP 다운로드 수
 - 프리셋 사용률
+- **마이그레이션 변환 완료 수**
 - SEO 검색 유입 수 (파일별/스택별 생성기 페이지)
 - 재방문율
+- **애드센스 월 수익**
 
 ### 보조 지표
 
 - 파일별/스택별 사용률
+- **마이그레이션 vs 생성 사용 비율**
 - 이탈이 많은 단계
 - 가장 많이 선택되는 옵션 조합
 - 검색 유입 상위 키워드
@@ -521,3 +615,5 @@ ConfigDeck
 - AI 기반 설정 리뷰
 - Framework boilerplate 생성
 - CI/CD 템플릿 자동 추가
+- **AI 도구 설정 파일 생성 (.cursorrules, copilot-instructions.md, CLAUDE.md, .windsurfrules 등)**
+- **마이그레이션 일괄 변환 (프로젝트 전체 설정 파일을 한 번에 최신화)**
