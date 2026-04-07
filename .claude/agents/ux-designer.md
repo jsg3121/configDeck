@@ -9,6 +9,9 @@ tools:
   - Grep
   - WebSearch
   - WebFetch
+allowedTools:
+  - WebSearch
+  - WebFetch
 ---
 
 # ux-designer
