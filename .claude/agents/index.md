@@ -15,11 +15,19 @@
 
 ## 에이전트 목록
 
+### 개발 에이전트
+
 - [config-maker](config-maker.md) — 설정 파일 스키마, 옵션 정의, 생성 로직 전문
 - [seo-specialist](seo-specialist.md) — 시맨틱 HTML, 메타태그, 구조화 데이터, 다국어 SEO 전문
 - [ui-publisher](ui-publisher.md) — Astro/Svelte 컴포넌트 구현, Tailwind 스타일링 전문
 - [ux-designer](ux-designer.md) — 사용자 플로우, 레이아웃, 인터랙션, 반응형 설계 전문
 - [qa-agent](qa-agent.md) — 설정 유효성 검증, 테스트, 코드 품질 검증 전문
+
+### 비즈니스 분석 에이전트
+
+- [market-intelligence](market-intelligence.md) — 시장 규모, 경쟁사, 산업 트렌드, 거시환경 조사 전문
+- [business-analyst](business-analyst.md) — 서비스 경쟁력, 포지셔닝, 내부 역량 분석 전문
+- [strategy-planner](strategy-planner.md) — MI+BA 분석 종합 후 전략 방향 도출 전문
 
 ## 활용 패턴
 
@@ -64,3 +72,19 @@ config-maker ──생성──→ qa-agent
 - UI/컴포넌트 관련 → ui-publisher
 - UX/플로우 관련 → ux-designer
 - 테스트/검증 관련 → qa-agent
+
+### 비즈니스 전략 분석 (Pipeline)
+
+```
+market-intelligence → business-analyst → strategy-planner
+(시장/경쟁사/트렌드)   (경쟁력/포지셔닝)   (전략 방향 도출)
+```
+
+`/biz-strategy` 스킬로 전체 파이프라인을 오케스트레이션하거나, 개별 에이전트를 직접 호출할 수 있다.
+
+### 신규 서비스 기획 (Pipeline)
+
+```
+market-intelligence → business-analyst → strategy-planner → ux-designer → ui-publisher
+(시장 조사)           (경쟁력 분석)       (전략 수립)         (UX 설계)     (구현)
+```

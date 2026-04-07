@@ -87,13 +87,14 @@
 **`skills/`** — 커스텀 스킬
 
 - 목적: 반복 작업이나 특화 워크플로우를 SKILL.md 기반 커스텀 스킬로 정의한다. 슬래시 명령어(`/skill-name`)로 호출하거나 description 기반 자동 트리거로 활성화된다.
-- 스킬 목록: research, create-pr, component-builder, lint-check, code-review, a11y-check, seo-audit, test-writer, e2e-test
+- 스킬 목록: research, create-pr, component-builder, lint-check, code-review, a11y-check, seo-audit, test-writer, e2e-test, biz-strategy
 - 배경: 에이전트의 능력을 프로젝트 맥락에 맞게 확장하고, 반복 작업을 표준화하기 위해 도입
 
 **`agents/`** — 에이전트 정의
 
 - 목적: 프로젝트 전용 에이전트의 역할, 작업 원칙, 입출력 프로토콜을 정의한다. 에이전트 팀/서브 에이전트 아키텍처 패턴에 따라 구성된다.
-- 에이전트 목록: config-maker, seo-specialist, ui-publisher, ux-designer, qa-agent
+- 개발 에이전트: config-maker, seo-specialist, ui-publisher, ux-designer, qa-agent
+- 비즈니스 분석 에이전트: market-intelligence, business-analyst, strategy-planner
 - 배경: 복잡한 작업을 전문 에이전트에게 위임하고, 팀 단위 협업으로 품질을 높이기 위해 도입
 
 ## 스킬과 에이전트의 역할 구분
@@ -186,3 +187,4 @@ SKILL.md와 가이드 문서는 500줄 이하로 유지한다. 상세 내용은 
 | 2026-04-06 | research/, hooks/ 폴더 추가 | 하네스 | 리서치 보고서 보관 및 Hook 스크립트 관리를 위해 추가 |
 | 2026-04-06 | 에이전트 permissionMode/tools 설정 | agents | 에이전트별 권한 모드 및 도구 제한 추가 |
 | 2026-04-06 | settings.json에 hooks, env 추가 | settings | PostToolUse 포맷팅, Stop 검증 Hook 및 에이전트 팀 환경변수 추가 |
+| 2026-04-07 | 비즈니스 분석 에이전트 3개 추가 | agents, skills | MI→BA→SP 파이프라인 구성, biz-strategy 스킬 추가 |
