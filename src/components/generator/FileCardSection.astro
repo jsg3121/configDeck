@@ -1,0 +1,49 @@
+---
+import { getTranslation, type Locale } from '@/i18n'
+
+import FileCard from './FileCard.astro'
+
+interface FileCardData {
+  name: string
+  slug: string
+  descriptionEn: string
+  descriptionKo: string
+}
+
+interface Props {
+  locale: Locale
+  categoryLabelKey: string
+  files: readonly FileCardData[]
+  iconType: 'document' | 'code'
+}
+
+const { locale, categoryLabelKey, files, iconType } = Astro.props
+
+/**
+ * locale에 따라 파일 설명을 반환한다.
+ */
+const getLocalizedDescription = (file: FileCardData): string => {
+  return locale === 'ko' ? file.descriptionKo : file.descriptionEn
+}
+---
+
+<div class="mt-10 first:mt-0">
+  <h3 class="flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-gray-400">
+    <span class="h-px flex-1 bg-border"></span>
+    <span>{getTranslation(locale, categoryLabelKey)}</span>
+    <span class="h-px flex-1 bg-border"></span>
+  </h3>
+  <div class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    {
+      files.map((file) => (
+        <FileCard
+          locale={locale}
+          name={file.name}
+          description={getLocalizedDescription(file)}
+          slug={file.slug}
+          iconType={iconType}
+        />
+      ))
+    }
+  </div>
+</div>

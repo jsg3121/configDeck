@@ -1,0 +1,54 @@
+---
+interface FileOption {
+  label: string
+  value: string
+  checked: boolean
+}
+
+interface IncludedFile {
+  fileName: string
+  slug: string
+  options: readonly FileOption[]
+}
+
+interface Props {
+  /** 스택에 포함된 파일 목록 */
+  includedFiles: readonly IncludedFile[]
+}
+
+const { includedFiles } = Astro.props
+---
+
+{
+  includedFiles.map((includedFile, fileIndex) => (
+    <details
+      open={fileIndex < 2}
+      class:list={['group py-5', fileIndex < includedFiles.length - 1 && 'border-b border-border']}
+    >
+      <summary class="flex cursor-pointer select-none items-center justify-between">
+        <span class="text-sm font-semibold text-gray-900">{includedFile.fileName}</span>
+        <svg
+          class="h-4 w-4 text-gray-400 transition-transform group-open:rotate-180"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </summary>
+      <div class="mt-4 flex flex-col gap-3 pl-1">
+        {includedFile.options.map((option) => (
+          <label class="flex cursor-pointer items-center gap-3">
+            <input
+              type="checkbox"
+              checked={option.checked}
+              class="h-4 w-4 rounded border-gray-300 text-primary accent-primary"
+            />
+            <span class="text-sm text-gray-700">{option.label}</span>
+          </label>
+        ))}
+      </div>
+    </details>
+  ))
+}

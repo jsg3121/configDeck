@@ -3,6 +3,8 @@ import { buildLocalizedPath, getTranslation, SUPPORTED_LOCALES, type Locale } fr
 
 import Layout from '@/layouts/Layout.astro'
 import Header from '@/components/common/Header.astro'
+import CodePreviewPanel from '@/components/generator/CodePreviewPanel.astro'
+import MigrationPanel from '@/components/generator/MigrationPanel.astro'
 import { FILE_DEFINITIONS, type FileDefinition } from '@/lib/data/files'
 
 export const getStaticPaths = () => {
@@ -47,15 +49,13 @@ const getSectionDescription = (section: {
   currentPath="/generator"
   bare
 >
-  <!-- 생성기 전용 Header (bare 모드이므로 직접 포함) -->
   <Header locale={locale} currentPath="/generator" />
 
-  <!-- 2분할 레이아웃 -->
   <main class="flex flex-col lg:flex-row">
     <!-- 좌측 패널: 설정 -->
     <div class="w-full lg:h-[calc(100vh-65px)] lg:w-1/2 lg:overflow-y-auto">
       <div class="mx-auto max-w-xl px-6 py-8">
-        <!-- 뒤로가기 링크 -->
+        <!-- 뒤로가기 -->
         <a
           href={buildLocalizedPath(locale, '/generator')}
           class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900"
@@ -72,7 +72,7 @@ const getSectionDescription = (section: {
           {getTranslation(locale, 'common.backToGenerator')}
         </a>
 
-        <!-- 파일 타이틀 -->
+        <!-- 타이틀 -->
         <div class="mt-6">
           <h1 class="text-2xl font-bold tracking-tight">
             <span class="font-mono">{currentFile.fileName}</span>
@@ -94,7 +94,7 @@ const getSectionDescription = (section: {
           )
         }
 
-        <!-- 프리셋 버튼 -->
+        <!-- 프리셋 -->
         <div class="mt-6 border-b border-border pb-6">
           <h2 class="text-xs font-semibold uppercase tracking-wider text-gray-400">
             {getTranslation(locale, 'generator.preset')}
@@ -145,100 +145,15 @@ const getSectionDescription = (section: {
           ))
         }
 
-        <!-- 마이그레이션 패널 (ESLint만, 기본 숨김 — Phase 4에서 Svelte로 전환) -->
-        {
-          currentFile.supportsMigration && (
-            <div class="hidden border-b border-border py-6" data-migration-panel>
-              <h2 class="text-sm font-semibold text-gray-900">
-                {getTranslation(locale, 'generator.migration.title')}
-              </h2>
-              <div class="mt-4 flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-8 text-center">
-                <svg
-                  class="h-10 w-10 text-gray-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"
-                  />
-                </svg>
-                <p class="mt-3 text-sm text-gray-500">
-                  {getTranslation(locale, 'generator.migration.dropzone')}
-                </p>
-              </div>
-              <div class="mt-4">
-                <label class="block text-sm font-medium text-gray-700">
-                  {getTranslation(locale, 'generator.migration.pasteLabel')}
-                </label>
-                <textarea
-                  rows="6"
-                  class="mt-1.5 block w-full rounded-md border border-border bg-surface px-3 py-2 font-mono text-sm text-gray-700 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
-                  placeholder='{`{\n  "extends": ["eslint:recommended"],\n  "rules": { ... }\n}`}'
-                />
-              </div>
-            </div>
-          )
-        }
+        {currentFile.supportsMigration && <MigrationPanel locale={locale} />}
       </div>
     </div>
 
     <!-- 우측 패널: 미리보기 -->
-    <div
-      class="w-full border-t border-border lg:sticky lg:top-0 lg:h-screen lg:w-1/2 lg:border-t-0 lg:border-l"
-    >
-      <div class="flex h-full flex-col bg-code-bg">
-        <!-- 상단 바 -->
-        <div class="flex items-center justify-between border-b border-gray-700 px-5 py-3">
-          <span class="font-mono text-sm text-gray-300">{currentFile.fileName}</span>
-          <div class="flex items-center gap-2">
-            <button
-              class="inline-flex items-center gap-1.5 rounded-md border border-gray-600 px-3 py-1.5 text-xs font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
-            >
-              <svg
-                class="h-3.5 w-3.5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                ></path>
-              </svg>
-              {getTranslation(locale, 'common.copy')}
-            </button>
-            <button
-              class="inline-flex items-center gap-1.5 rounded-md border border-gray-600 px-3 py-1.5 text-xs font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
-            >
-              <svg
-                class="h-3.5 w-3.5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-              </svg>
-              {getTranslation(locale, 'common.download')}
-            </button>
-          </div>
-        </div>
-
-        <!-- 코드 미리보기 -->
-        <div class="flex-1 overflow-auto p-5">
-          <pre
-            class="font-mono text-sm leading-relaxed text-gray-300"><code>{currentFile.sampleCode}</code></pre>
-        </div>
-      </div>
-    </div>
+    <CodePreviewPanel
+      locale={locale}
+      fileName={currentFile.fileName}
+      sampleCode={currentFile.sampleCode}
+    />
   </main>
 </Layout>

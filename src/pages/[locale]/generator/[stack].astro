@@ -3,6 +3,8 @@ import { buildLocalizedPath, getTranslation, SUPPORTED_LOCALES, type Locale } fr
 
 import Layout from '@/layouts/Layout.astro'
 import Header from '@/components/common/Header.astro'
+import CodePreviewPanel from '@/components/generator/CodePreviewPanel.astro'
+import FileOptionAccordion from '@/components/generator/FileOptionAccordion.astro'
 import { STACK_DEFINITIONS, type StackDefinition } from '@/lib/data/stacks'
 
 export const getStaticPaths = () => {
@@ -47,12 +49,11 @@ const getFirstSampleCode = (): string => {
 >
   <Header locale={locale} currentPath="/generator" />
 
-  <!-- 2분할 레이아웃 -->
   <main class="flex flex-col lg:flex-row">
     <!-- 좌측 패널: 설정 -->
     <div class="w-full lg:h-[calc(100vh-65px)] lg:w-1/2 lg:overflow-y-auto">
       <div class="mx-auto max-w-xl px-6 py-8">
-        <!-- 뒤로가기 링크 -->
+        <!-- 뒤로가기 -->
         <a
           href={buildLocalizedPath(locale, '/generator')}
           class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900"
@@ -100,51 +101,18 @@ const getFirstSampleCode = (): string => {
         </fieldset>
 
         <!-- 파일별 옵션 아코디언 -->
-        {
-          currentStack.includedFiles.map((includedFile, fileIndex) => (
-            <details
-              open={fileIndex < 2}
-              class:list={[
-                'group py-5',
-                fileIndex < currentStack.includedFiles.length - 1 && 'border-b border-border',
-              ]}
-            >
-              <summary class="flex cursor-pointer select-none items-center justify-between">
-                <span class="text-sm font-semibold text-gray-900">{includedFile.fileName}</span>
-                <svg
-                  class="h-4 w-4 text-gray-400 transition-transform group-open:rotate-180"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                </svg>
-              </summary>
-              <div class="mt-4 flex flex-col gap-3 pl-1">
-                {includedFile.options.map((option) => (
-                  <label class="flex cursor-pointer items-center gap-3">
-                    <input
-                      type="checkbox"
-                      checked={option.checked}
-                      class="h-4 w-4 rounded border-gray-300 text-primary accent-primary"
-                    />
-                    <span class="text-sm text-gray-700">{option.label}</span>
-                  </label>
-                ))}
-              </div>
-            </details>
-          ))
-        }
+        <FileOptionAccordion includedFiles={currentStack.includedFiles} />
       </div>
     </div>
 
     <!-- 우측 패널: 파일 탭 미리보기 -->
-    <div
-      class="w-full border-t border-border lg:sticky lg:top-0 lg:h-screen lg:w-1/2 lg:border-t-0 lg:border-l"
+    <CodePreviewPanel
+      locale={locale}
+      fileName={firstFileName}
+      sampleCode={getFirstSampleCode()}
+      showZipDownload
     >
-      <div class="flex h-full flex-col bg-code-bg">
-        <!-- 파일 탭 -->
+      <Fragment slot="file-tabs">
         <div class="overflow-x-auto border-b border-gray-700">
           <div class="flex">
             {
@@ -163,69 +131,7 @@ const getFirstSampleCode = (): string => {
             }
           </div>
         </div>
-
-        <!-- 액션 바 -->
-        <div class="flex items-center justify-end gap-2 border-b border-gray-700 px-5 py-2.5">
-          <button
-            class="inline-flex items-center gap-1.5 rounded-md border border-gray-600 px-3 py-1.5 text-xs font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
-          >
-            <svg
-              class="h-3.5 w-3.5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-              ></path>
-            </svg>
-            {getTranslation(locale, 'common.copy')}
-          </button>
-          <button
-            class="inline-flex items-center gap-1.5 rounded-md border border-gray-600 px-3 py-1.5 text-xs font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
-          >
-            <svg
-              class="h-3.5 w-3.5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-            </svg>
-            {getTranslation(locale, 'common.download')}
-          </button>
-          <button
-            class="inline-flex items-center gap-1.5 rounded-md bg-accent px-3.5 py-1.5 text-xs font-medium text-white hover:bg-accent/90"
-          >
-            <svg
-              class="h-3.5 w-3.5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-            </svg>
-            {getTranslation(locale, 'common.downloadAll')}
-          </button>
-        </div>
-
-        <!-- 코드 미리보기 (첫 번째 파일) -->
-        <div class="flex-1 overflow-auto p-5">
-          <pre
-            class="font-mono text-sm leading-relaxed text-gray-300"><code>{getFirstSampleCode()}</code></pre>
-        </div>
-      </div>
-    </div>
+      </Fragment>
+    </CodePreviewPanel>
   </main>
 </Layout>

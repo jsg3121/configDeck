@@ -1,0 +1,32 @@
+---
+import { getTranslation, getTranslationRaw, type Locale } from '@/i18n'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+
+const faqs = getTranslationRaw(locale, 'home.faqs') as Array<{
+  question: string
+  answer: string
+}>
+---
+
+<section class="border-y border-border bg-surface">
+  <div class="mx-auto max-w-3xl px-6 py-20">
+    <h2 class="text-center text-2xl font-bold">
+      {getTranslation(locale, 'home.faq')}
+    </h2>
+    <div class="mt-10 divide-y divide-border">
+      {
+        faqs.map((faqItem) => (
+          <div class="py-5">
+            <h3 class="font-semibold text-gray-900">{faqItem.question}</h3>
+            <p class="mt-2 text-sm text-gray-500">{faqItem.answer}</p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

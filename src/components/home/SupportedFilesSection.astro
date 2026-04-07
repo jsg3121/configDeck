@@ -1,0 +1,81 @@
+---
+import { buildLocalizedPath, getTranslation, type Locale } from '@/i18n'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+
+const supportedFileCards = [
+  {
+    name: '.gitignore',
+    descriptionEn: 'Git ignore patterns for your OS, IDE, and framework',
+    descriptionKo: 'OS, IDE, 프레임워크에 맞는 Git 무시 패턴',
+    slug: 'gitignore',
+  },
+  {
+    name: 'eslint.config.mjs',
+    descriptionEn: 'ESLint flat config with TypeScript and framework support',
+    descriptionKo: 'TypeScript와 프레임워크를 지원하는 ESLint flat config',
+    slug: 'eslint-config',
+  },
+  {
+    name: 'prettier.config.mjs',
+    descriptionEn: 'Code formatting rules for consistent style',
+    descriptionKo: '일관된 스타일을 위한 코드 포맷팅 규칙',
+    slug: 'prettier-config',
+  },
+  {
+    name: 'tsconfig.json',
+    descriptionEn: 'TypeScript compiler options and path aliases',
+    descriptionKo: 'TypeScript 컴파일러 옵션과 경로 별칭',
+    slug: 'tsconfig',
+  },
+  {
+    name: 'vite.config.ts',
+    descriptionEn: 'Vite bundler configuration with plugins',
+    descriptionKo: '플러그인이 포함된 Vite 번들러 설정',
+    slug: 'vite-config',
+  },
+  {
+    name: 'vitest.config.ts',
+    descriptionEn: 'Vitest test runner configuration',
+    descriptionKo: 'Vitest 테스트 러너 설정',
+    slug: 'vitest-config',
+  },
+] as const
+
+/**
+ * locale에 따라 파일 설명을 반환한다.
+ */
+const getFileDescription = (file: (typeof supportedFileCards)[number]): string => {
+  return locale === 'ko' ? file.descriptionKo : file.descriptionEn
+}
+---
+
+<section class="mx-auto max-w-7xl px-6 py-20">
+  <h2 class="text-center text-2xl font-bold">
+    {getTranslation(locale, 'home.supportedFiles')}
+  </h2>
+  <div class="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    {
+      supportedFileCards.map((file) => (
+        <a
+          href={buildLocalizedPath(locale, `/generator/${file.slug}`)}
+          class="group flex items-start gap-4 rounded-lg border border-border bg-surface p-4 transition-colors hover:border-primary/50"
+        >
+          <div class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded bg-gray-100 font-mono text-xs text-gray-500">
+            {'{}'}
+          </div>
+          <div>
+            <h3 class="font-mono text-sm font-semibold text-gray-900 group-hover:text-primary">
+              {file.name}
+            </h3>
+            <p class="mt-1 text-xs text-gray-500">{getFileDescription(file)}</p>
+          </div>
+        </a>
+      ))
+    }
+  </div>
+</section>
