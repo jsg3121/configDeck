@@ -11,7 +11,7 @@
 
 <div class="overflow-x-auto border-b border-gray-700">
   <div class="flex">
-    {#each fileNames as fileName}
+    {#each fileNames as fileName (fileName)}
       <button
         type="button"
         class="shrink-0 border-b-2 px-4 py-2.5 font-mono text-xs font-medium transition-colors {fileName ===

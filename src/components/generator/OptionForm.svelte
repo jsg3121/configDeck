@@ -50,14 +50,14 @@
   }
 </script>
 
-{#each sections as section, sectionIndex}
+{#each sections as section, sectionIndex (section.titleEn)}
   <fieldset class="border-b border-border py-6">
     <legend class="text-sm font-semibold text-gray-900">
       {getSectionTitle(section)}
     </legend>
     <p class="mt-1 text-xs text-gray-400">{getSectionDescription(section)}</p>
     <div class="mt-4 flex flex-col gap-3">
-      {#each section.options as option}
+      {#each section.options as option (option.value)}
         <label class="flex cursor-pointer items-center gap-3">
           {#if section.type === 'radio'}
             <input

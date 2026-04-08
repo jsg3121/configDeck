@@ -134,7 +134,7 @@
           {includedFilesLabel}
         </legend>
         <div class="mt-3 flex flex-col gap-2.5">
-          {#each includedFiles as file}
+          {#each includedFiles as file (file.fileName)}
             <label class="flex cursor-pointer items-center gap-3">
               <input
                 type="checkbox"
@@ -149,7 +149,7 @@
       </fieldset>
 
       <!-- 파일별 옵션 아코디언 -->
-      {#each fileOptions as file, fileIndex}
+      {#each fileOptions as file, fileIndex (file.fileName)}
         {#if enabledFileMap[file.fileName]}
           <details open={fileIndex < 2} class="group border-b border-border py-5">
             <summary class="flex cursor-pointer select-none items-center justify-between">
@@ -165,7 +165,7 @@
               </svg>
             </summary>
             <div class="mt-4 flex flex-col gap-3 pl-1">
-              {#each file.options as option}
+              {#each file.options as option (option.value)}
                 <label class="flex cursor-pointer items-center gap-3">
                   <input
                     type="checkbox"

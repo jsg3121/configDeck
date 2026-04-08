@@ -78,7 +78,7 @@
     <div class="rounded-md border border-amber-200 bg-amber-50 p-3">
       <h4 class="text-xs font-semibold text-amber-800">{warningLabel}</h4>
       <ul class="mt-1.5 flex flex-col gap-1">
-        {#each warnings as warning}
+        {#each warnings as warning (warning)}
           <li class="text-xs text-amber-700">• {warning}</li>
         {/each}
       </ul>

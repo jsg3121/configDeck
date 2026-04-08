@@ -10,7 +10,7 @@
 </script>
 
 <div class="flex gap-2">
-  {#each presets as presetName}
+  {#each presets as presetName (presetName)}
     <button
       type="button"
       class="rounded-md border px-3 py-1.5 text-sm font-medium transition-colors {presetName ===
