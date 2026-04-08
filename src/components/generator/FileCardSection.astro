@@ -14,10 +14,9 @@ interface Props {
   locale: Locale
   categoryLabelKey: string
   files: readonly FileCardData[]
-  iconType: 'document' | 'code'
 }
 
-const { locale, categoryLabelKey, files, iconType } = Astro.props
+const { locale, categoryLabelKey, files } = Astro.props
 
 /**
  * locale에 따라 파일 설명을 반환한다.
@@ -41,7 +40,6 @@ const getLocalizedDescription = (file: FileCardData): string => {
           name={file.name}
           description={getLocalizedDescription(file)}
           slug={file.slug}
-          iconType={iconType}
         />
       ))
     }

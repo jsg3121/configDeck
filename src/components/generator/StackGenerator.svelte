@@ -5,6 +5,7 @@
    */
   import { generateConfigBySlug } from '@/lib/generators'
   import { getPresetDefaultsBySlug } from '@/lib/schemas'
+  import { getFileIcon } from '@/lib/data/icons'
 
   import CodePreview from './CodePreview.svelte'
   import FileTabBar from './FileTabBar.svelte'
@@ -34,6 +35,8 @@
   let fileOptions = $state<IncludedFile[]>([])
   /** 현재 미리보기 파일 탭 */
   let activeFileTab = $state('')
+  /** 현재 열려 있는 아코디언 파일명 (하나만 열림) */
+  let openAccordion = $state('')
 
   // 초기값 설정 — props를 클로저 내에서 참조하여 반응성 경고 방지
   $effect(() => {
@@ -41,6 +44,7 @@
       enabledFileMap = Object.fromEntries(includedFiles.map((f) => [f.fileName, true]))
       fileOptions = JSON.parse(JSON.stringify(includedFiles))
       activeFileTab = includedFiles[0].fileName
+      openAccordion = includedFiles[0].fileName
     }
   })
 
@@ -94,13 +98,30 @@
   const handleFileToggle = (fileName: string, event: Event) => {
     const target = event.target as HTMLInputElement
     enabledFileMap = { ...enabledFileMap, [fileName]: target.checked }
-    // 비활성화된 파일이 현재 탭이면 첫 번째 활성 파일로 전환
-    if (!target.checked && activeFileTab === fileName) {
+    // 비활성화된 파일이 현재 탭/아코디언이면 첫 번째 활성 파일로 전환
+    if (!target.checked) {
       const firstActive = includedFiles.find(
         (f) => f.fileName !== fileName && enabledFileMap[f.fileName],
       )
-      if (firstActive) activeFileTab = firstActive.fileName
+      if (activeFileTab === fileName && firstActive) activeFileTab = firstActive.fileName
+      if (openAccordion === fileName) openAccordion = firstActive?.fileName ?? ''
     }
+  }
+
+  /** 아코디언 토글 핸들러 — 하나만 열리고, 미리보기 탭도 동기화한다 */
+  const handleAccordionToggle = (fileName: string) => {
+    if (openAccordion === fileName) {
+      openAccordion = ''
+    } else {
+      openAccordion = fileName
+      activeFileTab = fileName
+    }
+  }
+
+  /** 미리보기 탭 변경 핸들러 — 아코디언도 동기화한다 */
+  const handleTabChange = (fileName: string) => {
+    activeFileTab = fileName
+    openAccordion = fileName
   }
 
   /** 아코디언 옵션 변경 핸들러 */
@@ -144,6 +165,7 @@
         </legend>
         <div class="mt-3 flex flex-col gap-2.5">
           {#each includedFiles as file (file.fileName)}
+            {@const icon = getFileIcon(file.fileName)}
             <label class="flex cursor-pointer items-center gap-3">
               <input
                 type="checkbox"
@@ -151,20 +173,38 @@
                 onchange={(e) => handleFileToggle(file.fileName, e)}
                 class="h-4 w-4 rounded border-gray-300 text-primary accent-primary"
               />
+              {#if icon}
+                <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill={icon.color}>
+                  <path d={icon.path} />
+                </svg>
+              {/if}
               <span class="font-mono text-sm text-gray-700">{file.fileName}</span>
             </label>
           {/each}
         </div>
       </fieldset>
 
-      <!-- 파일별 옵션 아코디언 -->
+      <!-- 파일별 옵션 아코디언 (단일 열림) -->
       {#each fileOptions as file, fileIndex (file.fileName)}
         {#if enabledFileMap[file.fileName]}
-          <details open={fileIndex < 2} class="group border-b border-border py-5">
-            <summary class="flex cursor-pointer select-none items-center justify-between">
-              <span class="text-sm font-semibold text-gray-900">{file.fileName}</span>
+          {@const isOpen = openAccordion === file.fileName}
+          {@const accordionIcon = getFileIcon(file.fileName)}
+          <div class="border-b border-border py-5">
+            <button
+              type="button"
+              class="flex w-full cursor-pointer select-none items-center justify-between"
+              onclick={() => handleAccordionToggle(file.fileName)}
+            >
+              <span class="flex items-center gap-2 text-sm font-semibold text-gray-900">
+                {#if accordionIcon}
+                  <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill={accordionIcon.color}>
+                    <path d={accordionIcon.path} />
+                  </svg>
+                {/if}
+                {file.fileName}
+              </span>
               <svg
-                class="h-4 w-4 text-gray-400 transition-transform group-open:rotate-180"
+                class="h-4 w-4 text-gray-400 transition-transform {isOpen ? 'rotate-180' : ''}"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -172,21 +212,23 @@
               >
                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
               </svg>
-            </summary>
-            <div class="mt-4 flex flex-col gap-3 pl-1">
-              {#each file.options as option (option.value)}
-                <label class="flex cursor-pointer items-center gap-3">
-                  <input
-                    type="checkbox"
-                    checked={option.checked}
-                    onchange={(e) => handleOptionChange(fileIndex, option.value, e)}
-                    class="h-4 w-4 rounded border-gray-300 text-primary accent-primary"
-                  />
-                  <span class="text-sm text-gray-700">{option.label}</span>
-                </label>
-              {/each}
-            </div>
-          </details>
+            </button>
+            {#if isOpen}
+              <div class="mt-4 flex flex-col gap-3 pl-1">
+                {#each file.options as option (option.value)}
+                  <label class="flex cursor-pointer items-center gap-3">
+                    <input
+                      type="checkbox"
+                      checked={option.checked}
+                      onchange={(e) => handleOptionChange(fileIndex, option.value, e)}
+                      class="h-4 w-4 rounded border-gray-300 text-primary accent-primary"
+                    />
+                    <span class="text-sm text-gray-700">{option.label}</span>
+                  </label>
+                {/each}
+              </div>
+            {/if}
+          </div>
         {/if}
       {/each}
     </div>
@@ -200,7 +242,7 @@
       <FileTabBar
         fileNames={activeFileNames}
         activeTab={activeFileTab}
-        ontabchange={(name) => (activeFileTab = name)}
+        ontabchange={handleTabChange}
       />
       <CodePreview
         fileName={activeFileTab}
