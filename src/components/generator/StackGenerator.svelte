@@ -39,7 +39,7 @@
   $effect(() => {
     if (fileOptions.length === 0) {
       enabledFileMap = Object.fromEntries(includedFiles.map((f) => [f.fileName, true]))
-      fileOptions = structuredClone(includedFiles)
+      fileOptions = JSON.parse(JSON.stringify(includedFiles))
       activeFileTab = includedFiles[0].fileName
     }
   })
@@ -72,8 +72,10 @@
     const result: Record<string, string> = {}
     for (const file of fileOptions) {
       if (!enabledFileMap[file.fileName]) continue
-      const defaults = structuredClone(
-        getPresetDefaultsBySlug(file.slug, 'Recommended') as Record<string, unknown>,
+      const defaults = JSON.parse(
+        JSON.stringify(
+          getPresetDefaultsBySlug(file.slug, 'Recommended') as Record<string, unknown>,
+        ),
       )
       for (const opt of file.options) {
         const camelKey = toCamelCase(opt.value)
@@ -131,7 +133,7 @@
   let includedFilesLabel = $derived(locale === 'ko' ? '포함 파일' : 'Included Files')
 </script>
 
-<div class="flex flex-col lg:flex-row">
+<div class="mx-auto flex max-w-7xl flex-col lg:flex-row">
   <!-- 좌측 패널: 설정 -->
   <div class="w-full lg:h-[calc(100vh-65px)] lg:w-1/2 lg:overflow-y-auto">
     <div class="mx-auto max-w-xl px-6 py-8">

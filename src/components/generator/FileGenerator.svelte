@@ -51,7 +51,7 @@
     getPresetDefaultsBySlug(fileSlug, initialPreset) as Record<string, unknown>,
   )
   /** UI 표시용 섹션 상태 */
-  let currentSections = $state<OptionSection[]>(structuredClone(sections))
+  let currentSections = $state<OptionSection[]>(JSON.parse(JSON.stringify(sections)))
 
   /** 마이그레이션 결과 */
   let migrationResult = $state<MigrationResult | null>(null)
@@ -102,7 +102,7 @@
   const handlePresetChange = (presetName: string) => {
     selectedPreset = presetName
     const defaults = getPresetDefaultsBySlug(fileSlug, presetName) as Record<string, unknown>
-    generatorOptions = structuredClone(defaults)
+    generatorOptions = JSON.parse(JSON.stringify(defaults))
 
     currentSections = sections.map((section) => ({
       ...section,
@@ -127,7 +127,7 @@
         options: section.options.map((o) => ({ ...o, checked: o.value === optionValue })),
       }
       if (section.name) {
-        const updated = structuredClone(generatorOptions)
+        const updated = JSON.parse(JSON.stringify(generatorOptions))
         if (section.name in updated) {
           updated[section.name] = optionValue
         }
@@ -139,7 +139,7 @@
         options: section.options.map((o) => (o.value === optionValue ? { ...o, checked } : o)),
       }
       const camelKey = toCamelCase(optionValue)
-      const updated = structuredClone(generatorOptions)
+      const updated = JSON.parse(JSON.stringify(generatorOptions))
       setNestedValue(updated, camelKey, checked)
       generatorOptions = updated
     }
@@ -150,7 +150,7 @@
   let presetLabel = $derived(locale === 'ko' ? '프리셋' : 'Preset')
 </script>
 
-<div class="flex flex-col lg:flex-row">
+<div class="mx-auto flex max-w-7xl flex-col lg:flex-row">
   <!-- 좌측 패널: 옵션 -->
   <div class="w-full lg:h-[calc(100vh-65px)] lg:w-1/2 lg:overflow-y-auto">
     <div class="mx-auto max-w-xl px-6 py-8">
@@ -195,5 +195,9 @@
   </div>
 
   <!-- 우측 패널: 미리보기 -->
-  <CodePreview fileName={generatedOutput.fileName} code={generatedOutput.code} {locale} />
+  <div
+    class="w-full border-t border-border lg:sticky lg:top-0 lg:h-screen lg:w-1/2 lg:border-t-0 lg:border-l"
+  >
+    <CodePreview fileName={generatedOutput.fileName} code={generatedOutput.code} {locale} />
+  </div>
 </div>
