@@ -5,9 +5,11 @@
    * 섹션 UI 변경 시 스키마 옵션을 동기화하여 실시간 코드를 생성한다.
    */
   import { generateConfigBySlug } from '@/lib/generators'
+  import type { MigrationResult } from '@/lib/migration'
   import { getPresetDefaultsBySlug } from '@/lib/schemas'
 
   import CodePreview from './CodePreview.svelte'
+  import MigrationPanel from './MigrationPanel.svelte'
   import OptionForm from './OptionForm.svelte'
   import PresetSelector from './PresetSelector.svelte'
 
@@ -48,8 +50,20 @@
   /** UI 표시용 섹션 상태 */
   let currentSections = $state<OptionSection[]>(structuredClone(initialSections))
 
-  /** 옵션으로부터 자동 생성된 코드 */
-  let generatedOutput = $derived(generateConfigBySlug(fileSlug, generatorOptions))
+  /** 마이그레이션 결과 */
+  let migrationResult = $state<MigrationResult | null>(null)
+
+  /** 미리보기에 표시할 코드 — 마이그레이션 탭이면 변환 결과, 아니면 생성 결과 */
+  let generatedOutput = $derived(
+    activeTab === 'migrate' && migrationResult
+      ? { fileName: 'eslint.config.mjs', code: migrationResult.outputCode, language: 'javascript' }
+      : generateConfigBySlug(fileSlug, generatorOptions),
+  )
+
+  /** 마이그레이션 결과 수신 핸들러 */
+  const handleMigrationResult = (result: MigrationResult | null) => {
+    migrationResult = result
+  }
 
   /** kebab-case → camelCase 변환 */
   const toCamelCase = (str: string): string =>
@@ -175,15 +189,7 @@
 
         <OptionForm sections={currentSections} {locale} onoptionchange={handleOptionChange} />
       {:else}
-        <div
-          class="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-12 text-center"
-        >
-          <p class="text-sm text-gray-500">
-            {locale === 'ko'
-              ? '레거시 설정 파일을 붙여넣거나 업로드하세요.'
-              : 'Paste or upload your legacy config file.'}
-          </p>
-        </div>
+        <MigrationPanel {locale} onmigrationresult={handleMigrationResult} />
       {/if}
     </div>
   </div>

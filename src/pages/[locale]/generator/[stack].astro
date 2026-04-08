@@ -3,8 +3,7 @@ import { buildLocalizedPath, getTranslation, SUPPORTED_LOCALES, type Locale } fr
 
 import Layout from '@/layouts/Layout.astro'
 import Header from '@/components/common/Header.astro'
-import CodePreviewPanel from '@/components/generator/CodePreviewPanel.astro'
-import FileOptionAccordion from '@/components/generator/FileOptionAccordion.astro'
+import StackGenerator from '@/components/generator/StackGenerator.svelte'
 import { STACK_DEFINITIONS, type StackDefinition } from '@/lib/data/stacks'
 
 export const getStaticPaths = () => {
@@ -27,16 +26,15 @@ const pageTitle =
     : `${currentStack.name} Generator — ConfigDeck`
 const pageDescription = locale === 'ko' ? currentStack.descriptionKo : currentStack.descriptionEn
 
-const fileNames = currentStack.includedFiles.map((includedFile) => includedFile.fileName)
-const firstFileName = fileNames[0]
-
 /**
- * sampleFiles 객체에서 첫 번째 파일의 샘플 코드를 가져온다.
+ * includedFiles를 직렬화 가능한 형태로 변환한다.
+ * Astro → Svelte props는 Plain Object만 전달 가능하다.
  */
-const getFirstSampleCode = (): string => {
-  const sampleFilesRecord = currentStack.sampleFiles as Record<string, string>
-  return sampleFilesRecord[firstFileName] ?? ''
-}
+const serializableFiles = currentStack.includedFiles.map((f) => ({
+  fileName: f.fileName,
+  slug: f.slug,
+  options: f.options.map((o) => ({ label: o.label, value: o.value, checked: o.checked })),
+}))
 ---
 
 <Layout
@@ -49,89 +47,29 @@ const getFirstSampleCode = (): string => {
 >
   <Header locale={locale} currentPath="/generator" />
 
-  <main class="flex flex-col lg:flex-row">
-    <!-- 좌측 패널: 설정 -->
-    <div class="w-full lg:h-[calc(100vh-65px)] lg:w-1/2 lg:overflow-y-auto">
-      <div class="mx-auto max-w-xl px-6 py-8">
-        <!-- 뒤로가기 -->
-        <a
-          href={buildLocalizedPath(locale, '/generator')}
-          class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900"
-        >
-          <svg
-            class="h-4 w-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path>
-          </svg>
-          {getTranslation(locale, 'common.backToGenerator')}
-        </a>
+  <main>
+    <!-- SEO: Astro 정적 영역 -->
+    <div class="mx-auto max-w-xl px-6 pt-8">
+      <a
+        href={buildLocalizedPath(locale, '/generator')}
+        class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900"
+      >
+        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path>
+        </svg>
+        {getTranslation(locale, 'common.backToGenerator')}
+      </a>
 
-        <!-- 스택 타이틀 -->
-        <div class="mt-6">
-          <div class="flex items-center gap-3">
-            <span class="text-3xl" role="img">{currentStack.icon}</span>
-            <h1 class="text-2xl font-bold tracking-tight">{currentStack.name}</h1>
-          </div>
-          <p class="mt-2 text-sm text-gray-500">{pageDescription}</p>
+      <div class="mt-6 mb-6">
+        <div class="flex items-center gap-3">
+          <span class="text-3xl" role="img">{currentStack.icon}</span>
+          <h1 class="text-2xl font-bold tracking-tight">{currentStack.name}</h1>
         </div>
-
-        <!-- 포함 파일 체크리스트 -->
-        <fieldset class="mt-6 border-b border-border pb-6">
-          <legend class="text-xs font-semibold uppercase tracking-wider text-gray-400">
-            {getTranslation(locale, 'generator.includedFiles')}
-          </legend>
-          <div class="mt-3 flex flex-col gap-2.5">
-            {
-              currentStack.includedFiles.map((includedFile) => (
-                <label class="flex cursor-pointer items-center gap-3">
-                  <input
-                    type="checkbox"
-                    checked
-                    class="h-4 w-4 rounded border-gray-300 text-primary accent-primary"
-                  />
-                  <span class="font-mono text-sm text-gray-700">{includedFile.fileName}</span>
-                </label>
-              ))
-            }
-          </div>
-        </fieldset>
-
-        <!-- 파일별 옵션 아코디언 -->
-        <FileOptionAccordion includedFiles={currentStack.includedFiles} />
+        <p class="mt-2 text-sm text-gray-500">{pageDescription}</p>
       </div>
     </div>
 
-    <!-- 우측 패널: 파일 탭 미리보기 -->
-    <CodePreviewPanel
-      locale={locale}
-      fileName={firstFileName}
-      sampleCode={getFirstSampleCode()}
-      showZipDownload
-    >
-      <Fragment slot="file-tabs">
-        <div class="overflow-x-auto border-b border-gray-700">
-          <div class="flex">
-            {
-              fileNames.map((fileName, tabIndex) => (
-                <button
-                  class:list={[
-                    'shrink-0 border-b-2 px-4 py-2.5 font-mono text-xs font-medium transition-colors',
-                    tabIndex === 0
-                      ? 'border-primary bg-gray-800 text-white'
-                      : 'border-transparent text-gray-500 hover:bg-gray-800/50 hover:text-gray-300',
-                  ]}
-                >
-                  {fileName}
-                </button>
-              ))
-            }
-          </div>
-        </div>
-      </Fragment>
-    </CodePreviewPanel>
+    <!-- 인터랙티브: Svelte 아일랜드 -->
+    <StackGenerator client:load locale={locale} includedFiles={serializableFiles} />
   </main>
 </Layout>
