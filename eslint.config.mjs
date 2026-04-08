@@ -22,6 +22,15 @@ export default [
       '@typescript-eslint/no-non-null-assertion': 'warn',
     },
   },
+  // Astro 전용 설정 — frontmatter의 TypeScript 파싱을 위해 파서 지정
+  {
+    files: ['**/*.astro'],
+    languageOptions: {
+      parserOptions: {
+        parser: tseslint.parser,
+      },
+    },
+  },
   // Svelte 전용 설정 — 전역 rules 이후에 선언하여 오버라이드
   {
     files: ['**/*.svelte'],
@@ -35,10 +44,7 @@ export default [
       // Svelte 5 Runes($state, $derived, $props)는 let 선언이 필수
       // → 표준 prefer-const 대신 Svelte 전용 규칙으로 교체
       'prefer-const': 'off',
-      'svelte/prefer-const': [
-        'error',
-        { excludedRunes: ['$props', '$derived', '$state'] },
-      ],
+      'svelte/prefer-const': ['error', { excludedRunes: ['$props', '$derived', '$state'] }],
     },
   },
 ]

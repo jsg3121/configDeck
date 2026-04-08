@@ -8,12 +8,12 @@ interface Props {
 const { locale } = Astro.props
 ---
 
-<section class="mx-auto max-w-7xl px-6 py-24 text-center">
+<section class="mx-auto max-w-7xl px-6 pt-24 pb-16 text-center">
   <h1 class="text-5xl font-extrabold tracking-tight lg:text-6xl">
-    {getTranslation(locale, 'home.heroTitle')}<br />
+    {getTranslation(locale, 'home.heroTitle')}
     <span class="text-primary">{getTranslation(locale, 'home.heroTitleHighlight')}</span>
   </h1>
-  <p class="mx-auto mt-6 max-w-2xl text-lg text-gray-500">
+  <p class="mx-auto mt-6 max-w-full text-lg text-gray-500">
     {getTranslation(locale, 'home.heroDescription')}
   </p>
   <div class="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
@@ -22,12 +22,6 @@ const { locale } = Astro.props
       class="rounded-lg bg-primary px-8 py-3 text-base font-semibold text-white shadow-lg hover:bg-primary-hover"
     >
       {getTranslation(locale, 'home.startBuilding')}
-    </a>
-    <a
-      href={buildLocalizedPath(locale, '/generator')}
-      class="rounded-lg border border-border px-8 py-3 text-base font-semibold text-gray-700 hover:bg-gray-50"
-    >
-      {getTranslation(locale, 'home.browsePresets')}
     </a>
   </div>
 </section>
