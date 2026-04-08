@@ -18,6 +18,8 @@ interface Props {
   currentPath?: string
   /** OG 이미지 URL */
   ogImage?: string
+  /** 검색엔진 색인 방지 */
+  noindex?: boolean
 }
 
 const {
@@ -28,6 +30,7 @@ const {
   pagePath = '/',
   currentPath,
   ogImage,
+  noindex = false,
 } = Astro.props
 
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? 'https://configdeck.dev')
@@ -47,6 +50,7 @@ const ogLocaleMap: Record<Locale, string> = { en: 'en_US', ko: 'ko_KR' }
     <!-- SEO 기본 -->
     <title>{title}</title>
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="canonical" href={canonicalUrl.href} />
 
     <!-- hreflang -->

@@ -8,9 +8,9 @@ interface Props {
 const { locale } = Astro.props
 
 const footerLinks = [
-  { labelKey: 'footer.github', href: '#' },
-  { labelKey: 'footer.changelog', href: '#' },
-  { labelKey: 'footer.feedback', href: '#' },
+  { labelKey: 'footer.github', href: 'https://github.com/jsg3121/configDeck' },
+  { labelKey: 'footer.changelog', href: 'https://github.com/jsg3121/configDeck/releases' },
+  { labelKey: 'footer.feedback', href: 'https://github.com/jsg3121/configDeck/issues' },
 ] as const
 ---
 
@@ -20,7 +20,12 @@ const footerLinks = [
     <div class="mt-3 flex justify-center gap-4">
       {
         footerLinks.map((link) => (
-          <a href={link.href} class="hover:text-gray-600 transition-colors">
+          <a
+            href={link.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hover:text-gray-600 transition-colors"
+          >
             {getTranslation(locale, link.labelKey)}
           </a>
         ))

@@ -8,11 +8,7 @@ interface Props {
 
 const { locale, currentPath = '/' } = Astro.props
 
-const navigationItems = [
-  { labelKey: 'nav.generator', path: '/generator' },
-  { labelKey: 'nav.docs', path: '/docs' },
-  { labelKey: 'nav.blog', path: '/blog' },
-] as const
+const navigationItems = [{ labelKey: 'nav.generator', path: '/generator' }] as const
 
 /**
  * 현재 경로가 네비게이션 항목과 일치하는지 확인한다.
@@ -65,15 +61,21 @@ const getLanguageSwitchPath = (targetLocale: Locale): string => {
           SUPPORTED_LOCALES.map((targetLocale, index) => (
             <>
               {index > 0 && <span class="text-gray-300">/</span>}
-              <a
-                href={getLanguageSwitchPath(targetLocale)}
-                class:list={[
-                  'hover:text-gray-900 transition-colors',
-                  targetLocale === locale ? 'font-semibold text-gray-900' : 'text-gray-500',
-                ]}
-              >
-                {targetLocale.toUpperCase()}
-              </a>
+              {targetLocale === locale ? (
+                <span
+                  class="border-b-2 border-primary pb-0.5 font-semibold text-gray-900"
+                  aria-current="true"
+                >
+                  {targetLocale.toUpperCase()}
+                </span>
+              ) : (
+                <a
+                  href={getLanguageSwitchPath(targetLocale)}
+                  class="pb-0.5 text-gray-400 transition-colors hover:text-gray-900"
+                >
+                  {targetLocale.toUpperCase()}
+                </a>
+              )}
             </>
           ))
         }

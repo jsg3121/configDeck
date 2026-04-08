@@ -20,14 +20,9 @@ const { locale, stackPresets } = Astro.props
 ---
 
 <section class="mx-auto max-w-7xl px-6 pb-16">
-  <div class="flex items-center gap-3">
-    <h2 class="text-2xl font-bold">
-      {getTranslation(locale, 'generator.stackPresets')}
-    </h2>
-    <span class="rounded-full bg-primary/10 px-3 py-0.5 text-xs font-semibold text-primary">
-      {getTranslation(locale, 'generator.quickStart')}
-    </span>
-  </div>
+  <h2 class="text-2xl font-bold">
+    {getTranslation(locale, 'generator.stackPresets')}
+  </h2>
   <p class="mt-2 text-gray-500">
     {getTranslation(locale, 'generator.stackPresetsDescription')}
   </p>
@@ -37,7 +32,7 @@ const { locale, stackPresets } = Astro.props
       stackPresets.map((preset) => (
         <a
           href={buildLocalizedPath(locale, `/generator/${preset.slug}`)}
-          class="group flex flex-col rounded-xl border border-border bg-surface p-6 transition-all hover:border-primary hover:shadow-md"
+          class="group flex flex-col rounded-xl border border-border bg-surface p-6 transition-[transform,box-shadow,border-color] duration-200 hover:border-primary hover:shadow-lg motion-safe:hover:-translate-y-0.5"
         >
           {(() => {
             const icon = getStackIcon(preset.slug)
