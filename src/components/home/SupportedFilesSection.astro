@@ -1,5 +1,6 @@
 ---
 import { buildLocalizedPath, getTranslation, type Locale } from '@/i18n'
+
 import { getIconBySlug } from '@/lib/data/icons'
 
 interface Props {
@@ -71,7 +72,13 @@ const getFileDescription = (file: (typeof supportedFileCards)[number]): string =
             return (
               <div class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded bg-gray-100">
                 {icon ? (
-                  <svg class="h-4 w-4" viewBox="0 0 24 24" fill={icon.color} role="img" aria-label={file.name}>
+                  <svg
+                    class="h-4 w-4"
+                    viewBox="0 0 24 24"
+                    fill={icon.color}
+                    role="img"
+                    aria-label={file.name}
+                  >
                     <path d={icon.path} />
                   </svg>
                 ) : (

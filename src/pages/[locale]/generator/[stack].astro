@@ -4,8 +4,8 @@ import { buildLocalizedPath, getTranslation, SUPPORTED_LOCALES, type Locale } fr
 import Layout from '@/layouts/Layout.astro'
 import Header from '@/components/common/Header.astro'
 import StackGenerator from '@/components/generator/StackGenerator.svelte'
-import { STACK_DEFINITIONS, type StackDefinition } from '@/lib/data/stacks'
 import { getStackIcon } from '@/lib/data/icons'
+import { STACK_DEFINITIONS, type StackDefinition } from '@/lib/data/stacks'
 
 export const getStaticPaths = () => {
   return SUPPORTED_LOCALES.flatMap((locale) =>
@@ -70,14 +70,22 @@ const serializableFiles = currentStack.includedFiles.map((f) => ({
 
         <div class="mt-6 mb-6">
           <div class="flex items-center gap-3">
-            {(() => {
-              const icon = getStackIcon(currentStack.slug)
-              return icon ? (
-                <svg class="h-8 w-8" viewBox="0 0 24 24" fill={icon.color} role="img" aria-label={currentStack.name}>
-                  <path d={icon.path} />
-                </svg>
-              ) : null
-            })()}
+            {
+              (() => {
+                const icon = getStackIcon(currentStack.slug)
+                return icon ? (
+                  <svg
+                    class="h-8 w-8"
+                    viewBox="0 0 24 24"
+                    fill={icon.color}
+                    role="img"
+                    aria-label={currentStack.name}
+                  >
+                    <path d={icon.path} />
+                  </svg>
+                ) : null
+              })()
+            }
             <h1 class="text-2xl font-bold tracking-tight">{currentStack.name}</h1>
           </div>
           <p class="mt-2 text-sm text-gray-500">{pageDescription}</p>

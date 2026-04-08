@@ -3,9 +3,9 @@
    * 스택별 생성기의 인터랙티브 영역 전체를 담당한다.
    * 파일 체크리스트 on/off, 파일별 옵션 아코디언, 파일 탭 미리보기를 관리한다.
    */
+  import { getFileIcon } from '@/lib/data/icons'
   import { generateConfigBySlug } from '@/lib/generators'
   import { getPresetDefaultsBySlug } from '@/lib/schemas'
-  import { getFileIcon } from '@/lib/data/icons'
 
   import CodePreview from './CodePreview.svelte'
   import FileTabBar from './FileTabBar.svelte'
