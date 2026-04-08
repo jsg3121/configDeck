@@ -37,18 +37,16 @@
     URL.revokeObjectURL(url)
   }
 
-  const copyLabel = locale === 'ko' ? '복사' : 'Copy'
-  const copiedLabel = locale === 'ko' ? '복사됨!' : 'Copied!'
-  const downloadLabel = locale === 'ko' ? '다운로드' : 'Download'
-  const downloadAllLabel = locale === 'ko' ? '전체 다운로드' : 'Download All'
+  let copyLabel = $derived(locale === 'ko' ? '복사' : 'Copy')
+  let copiedLabel = $derived(locale === 'ko' ? '복사됨!' : 'Copied!')
+  let downloadLabel = $derived(locale === 'ko' ? '다운로드' : 'Download')
+  let downloadAllLabel = $derived(locale === 'ko' ? '전체 다운로드' : 'Download All')
 </script>
 
 <div
   class="w-full border-t border-border lg:sticky lg:top-0 lg:h-screen lg:w-1/2 lg:border-t-0 lg:border-l"
 >
   <div class="flex h-full flex-col bg-code-bg">
-    <slot name="file-tabs" />
-
     <!-- 상단 액션 바 -->
     <div class="flex items-center justify-between border-b border-gray-700 px-5 py-3">
       <span class="font-mono text-sm text-gray-300">{fileName}</span>

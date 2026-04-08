@@ -1,7 +1,7 @@
 ---
 name: business-analyst
 description: 서비스 경쟁력, 포지셔닝, 내부 역량 분석이 필요할 때 사용. "경쟁력 분석", "SWOT", "포지셔닝", "차별화", "가치 제안" 관련 작업에서 활용한다.
-model: opus
+model: sonnet
 permissionMode: plan
 tools:
   - Read

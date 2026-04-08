@@ -43,19 +43,20 @@
     }
   }
 
-  const pasteLabel =
-    locale === 'ko' ? '레거시 설정 파일을 붙여넣으세요' : 'Paste your legacy config file'
-  const formatLabel = locale === 'ko' ? '감지된 형식' : 'Detected format'
-  const warningLabel = locale === 'ko' ? '수동 확인 필요' : 'Manual review needed'
+  let pasteLabel = $derived(
+    locale === 'ko' ? '레거시 설정 파일을 붙여넣으세요' : 'Paste your legacy config file',
+  )
+  let formatLabel = $derived(locale === 'ko' ? '감지된 형식' : 'Detected format')
+  let warningLabel = $derived(locale === 'ko' ? '수동 확인 필요' : 'Manual review needed')
   const placeholder =
     '{\n  "extends": ["eslint:recommended"],\n  "rules": {\n    "no-console": "warn"\n  }\n}'
 </script>
 
 <div class="flex flex-col gap-4">
   <div>
-    <label class="block text-sm font-medium text-gray-700">
+    <p class="block text-sm font-medium text-gray-700">
       {pasteLabel}
-    </label>
+    </p>
     <textarea
       rows="10"
       class="mt-1.5 block w-full rounded-md border border-border bg-surface px-3 py-2 font-mono text-sm text-gray-700 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"

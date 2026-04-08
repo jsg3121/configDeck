@@ -1,7 +1,7 @@
 ---
 name: ux-designer
 description: UX 설계 전문 에이전트. 사용자 플로우, 페이지 레이아웃, 정보 구조, 인터랙션 패턴, 반응형 전략을 설계한다. 새 기능이나 페이지를 구현하기 전 UX 관점의 설계를 담당한다. "UX 설계", "플로우 설계", "레이아웃", "와이어프레임" 관련 작업에서 활용한다.
-model: opus
+model: sonnet
 permissionMode: plan
 tools:
   - Read

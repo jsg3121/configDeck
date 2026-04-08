@@ -37,18 +37,21 @@
     supportsMigration: boolean
   }
 
-  let { fileSlug, locale, sections: initialSections, presets, supportsMigration }: Props = $props()
+  const { fileSlug, locale, sections, presets, supportsMigration }: Props = $props()
+
+  /** 초기 프리셋을 결정한다 (두 번째 프리셋 또는 첫 번째) */
+  const initialPreset = presets[1] ?? presets[0]
 
   /** 현재 선택된 프리셋 — Svelte 5 반응성을 위해 let 필수 */
-  let selectedPreset = $state(presets[1] ?? presets[0])
+  let selectedPreset = $state(initialPreset)
   /** 현재 활성 탭 */
   let activeTab = $state<'generate' | 'migrate'>('generate')
-  /** 생성기에 전달할 스키마 옵션 (프리셋 기본값으로 초기화) */
+  /** 생성기에 전달할 스키마 옵션 */
   let generatorOptions = $state<Record<string, unknown>>(
-    getPresetDefaultsBySlug(fileSlug, selectedPreset) as Record<string, unknown>,
+    getPresetDefaultsBySlug(fileSlug, initialPreset) as Record<string, unknown>,
   )
   /** UI 표시용 섹션 상태 */
-  let currentSections = $state<OptionSection[]>(structuredClone(initialSections))
+  let currentSections = $state<OptionSection[]>(structuredClone(sections))
 
   /** 마이그레이션 결과 */
   let migrationResult = $state<MigrationResult | null>(null)
@@ -101,7 +104,7 @@
     const defaults = getPresetDefaultsBySlug(fileSlug, presetName) as Record<string, unknown>
     generatorOptions = structuredClone(defaults)
 
-    currentSections = initialSections.map((section) => ({
+    currentSections = sections.map((section) => ({
       ...section,
       options: section.options.map((option) => {
         if (section.type === 'radio' && section.name) {
@@ -142,12 +145,9 @@
     }
   }
 
-  // 초기 섹션을 프리셋 기본값에 맞게 동기화
-  handlePresetChange(selectedPreset)
-
-  const generateLabel = locale === 'ko' ? '생성' : 'Generate'
-  const migrateLabel = locale === 'ko' ? '마이그레이션' : 'Migrate'
-  const presetLabel = locale === 'ko' ? '프리셋' : 'Preset'
+  let generateLabel = $derived(locale === 'ko' ? '생성' : 'Generate')
+  let migrateLabel = $derived(locale === 'ko' ? '마이그레이션' : 'Migrate')
+  let presetLabel = $derived(locale === 'ko' ? '프리셋' : 'Preset')
 </script>
 
 <div class="flex flex-col lg:flex-row">

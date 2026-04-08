@@ -29,13 +29,20 @@
   let { locale, includedFiles }: Props = $props()
 
   /** 파일별 활성화 상태 */
-  let enabledFileMap = $state<Record<string, boolean>>(
-    Object.fromEntries(includedFiles.map((f) => [f.fileName, true])),
-  )
+  let enabledFileMap = $state<Record<string, boolean>>({})
   /** 파일별 옵션 상태 (mutable deep copy) */
-  let fileOptions = $state<IncludedFile[]>(structuredClone(includedFiles))
+  let fileOptions = $state<IncludedFile[]>([])
   /** 현재 미리보기 파일 탭 */
-  let activeFileTab = $state(includedFiles[0].fileName)
+  let activeFileTab = $state('')
+
+  // 초기값 설정 — props를 클로저 내에서 참조하여 반응성 경고 방지
+  $effect(() => {
+    if (fileOptions.length === 0) {
+      enabledFileMap = Object.fromEntries(includedFiles.map((f) => [f.fileName, true]))
+      fileOptions = structuredClone(includedFiles)
+      activeFileTab = includedFiles[0].fileName
+    }
+  })
 
   /** 활성화된 파일 이름 목록 */
   let activeFileNames = $derived(
@@ -121,7 +128,7 @@
     URL.revokeObjectURL(url)
   }
 
-  const includedFilesLabel = locale === 'ko' ? '포함 파일' : 'Included Files'
+  let includedFilesLabel = $derived(locale === 'ko' ? '포함 파일' : 'Included Files')
 </script>
 
 <div class="flex flex-col lg:flex-row">

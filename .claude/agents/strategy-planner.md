@@ -1,7 +1,7 @@
 ---
 name: strategy-planner
 description: 분석 결과를 종합해 전략 방향과 실행 우선순위 도출이 필요할 때 사용. "전략 수립", "실행 계획", "로드맵", "우선순위", "Go-to-Market" 관련 작업에서 활용한다.
-model: opus
+model: sonnet
 permissionMode: plan
 tools:
   - Read
