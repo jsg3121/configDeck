@@ -32,8 +32,7 @@ export const generateNextConfig = (options: NextConfigOptions): string => {
   // headers/redirects/webpack은 고급 옵션 — 주석으로 안내
   const advancedComments: string[] = []
   if (options.headers) advancedComments.push('// TODO: Add custom headers in async headers() {}')
-  if (options.redirects)
-    advancedComments.push('// TODO: Add redirects in async redirects() {}')
+  if (options.redirects) advancedComments.push('// TODO: Add redirects in async redirects() {}')
   if (options.webpack)
     advancedComments.push('// TODO: Add webpack customization in webpack(config) {}')
 

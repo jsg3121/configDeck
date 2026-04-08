@@ -3,8 +3,7 @@ import { buildLocalizedPath, getTranslation, SUPPORTED_LOCALES, type Locale } fr
 
 import Layout from '@/layouts/Layout.astro'
 import Header from '@/components/common/Header.astro'
-import CodePreviewPanel from '@/components/generator/CodePreviewPanel.astro'
-import MigrationPanel from '@/components/generator/MigrationPanel.astro'
+import FileGenerator from '@/components/generator/FileGenerator.svelte'
 import { FILE_DEFINITIONS, type FileDefinition } from '@/lib/data/files'
 
 export const getStaticPaths = () => {
@@ -24,21 +23,18 @@ const pageTitle =
 const pageDescription = locale === 'ko' ? currentFile.descriptionKo : currentFile.descriptionEn
 
 /**
- * 섹션 타이틀을 locale에 따라 반환한다.
+ * sections 데이터를 직렬화 가능한 형태로 변환한다.
+ * Astro → Svelte props는 Plain Object만 전달 가능하다.
  */
-const getSectionTitle = (section: { titleEn: string; titleKo: string }): string => {
-  return locale === 'ko' ? section.titleKo : section.titleEn
-}
-
-/**
- * 섹션 설명을 locale에 따라 반환한다.
- */
-const getSectionDescription = (section: {
-  descriptionEn: string
-  descriptionKo: string
-}): string => {
-  return locale === 'ko' ? section.descriptionKo : section.descriptionEn
-}
+const serializableSections = currentFile.sections.map((section) => ({
+  titleEn: section.titleEn,
+  titleKo: section.titleKo,
+  descriptionEn: section.descriptionEn,
+  descriptionKo: section.descriptionKo,
+  type: section.type,
+  name: 'name' in section ? section.name : undefined,
+  options: section.options.map((o) => ({ label: o.label, value: o.value, checked: o.checked })),
+}))
 ---
 
 <Layout
@@ -51,109 +47,35 @@ const getSectionDescription = (section: {
 >
   <Header locale={locale} currentPath="/generator" />
 
-  <main class="flex flex-col lg:flex-row">
-    <!-- 좌측 패널: 설정 -->
-    <div class="w-full lg:h-[calc(100vh-65px)] lg:w-1/2 lg:overflow-y-auto">
-      <div class="mx-auto max-w-xl px-6 py-8">
-        <!-- 뒤로가기 -->
-        <a
-          href={buildLocalizedPath(locale, '/generator')}
-          class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900"
-        >
-          <svg
-            class="h-4 w-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path>
-          </svg>
-          {getTranslation(locale, 'common.backToGenerator')}
-        </a>
+  <main>
+    <!-- SEO: Astro 정적 영역 -->
+    <div class="mx-auto max-w-xl px-6 pt-8">
+      <a
+        href={buildLocalizedPath(locale, '/generator')}
+        class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900"
+      >
+        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path>
+        </svg>
+        {getTranslation(locale, 'common.backToGenerator')}
+      </a>
 
-        <!-- 타이틀 -->
-        <div class="mt-6">
-          <h1 class="text-2xl font-bold tracking-tight">
-            <span class="font-mono">{currentFile.fileName}</span>
-          </h1>
-          <p class="mt-2 text-sm text-gray-500">{pageDescription}</p>
-        </div>
-
-        <!-- 생성 / 마이그레이션 탭 -->
-        {
-          currentFile.supportsMigration && (
-            <div class="mt-6 flex gap-1 rounded-lg bg-gray-100 p-1">
-              <button class="flex-1 rounded-md bg-white px-4 py-2 text-sm font-medium text-gray-900 shadow-sm">
-                {getTranslation(locale, 'generator.tabs.generate')}
-              </button>
-              <button class="flex-1 rounded-md px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700">
-                {getTranslation(locale, 'generator.tabs.migrate')}
-              </button>
-            </div>
-          )
-        }
-
-        <!-- 프리셋 -->
-        <div class="mt-6 border-b border-border pb-6">
-          <h2 class="text-xs font-semibold uppercase tracking-wider text-gray-400">
-            {getTranslation(locale, 'generator.preset')}
-          </h2>
-          <div class="mt-3 flex gap-2">
-            {
-              currentFile.presets.map((presetName, index) => (
-                <button
-                  class:list={[
-                    'rounded-md border px-3 py-1.5 text-sm font-medium',
-                    index === 1
-                      ? 'border-primary bg-primary text-white'
-                      : 'border-border text-gray-600 hover:border-primary hover:text-primary',
-                  ]}
-                >
-                  {presetName}
-                </button>
-              ))
-            }
-          </div>
-        </div>
-
-        <!-- 옵션 섹션들 -->
-        {
-          currentFile.sections.map((section) => (
-            <fieldset class="border-b border-border py-6">
-              <legend class="text-sm font-semibold text-gray-900">
-                {getSectionTitle(section)}
-              </legend>
-              {'descriptionEn' in section && (
-                <p class="mt-1 text-xs text-gray-400">{getSectionDescription(section)}</p>
-              )}
-              <div class="mt-4 flex flex-col gap-3">
-                {section.options.map((option) => (
-                  <label class="flex cursor-pointer items-center gap-3">
-                    <input
-                      type={section.type === 'radio' ? 'radio' : 'checkbox'}
-                      name={'name' in section ? section.name : undefined}
-                      value={option.value}
-                      checked={option.checked}
-                      class="h-4 w-4 text-primary accent-primary"
-                    />
-                    <span class="text-sm text-gray-700">{option.label}</span>
-                  </label>
-                ))}
-              </div>
-            </fieldset>
-          ))
-        }
-
-        {currentFile.supportsMigration && <MigrationPanel locale={locale} />}
+      <div class="mt-6 mb-6">
+        <h1 class="text-2xl font-bold tracking-tight">
+          <span class="font-mono">{currentFile.fileName}</span>
+        </h1>
+        <p class="mt-2 text-sm text-gray-500">{pageDescription}</p>
       </div>
     </div>
 
-    <!-- 우측 패널: 미리보기 -->
-    <CodePreviewPanel
+    <!-- 인터랙티브: Svelte 아일랜드 -->
+    <FileGenerator
+      client:load
+      fileSlug={currentFile.slug}
       locale={locale}
-      fileName={currentFile.fileName}
-      sampleCode={currentFile.sampleCode}
+      sections={serializableSections}
+      presets={[...currentFile.presets]}
+      supportsMigration={currentFile.supportsMigration}
     />
   </main>
 </Layout>
