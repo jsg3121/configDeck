@@ -19,15 +19,8 @@ interface Props {
 const { locale, stackPresets } = Astro.props
 ---
 
-<section class="mx-auto max-w-7xl px-6 pb-16">
-  <h2 class="text-2xl font-bold">
-    {getTranslation(locale, 'generator.stackPresets')}
-  </h2>
-  <p class="mt-2 text-gray-500">
-    {getTranslation(locale, 'generator.stackPresetsDescription')}
-  </p>
-
-  <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+<div>
+  <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
     {
       stackPresets.map((preset) => (
         <a
@@ -54,15 +47,20 @@ const { locale, stackPresets } = Astro.props
           <p class="mt-1 text-sm text-gray-500">
             {preset.fileCount} {getTranslation(locale, 'generator.configFiles')}
           </p>
-          <ul class="mt-4 flex flex-wrap gap-1.5">
-            {preset.includedFiles.map((fileName) => (
-              <li class="rounded bg-gray-100 px-2 py-0.5 font-mono text-xs text-gray-600">
-                {fileName}
-              </li>
-            ))}
-          </ul>
+          <div class="mt-4 border-t border-border pt-4">
+            <p class="text-xs font-semibold uppercase tracking-wider text-gray-500">
+              {getTranslation(locale, 'generator.includedFiles')}
+            </p>
+            <ul class="mt-2 flex flex-wrap gap-1.5">
+              {preset.includedFiles.map((fileName) => (
+                <li class="rounded-md border border-primary/20 bg-primary/5 px-2 py-0.5 font-mono text-xs text-primary">
+                  {fileName}
+                </li>
+              ))}
+            </ul>
+          </div>
         </a>
       ))
     }
   </div>
-</section>
+</div>

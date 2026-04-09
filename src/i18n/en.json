@@ -36,6 +36,7 @@
       }
     ],
     "supportedFiles": "Supported Config Files",
+    "supportedFilesDescription": "Generate 9 essential config files for your project with customizable options.",
     "faq": "FAQ",
     "faqs": [
       {
@@ -77,6 +78,11 @@
     "presetStrict": "Strict",
     "advancedOptions": "Advanced Options",
     "includedFiles": "Included Files",
+    "methodLabel": "Method",
+    "methodStackTitle": "Generate all at once with a stack",
+    "methodStackDescription": "Pick a project stack to generate every required config file in one go. Best for quickly starting a new project.",
+    "methodFileTitle": "Pick individual files",
+    "methodFileDescription": "Use this when you want to add or replace specific files in an already configured project.",
     "migration": {
       "title": "Migrate to latest format",
       "dropzone": "Drop your config file here or paste code below",

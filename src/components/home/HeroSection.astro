@@ -1,22 +1,14 @@
 ---
 import { buildLocalizedPath, getTranslation, type Locale } from '@/i18n'
 
-import { FILE_DEFINITIONS } from '@/lib/data/files'
-
 interface Props {
   locale: Locale
 }
 
 const { locale } = Astro.props
-
-/**
- * 히어로 하단 신뢰 지표로 표시할 지원 파일 목록.
- * CTA 버튼 직후 "내가 필요한 파일이 있다"는 확인을 제공하기 위함.
- */
-const supportedFileNames = FILE_DEFINITIONS.map((file) => file.fileName)
 ---
 
-<section class="mx-auto max-w-7xl px-6 pt-16 pb-10 text-center lg:pt-20 lg:pb-12">
+<section class="mx-auto max-w-7xl px-6 pt-16 pb-12 text-center lg:pt-20 lg:pb-16">
   <h1 class="text-5xl font-extrabold tracking-tight lg:text-6xl">
     {getTranslation(locale, 'home.heroTitle')}
     <span class="text-primary">{getTranslation(locale, 'home.heroTitleHighlight')}</span>
@@ -32,15 +24,4 @@ const supportedFileNames = FILE_DEFINITIONS.map((file) => file.fileName)
       {getTranslation(locale, 'home.startBuilding')}
     </a>
   </div>
-
-  <!-- 지원 파일 신뢰 지표 -->
-  <ul class="mx-auto mt-8 flex max-w-3xl flex-wrap justify-center gap-x-2 gap-y-2">
-    {
-      supportedFileNames.map((fileName) => (
-        <li class="rounded-md border border-border bg-surface px-2.5 py-1 font-mono text-xs text-gray-600">
-          {fileName}
-        </li>
-      ))
-    }
-  </ul>
 </section>

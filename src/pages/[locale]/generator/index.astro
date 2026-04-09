@@ -143,20 +143,45 @@ const frontendFileCards = [
     </p>
   </section>
 
-  <StackPresetSection locale={locale} stackPresets={stackPresetCards} />
+  <!-- 방법 1: 스택 프리셋 -->
+  <section class="mx-auto max-w-7xl px-6 pb-16">
+    <div class="flex items-center gap-3">
+      <span
+        class="inline-flex h-7 items-center rounded-full bg-primary/10 px-3 text-xs font-bold uppercase tracking-wider text-primary"
+      >
+        {getTranslation(locale, 'generator.methodLabel')} 1
+      </span>
+      <h2 class="text-2xl font-bold">
+        {getTranslation(locale, 'generator.methodStackTitle')}
+      </h2>
+    </div>
+    <p class="mt-2 max-w-3xl text-gray-500">
+      {getTranslation(locale, 'generator.methodStackDescription')}
+    </p>
+    <div class="mt-8">
+      <StackPresetSection locale={locale} stackPresets={stackPresetCards} />
+    </div>
+  </section>
 
   <!-- 구분선 -->
   <div class="mx-auto max-w-7xl px-6">
     <hr class="border-border" />
   </div>
 
-  <!-- 개별 설정 파일 -->
+  <!-- 방법 2: 개별 설정 파일 -->
   <section class="mx-auto max-w-7xl px-6 py-16">
-    <h2 class="text-2xl font-bold">
-      {getTranslation(locale, 'generator.individualFiles')}
-    </h2>
-    <p class="mt-2 text-gray-500">
-      {getTranslation(locale, 'generator.individualFilesDescription')}
+    <div class="flex items-center gap-3">
+      <span
+        class="inline-flex h-7 items-center rounded-full bg-primary/10 px-3 text-xs font-bold uppercase tracking-wider text-primary"
+      >
+        {getTranslation(locale, 'generator.methodLabel')} 2
+      </span>
+      <h2 class="text-2xl font-bold">
+        {getTranslation(locale, 'generator.methodFileTitle')}
+      </h2>
+    </div>
+    <p class="mt-2 max-w-3xl text-gray-500">
+      {getTranslation(locale, 'generator.methodFileDescription')}
     </p>
 
     <FileCardSection

@@ -36,6 +36,7 @@
       }
     ],
     "supportedFiles": "지원하는 설정 파일",
+    "supportedFilesDescription": "프로젝트에 필요한 9가지 설정 파일을 옵션 기반으로 생성할 수 있습니다.",
     "faq": "자주 묻는 질문",
     "faqs": [
       {
@@ -77,6 +78,11 @@
     "presetStrict": "엄격",
     "advancedOptions": "고급 옵션",
     "includedFiles": "포함 파일",
+    "methodLabel": "방법",
+    "methodStackTitle": "스택으로 한 번에 생성",
+    "methodStackDescription": "프로젝트 스택을 선택하면 필요한 모든 설정 파일을 한 번에 생성합니다. 빠르게 시작하고 싶을 때 적합합니다.",
+    "methodFileTitle": "개별 파일만 선택",
+    "methodFileDescription": "이미 설정된 프로젝트에 특정 파일만 추가하거나 교체하고 싶을 때 사용하세요.",
     "migration": {
       "title": "최신 형식으로 마이그레이션",
       "dropzone": "설정 파일을 여기에 드래그하거나 아래에 코드를 붙여넣으세요",
