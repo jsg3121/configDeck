@@ -10,15 +10,15 @@ export const generateEditorconfig = (options: EditorconfigOptions): string => {
   lines.push('root = true')
   lines.push('')
   lines.push('[*]')
-  lines.push(`indent_style = ${options.indentStyle}`)
-  lines.push(`indent_size = ${options.indentSize}`)
-  lines.push(`end_of_line = ${options.endOfLine}`)
+  lines.push(`indent_style = ${options.indentSpace ? 'space' : 'tab'}`)
+  lines.push(`indent_size = ${options.indent2 ? 2 : 4}`)
+  lines.push(`end_of_line = ${options.eolLf ? 'lf' : 'crlf'}`)
   lines.push('charset = utf-8')
 
-  if (options.trimTrailingWhitespace) {
+  if (options.trimTrailing) {
     lines.push('trim_trailing_whitespace = true')
   }
-  if (options.insertFinalNewline) {
+  if (options.finalNewline) {
     lines.push('insert_final_newline = true')
   }
 
