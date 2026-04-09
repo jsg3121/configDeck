@@ -24,7 +24,13 @@ const icon = getIconBySlug(slug)
   >
     {
       icon ? (
-        <svg class="h-5 w-5" viewBox="0 0 24 24" fill={icon.color} role="img" aria-label={name}>
+        <svg
+          class="h-5 w-5 drop-shadow-[1px_1px_1px_#666666]"
+          viewBox="0 0 24 24"
+          fill={icon.color}
+          role="img"
+          aria-label={name}
+        >
           <path d={icon.path} />
         </svg>
       ) : (
