@@ -54,10 +54,10 @@ const relatedFiles = getRelatedFiles(fileSlug).map((file) => ({
   description={pageDescription}
   locale={locale}
   pagePath={`/generator/${fileSlug}`}
-  currentPath="/generator"
+  currentPath={`/generator/${fileSlug}`}
   bare
 >
-  <Header locale={locale} currentPath="/generator" />
+  <Header locale={locale} currentPath={`/generator/${fileSlug}`} />
 
   <main class="mx-auto max-w-7xl">
     <!-- SEO: Astro 정적 영역 — 좌측 패널과 동일한 폭 구조 -->
