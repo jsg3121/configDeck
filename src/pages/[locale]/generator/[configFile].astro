@@ -4,7 +4,7 @@ import { buildLocalizedPath, getTranslation, SUPPORTED_LOCALES, type Locale } fr
 import Layout from '@/layouts/Layout.astro'
 import Header from '@/components/common/Header.astro'
 import FileGenerator from '@/components/generator/FileGenerator.svelte'
-import { FILE_DEFINITIONS, type FileDefinition } from '@/lib/data/files'
+import { FILE_DEFINITIONS, getRelatedFiles, type FileDefinition } from '@/lib/data/files'
 
 export const getStaticPaths = () => {
   return SUPPORTED_LOCALES.flatMap((locale) =>
@@ -34,6 +34,18 @@ const serializableSections = currentFile.sections.map((section) => ({
   type: section.type,
   name: 'name' in section ? section.name : undefined,
   options: section.options.map((o) => ({ label: o.label, value: o.value, checked: o.checked })),
+}))
+
+/**
+ * 관련 파일 데이터를 Svelte에 전달 가능한 직렬화 형태로 변환한다.
+ * 좌측 패널 하단 "함께 쓰면 좋아요" 섹션에서 카드로 렌더링한다.
+ */
+const relatedFiles = getRelatedFiles(fileSlug).map((file) => ({
+  slug: file.slug,
+  fileName: file.fileName,
+  descriptionEn: file.descriptionEn,
+  descriptionKo: file.descriptionKo,
+  href: buildLocalizedPath(locale, `/generator/${file.slug}`),
 }))
 ---
 
@@ -84,6 +96,7 @@ const serializableSections = currentFile.sections.map((section) => ({
       sections={serializableSections}
       presets={[...currentFile.presets]}
       supportsMigration={currentFile.supportsMigration}
+      relatedFiles={relatedFiles}
     />
   </main>
 </Layout>

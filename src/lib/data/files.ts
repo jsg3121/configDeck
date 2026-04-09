@@ -412,3 +412,30 @@ JWT_SECRET=your-jwt-secret-here`,
 ] as const
 
 export type FileDefinition = (typeof FILE_DEFINITIONS)[number]
+
+/**
+ * 파일 slug → 함께 자주 사용되는 관련 파일 slug 목록 매핑.
+ * 파일 생성기 좌측 패널 하단 "함께 쓰면 좋아요" 섹션에서 참조한다.
+ * 옵션이 적은 파일의 빈 공간을 채우고, 내부 링크로 탐색 깊이를 높이기 위함.
+ */
+export const RELATED_FILES: Record<string, readonly string[]> = {
+  'eslint-config': ['prettier-config', 'editorconfig'],
+  'prettier-config': ['eslint-config', 'editorconfig'],
+  tsconfig: ['eslint-config', 'vite-config'],
+  gitignore: ['editorconfig', 'env-example'],
+  'vite-config': ['tsconfig', 'vitest-config'],
+  'vitest-config': ['vite-config', 'tsconfig'],
+  'next-config': ['tsconfig', 'eslint-config'],
+  editorconfig: ['gitignore', 'prettier-config'],
+  'env-example': ['gitignore', 'editorconfig'],
+}
+
+/**
+ * 주어진 slug의 관련 파일 메타데이터를 반환한다.
+ */
+export const getRelatedFiles = (slug: string): readonly FileDefinition[] => {
+  const relatedSlugs = RELATED_FILES[slug] ?? []
+  return relatedSlugs
+    .map((relatedSlug) => FILE_DEFINITIONS.find((file) => file.slug === relatedSlug))
+    .filter((file): file is FileDefinition => file !== undefined)
+}
