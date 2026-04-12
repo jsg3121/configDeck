@@ -8,6 +8,7 @@ import { editorconfigOptions } from './editorconfig'
 import { prettierOptions } from './prettier'
 import { tsconfigOptions } from './tsconfig'
 import { viteOptions } from './vite'
+import { vitestOptions } from './vitest'
 
 /** slug → FileOptionDefinition 맵. 마이그레이션 순서대로 등록된다 */
 const optionDefinitions: Record<string, FileOptionDefinition> = {
@@ -15,6 +16,7 @@ const optionDefinitions: Record<string, FileOptionDefinition> = {
   editorconfig: editorconfigOptions,
   tsconfig: tsconfigOptions,
   'vite-config': viteOptions,
+  'vitest-config': vitestOptions,
   // M4: 'tsconfig': tsconfigOptions,
   // M5: 'vite-config': viteOptions,
   // M6: 'vitest-config': vitestOptions,

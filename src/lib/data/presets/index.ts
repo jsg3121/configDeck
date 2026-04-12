@@ -8,6 +8,7 @@ import { editorconfigPresets } from './editorconfig'
 import { prettierPresets } from './prettier'
 import { tsconfigPresets } from './tsconfig'
 import { vitePresets } from './vite'
+import { vitestPresets } from './vitest'
 
 /** slug → Preset 배열 맵 */
 const presetDefinitions: Record<string, Preset[]> = {
@@ -15,6 +16,7 @@ const presetDefinitions: Record<string, Preset[]> = {
   editorconfig: editorconfigPresets,
   tsconfig: tsconfigPresets,
   'vite-config': vitePresets,
+  'vitest-config': vitestPresets,
   // M4: 'tsconfig': tsconfigPresets,
   // M5: 'vite-config': vitePresets,
   // M6: 'vitest-config': vitestPresets,

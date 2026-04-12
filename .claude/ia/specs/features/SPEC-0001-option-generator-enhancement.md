@@ -403,13 +403,12 @@ src/components/generator/controls/
 
 #### M6. Vitest Config 마이그레이션
 
-- [ ] **Phase 6.1** — Vitest 사전 조사
-- [ ] **Phase 6.2** — 주요 옵션 선정
-- [ ] **Phase 6.3** — 옵션 정의 작성
-- [ ] **Phase 6.4** — 프리셋 작성
-- [ ] **Phase 6.5** — 생성기 갱신
-- [ ] **Phase 6.6** — 파일 메타/연결 + legacy 스키마 제거
-- [ ] **Phase 6.7** — 테스트 및 검증
+- [x] **Phase 6.1~6.2** — Vitest 옵션 조사 + 주요 옵션 선정 (core 4개 / advanced 9개 = 13개, 4개 섹션)
+- [x] **Phase 6.3** — `src/lib/data/options/vitest.ts` 옵션 정의 (환경, 파일매칭, 커버리지, 실행)
+- [x] **Phase 6.4** — `src/lib/data/presets/vitest.ts` 프리셋 4종 (React, Node, Vue, Minimal)
+- [x] **Phase 6.5** — `src/lib/generators/vitestGenerator.ts` 재작성 (test 중첩, coverage 하위 객체)
+- [x] **Phase 6.6** — 파일 메타/연결 + `schemas/index.ts` legacy 분기 제거
+- [x] **Phase 6.7** — 빌드 35페이지 통과
 - [ ] **✅ M6 완료 Checkpoint**: 작업 보고 + M7(Next.js) 착수 승인
 
 #### M7. Next.js Config 마이그레이션

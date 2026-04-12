@@ -203,34 +203,8 @@ export default defineConfig({
     descriptionEn: 'Generate a Vitest config with test environment, coverage, and setup files.',
     descriptionKo: '테스트 환경, 커버리지, 셋업 파일이 포함된 Vitest 설정을 생성합니다.',
     supportsMigration: false,
-    presets: ['Minimal', 'React', 'Node'],
-    sections: [
-      {
-        titleEn: 'Environment',
-        titleKo: '환경',
-        descriptionEn: 'Select the test environment.',
-        descriptionKo: '테스트 환경을 선택하세요.',
-        type: 'radio' as const,
-        name: 'environment',
-        options: [
-          { label: 'Node', value: 'node', checked: true },
-          { label: 'jsdom', value: 'jsdom', checked: false },
-          { label: 'happy-dom', value: 'happy-dom', checked: false },
-        ],
-      },
-      {
-        titleEn: 'Options',
-        titleKo: '옵션',
-        descriptionEn: 'Configure additional test options.',
-        descriptionKo: '추가 테스트 옵션을 구성하세요.',
-        type: 'checkbox' as const,
-        options: [
-          { label: 'Global test APIs', value: 'globals', checked: true },
-          { label: 'Coverage reporter (v8)', value: 'coverage', checked: false },
-          { label: 'Setup file', value: 'setup-file', checked: false },
-        ],
-      },
-    ],
+    presets: ['React', 'Node', 'Vue', 'Minimal'],
+    sections: [],
     sampleCode: `import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
