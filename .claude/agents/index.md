@@ -15,6 +15,10 @@
 
 ## 에이전트 목록
 
+### 기획 에이전트
+
+- [product-planner](product-planner.md) — 기능 기획서(SPEC) 작성/업데이트, ADR 연결 관리 전문
+
 ### 개발 에이전트
 
 - [config-maker](config-maker.md) — 설정 파일 스키마, 옵션 정의, 생성 로직 전문
@@ -33,7 +37,14 @@
 
 작업 유형에 따라 적절한 에이전트 조합과 아키텍처 패턴을 선택한다.
 
-### 새 기능 구현 (Pipeline)
+### 새 기능 기획 → 구현 (Pipeline)
+
+```
+product-planner → ux-designer → ui-publisher → qa-agent
+(기획서 작성)     (설계)         (구현)          (검증)
+```
+
+### 기존 기획 기반 구현 (Pipeline)
 
 ```
 ux-designer → ui-publisher → qa-agent
