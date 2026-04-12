@@ -112,21 +112,8 @@ export default {
     descriptionEn: 'Generate a tsconfig.json with strict mode, path aliases, and modern settings.',
     descriptionKo: 'strict 모드, 경로 별칭, 최신 설정이 포함된 tsconfig.json을 생성합니다.',
     supportsMigration: false,
-    presets: ['Minimal', 'Recommended', 'Strict'],
-    sections: [
-      {
-        titleEn: 'Compiler Options',
-        titleKo: '컴파일러 옵션',
-        descriptionEn: 'Configure TypeScript compiler options.',
-        descriptionKo: 'TypeScript 컴파일러 옵션을 구성하세요.',
-        type: 'checkbox' as const,
-        options: [
-          { label: 'Enable strict mode', value: 'strict', checked: true },
-          { label: 'Skip lib check', value: 'skip-lib-check', checked: true },
-          { label: 'ES module interop', value: 'es-module-interop', checked: true },
-        ],
-      },
-    ],
+    presets: ['Node 20', 'React + Vite', 'Next.js', 'Astro', 'Library', 'Strict'],
+    sections: [],
     sampleCode: `{
   "compilerOptions": {
     "target": "ES2022",

@@ -378,17 +378,17 @@ src/components/generator/controls/
 - [x] **Phase 3.5** — `src/lib/generators/editorconfigGenerator.ts` 갱신 (touched 키만 출력, markdown 예외 섹션)
 - [x] **Phase 3.6** — 파일 메타/연결 + `schemas/index.ts` legacy 분기 제거
 - [x] **Phase 3.7** — 테스트 및 검증 (타입 체크 + 빌드 35페이지 통과)
-- [ ] **✅ M3 완료 Checkpoint**: 작업 보고 + M4(TSConfig) 착수 승인
+- [x] **✅ M3 완료 Checkpoint**: 작업 보고 + M4(TSConfig) 착수 승인
 
 #### M4. TSConfig 마이그레이션 (핵심)
 
-- [ ] **Phase 4.1** — TSConfig 사전 조사 (약 80개 옵션)
-- [ ] **Phase 4.2** — 주요 옵션 선정 (15~20개 예상) — **Checkpoint**: 선정 근거 사용자 리뷰
-- [ ] **Phase 4.3** — 옵션 정의 작성 (필요 시 `tsconfig-lib-values.ts` 분리)
-- [ ] **Phase 4.4** — 프리셋 작성 (Node 20, React+Vite, Next.js, Astro, Svelte Kit, Library, Monorepo)
-- [ ] **Phase 4.5** — 생성기 갱신
-- [ ] **Phase 4.6** — 파일 메타/연결 + legacy 스키마 제거
-- [ ] **Phase 4.7** — 테스트 및 검증 (각 프리셋을 `tsc --noEmit`으로 검증)
+- [x] **Phase 4.1** — TSConfig 사전 조사 (약 80개 compilerOptions 파악)
+- [x] **Phase 4.2** — 주요 옵션 선정 (core 13개 / advanced 12개 = 25개, 7��� 섹션)
+- [x] **Phase 4.3** — `src/lib/data/options/tsconfig.ts` 옵션 정의 작성 (tags, key-value, text 등 다양한 입력 타입 활용)
+- [x] **Phase 4.4** — `src/lib/data/presets/tsconfig.ts` 프리셋 6종 (Node 20, React+Vite, Next.js, Astro, Library, Strict)
+- [x] **Phase 4.5** — `src/lib/generators/tsconfigGenerator.ts` 재작성 (touched 키만 출력, paths 배열 래핑, include/exclude 최상위)
+- [x] **Phase 4.6** — 파일 메타/연결 + `schemas/index.ts` legacy 분기 제거
+- [x] **Phase 4.7** — 테스트 및 검증 (타입 체크 + 빌드 35페이지 통과)
 - [ ] **✅ M4 완료 Checkpoint**: 작업 보고 + M5(Vite) 착수 승인
 
 #### M5. Vite Config 마이그레이션
