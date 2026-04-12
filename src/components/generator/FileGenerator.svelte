@@ -319,7 +319,7 @@
 <div class="mx-auto flex h-full max-w-7xl flex-col lg:flex-row">
   <!-- 좌측 패널: 옵션 -->
   <div class="w-full lg:w-1/2 lg:overflow-y-auto">
-    <div class="mx-auto max-w-xl px-6 py-8">
+    <div class="mx-auto max-w-full px-6 py-8">
       {#if supportsMigration}
         <div class="mb-6 flex gap-1 rounded-lg bg-gray-100 p-1">
           <button

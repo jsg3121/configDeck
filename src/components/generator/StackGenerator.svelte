@@ -157,7 +157,7 @@
 <div class="mx-auto flex max-w-7xl flex-col lg:flex-row">
   <!-- 좌측 패널: 설정 -->
   <div class="w-full lg:h-[calc(100vh-65px)] lg:w-1/2 lg:overflow-y-auto">
-    <div class="mx-auto max-w-xl px-6 py-8">
+    <div class="mx-auto max-w-full px-6 py-8">
       <!-- 포함 파일 체크리스트 -->
       <fieldset class="border-b border-border pb-6">
         <legend class="text-xs font-semibold uppercase tracking-wider text-gray-400">
