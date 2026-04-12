@@ -393,13 +393,12 @@ src/components/generator/controls/
 
 #### M5. Vite Config 마이그레이션
 
-- [ ] **Phase 5.1** — Vite 사전 조사
-- [ ] **Phase 5.2** — 주요 옵션 선정
-- [ ] **Phase 5.3** — 옵션 정의 작성
-- [ ] **Phase 5.4** — 프리셋 작성
-- [ ] **Phase 5.5** — 생성기 갱신 (플러그인 함수 호출 직렬화)
-- [ ] **Phase 5.6** — 파일 메타/연결 + legacy 스키마 제거
-- [ ] **Phase 5.7** — 테스트 및 검증
+- [x] **Phase 5.1~5.2** — Vite 공식 옵션 조사 + 주요 옵션 선정 (core 4개 / advanced 7개 = 11개, 4개 섹션)
+- [x] **Phase 5.3** — `src/lib/data/options/vite.ts` 옵션 정의 (프레임워크, 경로, 서버, 빌드)
+- [x] **Phase 5.4** — `src/lib/data/presets/vite.ts` 프리셋 4종 (React, Vue, Svelte, Minimal)
+- [x] **Phase 5.5** — `src/lib/generators/viteGenerator.ts` 재작성 (플러그인 import, server/build 중첩 객체)
+- [x] **Phase 5.6** — 파일 메타/연결 + `schemas/index.ts` legacy 분기 제거
+- [x] **Phase 5.7** — 빌드 35페이지 통과
 - [ ] **✅ M5 완료 Checkpoint**: 작업 보고 + M6(Vitest) 착수 승인
 
 #### M6. Vitest Config 마이그레이션

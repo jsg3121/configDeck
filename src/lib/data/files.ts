@@ -180,35 +180,8 @@ build/
     descriptionEn: 'Generate a Vite config with plugins, path aliases, and dev server options.',
     descriptionKo: '플러그인, 경로 별칭, 개발 서버 옵션이 포함된 Vite 설정을 생성합니다.',
     supportsMigration: false,
-    presets: ['Minimal', 'React', 'Vue'],
-    sections: [
-      {
-        titleEn: 'Framework Plugin',
-        titleKo: '프레임워크 플러그인',
-        descriptionEn: 'Select the framework plugin for Vite.',
-        descriptionKo: 'Vite에 사용할 프레임워크 플러그인을 선택하세요.',
-        type: 'radio' as const,
-        name: 'framework',
-        options: [
-          { label: 'None', value: 'none', checked: true },
-          { label: 'React (@vitejs/plugin-react)', value: 'react', checked: false },
-          { label: 'Vue (@vitejs/plugin-vue)', value: 'vue', checked: false },
-          { label: 'Svelte (@sveltejs/vite-plugin-svelte)', value: 'svelte', checked: false },
-        ],
-      },
-      {
-        titleEn: 'Options',
-        titleKo: '옵션',
-        descriptionEn: 'Configure additional Vite options.',
-        descriptionKo: '추가 Vite 옵션을 구성하세요.',
-        type: 'checkbox' as const,
-        options: [
-          { label: 'Path alias (@/ → src/)', value: 'path-alias', checked: true },
-          { label: 'Dev server port (3000)', value: 'dev-port', checked: false },
-          { label: 'Build sourcemap', value: 'sourcemap', checked: false },
-        ],
-      },
-    ],
+    presets: ['React', 'Vue', 'Svelte', 'Minimal'],
+    sections: [],
     sampleCode: `import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
 import { defineConfig } from 'vite'

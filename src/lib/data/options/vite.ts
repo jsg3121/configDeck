@@ -1,0 +1,178 @@
+/**
+ * Vite 설정 파일의 옵션 정의.
+ * 공식 문서: https://vite.dev/config/
+ */
+import type { FileOptionDefinition } from '@/types/generator'
+
+const VITE_DOCS = 'https://vite.dev/config'
+
+export const viteOptions: FileOptionDefinition = {
+  slug: 'vite-config',
+  sections: [
+    {
+      title: '프레임워크 플러그인',
+      titleEn: 'Framework Plugin',
+      description: 'Vite에서 사용할 프레임워크 플러그인을 선택합니다.',
+      descriptionEn: 'Select the framework plugin for Vite.',
+      controls: [
+        {
+          type: 'radio',
+          key: 'framework',
+          label: '프레임워크',
+          labelEn: 'Framework',
+          description: '프로젝트에서 사용하는 프레임워크에 맞는 Vite 플러그인을 추가합니다.',
+          descriptionEn: 'Add the Vite plugin for your project framework.',
+          tier: 'core',
+          rationale: 'Vite는 프레임워크별 플러그인으로 JSX/SFC 변환을 처리한다.',
+          docsUrl: `${VITE_DOCS}/shared-options#plugins`,
+          options: [
+            { label: 'None — 플러그인 없음', value: 'none' },
+            { label: 'React (@vitejs/plugin-react)', value: 'react' },
+            { label: 'Vue (@vitejs/plugin-vue)', value: 'vue' },
+            { label: 'Svelte (@sveltejs/vite-plugin-svelte)', value: 'svelte' },
+          ],
+          default: 'none',
+        },
+      ],
+    },
+    {
+      title: '경로 해석',
+      titleEn: 'Resolve',
+      description: '모듈 경로 별칭과 해석 설정입니다.',
+      descriptionEn: 'Configure module path aliases and resolution.',
+      controls: [
+        {
+          type: 'checkbox',
+          key: 'pathAlias',
+          label: '경로 별칭 (@/ → src/)',
+          labelEn: 'Path Alias (@/ → src/)',
+          description: '@/ 경로를 src/ 디렉터리로 매핑합니다. tsconfig의 paths와 함께 사용합니다.',
+          descriptionEn: 'Map @/ to src/ directory. Use together with tsconfig paths.',
+          tier: 'core',
+          rationale: '깊은 상대 경로(../../) 대신 @/로 접근. 대부분의 Vite 프로젝트에서 사용.',
+          docsUrl: `${VITE_DOCS}/shared-options#resolve-alias`,
+          default: false,
+        },
+      ],
+    },
+    {
+      title: '개발 서버',
+      titleEn: 'Dev Server',
+      description: 'Vite 개발 서버 설정입니다.',
+      descriptionEn: 'Configure Vite dev server options.',
+      controls: [
+        {
+          type: 'number',
+          key: 'serverPort',
+          label: '포트',
+          labelEn: 'Port',
+          description: '개발 서버가 사용할 포트 번호입니다. 기본값은 5173입니다.',
+          descriptionEn: 'Port for the dev server. Default is 5173.',
+          tier: 'core',
+          rationale: 'Vite 기본 포트(5173)를 3000이나 8080 등 익숙한 포트로 변경하는 경우가 많다.',
+          docsUrl: `${VITE_DOCS}/server-options#server-port`,
+          default: null,
+          step: 1,
+          quickValues: [3000, 4000, 5173, 8080],
+        },
+        {
+          type: 'checkbox',
+          key: 'serverOpen',
+          label: '브라우저 자동 열기',
+          labelEn: 'Open Browser',
+          description: '개발 서버 시작 시 브라우저를 자동으로 엽니다.',
+          descriptionEn: 'Automatically open the browser when the dev server starts.',
+          tier: 'advanced',
+          docsUrl: `${VITE_DOCS}/server-options#server-open`,
+          default: false,
+        },
+        {
+          type: 'checkbox',
+          key: 'serverStrictPort',
+          label: '포트 고정',
+          labelEn: 'Strict Port',
+          description: '지정된 포트가 사용 중이면 다음 포트를 시도하지 않고 종료합니다.',
+          descriptionEn:
+            'Exit if the specified port is already in use instead of trying the next port.',
+          tier: 'advanced',
+          docsUrl: `${VITE_DOCS}/server-options#server-strictport`,
+          default: false,
+        },
+        {
+          type: 'text',
+          key: 'serverHost',
+          label: '호스트',
+          labelEn: 'Host',
+          description: '개발 서버의 호스트를 지정합니다. LAN 접근 시 "0.0.0.0"을 사용합니다.',
+          descriptionEn: 'Specify the host. Use "0.0.0.0" for LAN access.',
+          tier: 'advanced',
+          docsUrl: `${VITE_DOCS}/server-options#server-host`,
+          default: '',
+          placeholder: '0.0.0.0',
+        },
+        {
+          type: 'checkbox',
+          key: 'serverProxy',
+          label: 'API 프록시',
+          labelEn: 'API Proxy',
+          description: 'API 요청을 백엔드 서버로 프록시합니다. CORS 문제를 해결할 때 사용합니다.',
+          descriptionEn: 'Proxy API requests to a backend server. Useful for avoiding CORS issues.',
+          tier: 'advanced',
+          docsUrl: `${VITE_DOCS}/server-options#server-proxy`,
+          default: false,
+        },
+      ],
+    },
+    {
+      title: '빌드',
+      titleEn: 'Build',
+      description: '프로덕션 빌드 관련 설정입니다.',
+      descriptionEn: 'Configure production build options.',
+      controls: [
+        {
+          type: 'checkbox',
+          key: 'buildSourcemap',
+          label: '소스맵 생성',
+          labelEn: 'Source Map',
+          description:
+            '프로덕션 빌드에 소스맵을 포함합니다. 디버깅에 유용하지만 번들 크기가 증가합니다.',
+          descriptionEn:
+            'Include source maps in production build. Useful for debugging but increases bundle size.',
+          tier: 'core',
+          rationale: '프로덕션 디버깅과 에러 추적에 필요. Sentry 등 모니터링 도구와 연동.',
+          docsUrl: `${VITE_DOCS}/build-options#build-sourcemap`,
+          default: false,
+        },
+        {
+          type: 'text',
+          key: 'buildOutDir',
+          label: '출력 디렉터리',
+          labelEn: 'Output Directory',
+          description: '빌드 결과물의 출력 디렉터리입니다. 기본값은 "dist"입니다.',
+          descriptionEn: 'Output directory for build artifacts. Default is "dist".',
+          tier: 'advanced',
+          docsUrl: `${VITE_DOCS}/build-options#build-outdir`,
+          default: '',
+          placeholder: 'dist',
+        },
+        {
+          type: 'select',
+          key: 'buildTarget',
+          label: '빌드 대상',
+          labelEn: 'Build Target',
+          description: '빌드 시 타겟 브라우저 호환성입니다. esbuild의 target에 해당합니다.',
+          descriptionEn: 'Browser compatibility target for builds. Corresponds to esbuild target.',
+          tier: 'advanced',
+          docsUrl: `${VITE_DOCS}/build-options#build-target`,
+          options: [
+            { label: 'modules — ESM 지원 브라우저', value: 'modules' },
+            { label: 'esnext — 최신 브라우저', value: 'esnext' },
+            { label: 'es2020', value: 'es2020' },
+            { label: 'es2022', value: 'es2022' },
+          ],
+          default: 'modules',
+        },
+      ],
+    },
+  ],
+}
