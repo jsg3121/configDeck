@@ -23,20 +23,6 @@ const pageTitle =
 const pageDescription = locale === 'ko' ? currentFile.descriptionKo : currentFile.descriptionEn
 
 /**
- * sections 데이터를 직렬화 가능한 형태로 변환한다.
- * Astro → Svelte props는 Plain Object만 전달 가능하다.
- */
-const serializableSections = currentFile.sections.map((section) => ({
-  titleEn: section.titleEn,
-  titleKo: section.titleKo,
-  descriptionEn: section.descriptionEn,
-  descriptionKo: section.descriptionKo,
-  type: section.type,
-  name: 'name' in section ? section.name : undefined,
-  options: section.options.map((o) => ({ label: o.label, value: o.value, checked: o.checked })),
-}))
-
-/**
  * 관련 파일 데이터를 Svelte에 전달 가능한 직렬화 형태로 변환한다.
  * 좌측 패널 하단 "함께 쓰면 좋아요" 섹션에서 카드로 렌더링한다.
  */
@@ -96,7 +82,6 @@ const relatedFiles = getRelatedFiles(fileSlug).map((file) => ({
         client:load
         fileSlug={currentFile.slug}
         locale={locale}
-        sections={serializableSections}
         presets={[...currentFile.presets]}
         supportsMigration={currentFile.supportsMigration}
         relatedFiles={relatedFiles}

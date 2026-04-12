@@ -14,7 +14,7 @@ export const FILE_DEFINITIONS = [
       'TypeScript, 프레임워크 지원, 커스텀 규칙이 포함된 최신 ESLint flat config를 생성합니다.',
     supportsMigration: true,
     presets: ['TypeScript Strict', 'Next.js', 'Airbnb', 'Standard', 'Vue'],
-    sections: [],
+
     sampleCode: `// eslint.config.mjs
 import eslintPluginAstro from 'eslint-plugin-astro'
 import tseslint from 'typescript-eslint'
@@ -41,7 +41,7 @@ export default [
     descriptionKo: '선호하는 포맷팅 규칙으로 Prettier 설정을 생성합니다.',
     supportsMigration: false,
     presets: ['Prettier Default', 'Standard JS', 'Airbnb-like', 'Minimal'],
-    sections: [],
+
     sampleCode: `/** @type {import("prettier").Config} */
 export default {
   singleQuote: true,
@@ -60,7 +60,7 @@ export default {
     descriptionKo: 'strict 모드, 경로 별칭, 최신 설정이 포함된 tsconfig.json을 생성합니다.',
     supportsMigration: false,
     presets: ['Node 20', 'React + Vite', 'Next.js', 'Astro', 'Library', 'Strict'],
-    sections: [],
+
     sampleCode: `{
   "compilerOptions": {
     "target": "ES2022",
@@ -87,7 +87,7 @@ export default {
     descriptionKo: 'OS, IDE, 프레임워크에 맞는 .gitignore 파일을 생성합니다.',
     supportsMigration: false,
     presets: ['Node', 'Full Stack', 'Minimal'],
-    sections: [],
+
     sampleCode: `# Dependencies
 node_modules/
 npm-debug.log*
@@ -113,7 +113,7 @@ build/
     descriptionKo: '플러그인, 경로 별칭, 개발 서버 옵션이 포함된 Vite 설정을 생성합니다.',
     supportsMigration: false,
     presets: ['React', 'Vue', 'Svelte', 'Minimal'],
-    sections: [],
+
     sampleCode: `import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
 import { defineConfig } from 'vite'
@@ -136,7 +136,7 @@ export default defineConfig({
     descriptionKo: '테스트 환경, 커버리지, 셋업 파일이 포함된 Vitest 설정을 생성합니다.',
     supportsMigration: false,
     presets: ['React', 'Node', 'Vue', 'Minimal'],
-    sections: [],
+
     sampleCode: `import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
@@ -155,7 +155,7 @@ export default defineConfig({
     descriptionKo: '이미지, 리다이렉트, webpack 커스터마이즈를 위한 Next.js 설정을 생성합니다.',
     supportsMigration: false,
     presets: ['Standard', 'Docker', 'Static Export', 'Minimal'],
-    sections: [],
+
     sampleCode: `/** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -173,7 +173,7 @@ module.exports = nextConfig`,
     descriptionKo: '에디터와 IDE 간 일관된 코딩 스타일을 위한 .editorconfig 파일을 생성합니다.',
     supportsMigration: false,
     presets: ['Standard', 'Tabs', '4-Space', 'Minimal'],
-    sections: [],
+
     sampleCode: `root = true
 
 [*]
@@ -196,7 +196,7 @@ trim_trailing_whitespace = false`,
     descriptionKo: '프로젝트에 필요한 환경 변수가 포함된 .env 파일을 생성합니다.',
     supportsMigration: false,
     presets: ['Frontend', 'Backend', 'Full Stack'],
-    sections: [],
+
     sampleCode: `# App
 PORT=3000
 NODE_ENV=development

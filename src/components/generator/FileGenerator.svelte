@@ -4,35 +4,16 @@
    * 프리셋 기본값을 기준으로 생성기 옵션을 관리하고,
    * 섹션 UI 변경 시 스키마 옵션을 동기화하여 실시간 코드를 생성한다.
    */
-  import { getOptionDefinition, isMigrated } from '@/lib/data/options'
+  import { getOptionDefinition } from '@/lib/data/options'
   import { generateConfigBySlug } from '@/lib/generators'
   import type { MigrationResult } from '@/lib/migration'
   import { getPresetDefaultsBySlug } from '@/lib/schemas'
-  import type { NewOptionSection, OptionControl } from '@/types/generator'
+  import type { NewOptionSection } from '@/types/generator'
 
   import CodePreview from './CodePreview.svelte'
   import MigrationPanel from './MigrationPanel.svelte'
   import OptionForm from './OptionForm.svelte'
   import PresetSelector from './PresetSelector.svelte'
-
-  // ---------------------------------------------------------------------------
-  // Legacy 타입 — 마이그레이션 완료(M11) 시 제거 예정
-  // ---------------------------------------------------------------------------
-  interface LegacyOptionField {
-    label: string
-    value: string
-    checked: boolean
-  }
-
-  interface LegacyOptionSection {
-    titleEn: string
-    titleKo: string
-    descriptionEn: string
-    descriptionKo: string
-    type: 'radio' | 'checkbox'
-    name?: string
-    options: LegacyOptionField[]
-  }
 
   interface RelatedFile {
     slug: string
@@ -45,138 +26,16 @@
   interface Props {
     fileSlug: string
     locale: string
-    sections: LegacyOptionSection[]
     presets: string[]
     supportsMigration: boolean
     relatedFiles?: RelatedFile[]
   }
 
-  const {
-    fileSlug,
-    locale,
-    sections,
-    presets,
-    supportsMigration,
-    relatedFiles = [],
-  }: Props = $props()
-
-  // ---------------------------------------------------------------------------
-  // Legacy → 신규 구조 어댑터 (M11에서 제거)
-  // ---------------------------------------------------------------------------
-
-  /** legacy OptionSection을 신규 NewOptionSection으로 변환한다 */
-  const adaptLegacySections = (legacySections: LegacyOptionSection[]): NewOptionSection[] => {
-    return legacySections.map((section) => ({
-      title: section.titleKo,
-      titleEn: section.titleEn,
-      description: section.descriptionKo,
-      descriptionEn: section.descriptionEn,
-      controls: section.options.map((option): OptionControl => {
-        if (section.type === 'radio') {
-          return {
-            type: 'radio',
-            key: section.name ?? option.value,
-            label: section.titleKo,
-            labelEn: section.titleEn,
-            description: section.descriptionKo,
-            descriptionEn: section.descriptionEn,
-            tier: 'core',
-            options: section.options.map((o) => ({ label: o.label, value: o.value })),
-            default: section.options.find((o) => o.checked)?.value ?? section.options[0].value,
-          }
-        }
-        return {
-          type: 'checkbox',
-          key: option.value,
-          label: option.label,
-          labelEn: option.label,
-          description: '',
-          descriptionEn: '',
-          tier: 'core',
-          default: option.checked,
-        }
-      }),
-    }))
-  }
-
-  /**
-   * legacy 어댑터의 radio 섹션은 각 option을 별도 control로 변환하므로
-   * radio 그룹이 중복 렌더링된다. 이를 제거하기 위해 radio 컨트롤을 그룹당 1개만 남긴다.
-   */
-  const deduplicateRadioControls = (adaptedSections: NewOptionSection[]): NewOptionSection[] => {
-    return adaptedSections.map((section) => {
-      const seen: string[] = []
-      const dedupedControls = section.controls.filter((control) => {
-        if (control.type === 'radio') {
-          if (seen.includes(control.key)) return false
-          seen.push(control.key)
-        }
-        return true
-      })
-      return { ...section, controls: dedupedControls }
-    })
-  }
-
-  // ---------------------------------------------------------------------------
-  // 유틸 함수 (어댑터에서도 사용하므로 먼저 선언)
-  // ---------------------------------------------------------------------------
-
-  /** kebab-case → camelCase 변환 */
-  const toCamelCase = (str: string): string =>
-    str.replace(/-([a-z])/g, (_, c: string) => c.toUpperCase())
-
-  /** 중첩 객체에서 키를 찾아 값을 설정한다 */
-  const setNestedValue = (obj: Record<string, unknown>, key: string, value: unknown): boolean => {
-    if (key in obj) {
-      obj[key] = value
-      return true
-    }
-    for (const v of Object.values(obj)) {
-      if (typeof v === 'object' && v !== null) {
-        if (setNestedValue(v as Record<string, unknown>, key, value)) return true
-      }
-    }
-    return false
-  }
-
-  /** 중첩 객체에서 키의 값을 찾는다 */
-  const findNestedValue = (obj: Record<string, unknown>, key: string): unknown => {
-    if (key in obj) return obj[key]
-    for (const v of Object.values(obj)) {
-      if (typeof v === 'object' && v !== null) {
-        const found = findNestedValue(v as Record<string, unknown>, key)
-        if (found !== undefined) return found
-      }
-    }
-    return undefined
-  }
-
-  /** legacy 옵션 값을 신규 values 맵으로 변환한다 */
-  const buildValuesFromLegacy = (
-    legacySections: LegacyOptionSection[],
-    opts: Record<string, unknown>,
-  ): Record<string, unknown> => {
-    const values: Record<string, unknown> = {}
-    for (const section of legacySections) {
-      if (section.type === 'radio' && section.name) {
-        values[section.name] = opts[section.name] ?? section.options.find((o) => o.checked)?.value
-      } else {
-        for (const option of section.options) {
-          const camelKey = toCamelCase(option.value)
-          const found = findNestedValue(opts, camelKey)
-          values[option.value] = typeof found === 'boolean' ? found : option.checked
-        }
-      }
-    }
-    return values
-  }
+  const { fileSlug, locale, presets, supportsMigration, relatedFiles = [] }: Props = $props()
 
   // ---------------------------------------------------------------------------
   // 상태 관리
   // ---------------------------------------------------------------------------
-
-  /** 이 파일이 신규 옵션 구조로 마이그레이션되었는지 */
-  const usesNewStructure = isMigrated(fileSlug)
 
   /** 초기 프리셋을 결정한다 (두 번째 프리셋 또는 첫 번째) */
   const initialPreset = presets[1] ?? presets[0]
@@ -223,15 +82,11 @@
   /** 생성기에 전달할 스키마 옵션 — touchedKeys에 포함된 옵션만 들어간다 */
   let generatorOptions = $state<Record<string, unknown>>({})
 
-  /** 신규 OptionForm에 전달할 값 맵 — 초기 진입 시 빈 상태 */
-  let optionValues = $state<Record<string, unknown>>(usesNewStructure ? buildEmptyValues() : {})
+  /** OptionForm에 전달할 값 맵 — 초기 진입 시 빈 상태 */
+  let optionValues = $state<Record<string, unknown>>(buildEmptyValues())
 
-  /** 신규 OptionForm에 전달할 섹션 목록 */
-  let formSections = $derived<NewOptionSection[]>(
-    usesNewStructure
-      ? (getOptionDefinition(fileSlug)?.sections ?? [])
-      : deduplicateRadioControls(adaptLegacySections(sections)),
-  )
+  /** OptionForm에 전달할 섹션 목록 */
+  let formSections = $derived<NewOptionSection[]>(getOptionDefinition(fileSlug)?.sections ?? [])
 
   /** 마이그레이션 결과 */
   let migrationResult = $state<MigrationResult | null>(null)
@@ -259,46 +114,24 @@
   const handlePresetChange = (presetName: string) => {
     selectedPreset = presetName
     const defaults = getPresetDefaultsBySlug(fileSlug, presetName) as Record<string, unknown>
-
-    if (usesNewStructure) {
-      // 빈 상태 + 프리셋 값 덮어쓰기 (프리셋이 명시한 키만 채움)
-      optionValues = { ...buildEmptyValues(), ...defaults }
-      touchedKeys = new Set(Object.keys(defaults))
-    } else {
-      optionValues = buildValuesFromLegacy(sections, defaults)
-      touchedKeys = new Set(Object.keys(optionValues))
-    }
+    optionValues = { ...buildEmptyValues(), ...defaults }
+    touchedKeys = new Set(Object.keys(defaults))
     syncGeneratorOptions()
   }
 
   /** touchedKeys 기반으로 generatorOptions를 갱신한다. 터치된 키의 값만 포함된다 */
   const syncGeneratorOptions = () => {
-    if (usesNewStructure) {
-      const opts: Record<string, unknown> = {}
-      for (const key of touchedKeys) {
-        if (key in optionValues) {
-          opts[key] = optionValues[key]
-        }
+    const opts: Record<string, unknown> = {}
+    for (const key of touchedKeys) {
+      if (key in optionValues) {
+        opts[key] = optionValues[key]
       }
-      generatorOptions = opts
-    } else {
-      const defaults = getPresetDefaultsBySlug(fileSlug, initialPreset) as Record<string, unknown>
-      const updated = JSON.parse(JSON.stringify(defaults))
-      for (const key of touchedKeys) {
-        const camelKey = toCamelCase(key)
-        if (key in updated) {
-          updated[key] = optionValues[key]
-        } else {
-          setNestedValue(updated, camelKey, optionValues[key])
-        }
-      }
-      // legacy는 전체 옵션이 필요하므로 touched가 하나라도 있으면 전체 전달
-      generatorOptions = touchedKeys.size > 0 ? updated : {}
     }
+    generatorOptions = opts
   }
 
-  /** 신규 OptionForm의 옵션 변경 핸들러 */
-  const handleNewOptionChange = (key: string, value: unknown) => {
+  /** OptionForm의 옵션 변경 핸들러 */
+  const handleOptionChange = (key: string, value: unknown) => {
     optionValues = { ...optionValues, [key]: value }
     touchedKeys = new Set([...touchedKeys, key])
     syncGeneratorOptions()
@@ -309,7 +142,7 @@
     selectedPreset = null
     touchedKeys = new Set()
     generatorOptions = {}
-    optionValues = usesNewStructure ? buildEmptyValues() : {}
+    optionValues = buildEmptyValues()
   }
 
   let generateLabel = $derived(locale === 'ko' ? '생성' : 'Generate')
@@ -373,7 +206,7 @@
           sections={formSections}
           values={optionValues}
           {locale}
-          onchange={handleNewOptionChange}
+          onchange={handleOptionChange}
         />
 
         {#if relatedFiles.length > 0}

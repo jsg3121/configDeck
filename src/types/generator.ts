@@ -3,35 +3,7 @@
  */
 
 // ---------------------------------------------------------------------------
-// Legacy 타입 — 마이그레이션 완료(M11) 시 제거 예정
-// ---------------------------------------------------------------------------
-
-/** @deprecated 신규 구조의 OptionControl을 사용한다 */
-export interface OptionField {
-  label: string
-  value: string
-  checked: boolean
-}
-
-/** @deprecated 신규 구조의 OptionControl.type을 사용한다 */
-export type OptionInputType = 'radio' | 'checkbox'
-
-/** @deprecated 신규 구조의 NewOptionSection을 사용한다 */
-export interface OptionSection {
-  titleEn: string
-  titleKo: string
-  descriptionEn: string
-  descriptionKo: string
-  type: OptionInputType
-  name?: string
-  options: OptionField[]
-}
-
-/** @deprecated 신규 구조의 Preset<T>를 사용한다 */
-export type PresetDefaultsProvider<T> = (presetName: string) => T
-
-// ---------------------------------------------------------------------------
-// 신규 옵션 컨트롤 타입 — 판별 유니온 (Discriminated Union)
+// 옵션 컨트롤 타입 — 판별 유니온 (Discriminated Union)
 // ref: https://www.typescriptlang.org/docs/handbook/2/narrowing.html#discriminated-unions
 // ---------------------------------------------------------------------------
 
