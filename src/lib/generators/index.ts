@@ -73,7 +73,7 @@ const GENERATOR_MAP: Record<
   },
   env: {
     generate: generateEnvExample as (options: never) => string,
-    fileName: '.env.example',
+    fileName: '.env',
     language: 'shell',
   },
 }

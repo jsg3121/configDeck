@@ -87,7 +87,7 @@ const FILE_ICON_MAP: Record<string, string> = {
   'vitest.config.ts': 'vitest-config',
   'next.config.js': 'next-config',
   '.editorconfig': 'editorconfig',
-  '.env.example': 'env',
+  '.env': 'env',
 } as const
 
 /** 스택 slug로 아이콘 데이터를 반환한다 */

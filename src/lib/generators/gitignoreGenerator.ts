@@ -66,10 +66,20 @@ export const generateGitignore = (options: Record<string, unknown>): string => {
   const blocks: string[] = []
 
   for (const [key, value] of Object.entries(options)) {
+    if (key === 'customPatterns') continue
     if (value === true && PATTERN_BLOCKS[key]) {
       const block = PATTERN_BLOCKS[key]
       blocks.push(`${block.header}\n${block.patterns.join('\n')}`)
     }
+  }
+
+  // 커스텀 패턴
+  if (
+    'customPatterns' in options &&
+    Array.isArray(options.customPatterns) &&
+    options.customPatterns.length > 0
+  ) {
+    blocks.push(`# Custom\n${(options.customPatterns as string[]).join('\n')}`)
   }
 
   return blocks.join('\n\n')

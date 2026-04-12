@@ -1,5 +1,5 @@
 /**
- * .env.example 코드를 생성한다.
+ * .env 코드를 생성한다.
  * 사용자가 선택한(touched) 섹션의 환경 변수 블록만 출력한다.
  */
 
@@ -52,14 +52,30 @@ const ENV_BLOCKS: Record<string, { header: string; variables: string[] }> = {
   },
 }
 
-/** .env.example 전체 코드를 생성한다 */
+/** .env 전체 코드를 생성한다 */
 export const generateEnvExample = (options: Record<string, unknown>): string => {
   const blocks: string[] = []
 
   for (const [key, value] of Object.entries(options)) {
+    if (key === 'customVariables') continue
     if (value === true && ENV_BLOCKS[key]) {
       const block = ENV_BLOCKS[key]
       blocks.push(`${block.header}\n${block.variables.join('\n')}`)
+    }
+  }
+
+  // 커스텀 변수
+  if (
+    'customVariables' in options &&
+    typeof options.customVariables === 'object' &&
+    options.customVariables !== null
+  ) {
+    const entries = Object.entries(options.customVariables as Record<string, string>).filter(
+      ([k, v]) => k && v,
+    )
+    if (entries.length > 0) {
+      const lines = entries.map(([k, v]) => `${k}=${v}`)
+      blocks.push(`# Custom\n${lines.join('\n')}`)
     }
   }
 

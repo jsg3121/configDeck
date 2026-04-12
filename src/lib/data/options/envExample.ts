@@ -1,5 +1,5 @@
 /**
- * .env.example 설정 파일의 옵션 정의.
+ * .env 설정 파일의 옵션 정의.
  * 섹션별 환경 변수 블록을 선택하는 방식.
  */
 import type { FileOptionDefinition } from '@/types/generator'
@@ -112,6 +112,27 @@ export const envExampleOptions: FileOptionDefinition = {
           descriptionEn: 'SMTP server settings for sending emails.',
           tier: 'advanced',
           default: false,
+        },
+      ],
+    },
+    {
+      title: '커스텀 변수',
+      titleEn: 'Custom Variables',
+      description: '위 목록에 없는 환경 변수를 직접 추가합니다.',
+      descriptionEn: 'Add custom environment variables not listed above.',
+      controls: [
+        {
+          type: 'key-value',
+          key: 'customVariables',
+          label: '추가 변수',
+          labelEn: 'Additional Variables',
+          description: '환경 변수 이름과 예시 값을 입력하세요.',
+          descriptionEn: 'Enter variable names and example values.',
+          tier: 'core',
+          rationale: '프리셋에 없는 프로젝트 고유 환경 변수를 자유롭게 추가할 수 있어야 한다.',
+          default: {},
+          keyPlaceholder: 'VARIABLE_NAME',
+          valuePlaceholder: 'example-value',
         },
       ],
     },

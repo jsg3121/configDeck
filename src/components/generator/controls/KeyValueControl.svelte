@@ -14,8 +14,10 @@
 
   let { control, value, locale, onchange }: Props = $props()
 
-  /** Record를 [key, value] 배열로 변환한다 */
-  let entries = $derived(Object.entries(value))
+  /** Record를 [key, value] 배열로 변환한다. 빈 상태면 빈 행 1개를 표시한다 */
+  let entries = $derived(
+    Object.keys(value).length > 0 ? Object.entries(value) : [['', ''] as [string, string]],
+  )
 
   const getLabel = (): string => {
     return locale === 'ko' ? control.label : control.labelEn

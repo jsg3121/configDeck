@@ -1,5 +1,5 @@
 /**
- * .env.example 프리셋 목록.
+ * .env 프리셋 목록.
  */
 import type { Preset } from '@/types/generator'
 

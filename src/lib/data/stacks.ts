@@ -400,7 +400,7 @@ insert_final_newline = true`,
         ],
       },
       {
-        fileName: '.env.example',
+        fileName: '.env',
         slug: 'env',
         options: [
           { label: 'PORT', value: 'port', checked: true },
@@ -462,7 +462,7 @@ export default [
   tabWidth: 2,
   printWidth: 100,
 }`,
-      '.env.example': `# App
+      '.env': `# App
 PORT=3000
 NODE_ENV=development
 
