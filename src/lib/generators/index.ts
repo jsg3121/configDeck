@@ -1,6 +1,7 @@
 /**
  * 모든 생성기를 통합 export하고, slug 기반 통합 진입점을 제공한다.
  */
+import { isMigrated } from '@/lib/data/options'
 import type { GeneratorOutput } from '@/types/generator'
 
 import { generateEditorconfig } from './editorconfigGenerator'
@@ -82,6 +83,16 @@ export const generateConfigBySlug = (slug: string, options: unknown): GeneratorO
   const entry = GENERATOR_MAP[slug]
   if (!entry) {
     return { fileName: '', code: '', language: '' }
+  }
+
+  const isEmpty =
+    options === null ||
+    options === undefined ||
+    (typeof options === 'object' && Object.keys(options as Record<string, unknown>).length === 0)
+
+  // 빈 객체 + legacy 생성기 → 빈 코드 반환 (legacy 생성기는 빈 객체에 대한 방어가 없음)
+  if (isEmpty && !isMigrated(slug)) {
+    return { fileName: entry.fileName, code: '', language: entry.language }
   }
 
   return {

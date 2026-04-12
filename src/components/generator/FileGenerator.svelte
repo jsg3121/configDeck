@@ -181,21 +181,50 @@
   /** 초기 프리셋을 결정한다 (두 번째 프리셋 또는 첫 번째) */
   const initialPreset = presets[1] ?? presets[0]
 
-  /** 현재 선택된 프리셋 — Svelte 5 반응성을 위해 let 필수 */
-  let selectedPreset = $state(initialPreset)
+  /** 신규 옵션 구조에서 모든 control의 빈 값(초기 상태)으로 구성된 맵을 반환한다 */
+  const buildEmptyValues = (): Record<string, unknown> => {
+    const definition = getOptionDefinition(fileSlug)
+    if (!definition) return {}
+    const empty: Record<string, unknown> = {}
+    for (const section of definition.sections) {
+      for (const control of section.controls) {
+        switch (control.type) {
+          case 'checkbox':
+            empty[control.key] = false
+            break
+          case 'number':
+            empty[control.key] = null
+            break
+          case 'radio':
+          case 'select':
+          case 'text':
+            empty[control.key] = ''
+            break
+          case 'tags':
+            empty[control.key] = []
+            break
+          case 'key-value':
+            empty[control.key] = {}
+            break
+        }
+      }
+    }
+    return empty
+  }
+
+  /** 현재 선택된 프리셋 — null이면 선택 없음(초기/클리어 상태) */
+  let selectedPreset = $state<string | null>(null)
   /** 현재 활성 탭 */
   let activeTab = $state<'generate' | 'migrate'>('generate')
-  /** 생성기에 전달할 스키마 옵션 */
-  let generatorOptions = $state<Record<string, unknown>>(
-    getPresetDefaultsBySlug(fileSlug, initialPreset) as Record<string, unknown>,
-  )
 
-  /** 신규 OptionForm에 전달할 값 맵 */
-  let optionValues = $state<Record<string, unknown>>(
-    usesNewStructure
-      ? { ...(generatorOptions as Record<string, unknown>) }
-      : buildValuesFromLegacy(sections, generatorOptions),
-  )
+  /** 사용자가 직접 변경한 옵션 키 Set. 이 키의 옵션만 generatorOptions에 포함되어 미리보기에 출력된다 */
+  let touchedKeys = $state(new Set<string>())
+
+  /** 생성기에 전달할 스키마 옵션 — touchedKeys에 포함된 옵션만 들어간다 */
+  let generatorOptions = $state<Record<string, unknown>>({})
+
+  /** 신규 OptionForm에 전달할 값 맵 — 초기 진입 시 빈 상태 */
+  let optionValues = $state<Record<string, unknown>>(usesNewStructure ? buildEmptyValues() : {})
 
   /** 신규 OptionForm에 전달할 섹션 목록 */
   let formSections = $derived<NewOptionSection[]>(
@@ -219,51 +248,77 @@
     migrationResult = result
   }
 
-  /** 프리셋 변경 시 옵션 값을 초기화한다 */
+  /** 프리셋 변경 시 프리셋이 명시한 옵션만 적용한다. 나머지는 빈 상태 유지 */
   const handlePresetChange = (presetName: string) => {
     selectedPreset = presetName
     const defaults = getPresetDefaultsBySlug(fileSlug, presetName) as Record<string, unknown>
-    generatorOptions = JSON.parse(JSON.stringify(defaults))
 
-    optionValues = usesNewStructure
-      ? { ...(generatorOptions as Record<string, unknown>) }
-      : buildValuesFromLegacy(sections, generatorOptions)
+    if (usesNewStructure) {
+      // 빈 상태 + 프리셋 값 덮어쓰기 (프리셋이 명시한 키만 채움)
+      optionValues = { ...buildEmptyValues(), ...defaults }
+      touchedKeys = new Set(Object.keys(defaults))
+    } else {
+      optionValues = buildValuesFromLegacy(sections, defaults)
+      touchedKeys = new Set(Object.keys(optionValues))
+    }
+    syncGeneratorOptions()
+  }
+
+  /** touchedKeys 기반으로 generatorOptions를 갱신한다. 터치된 키의 값만 포함된다 */
+  const syncGeneratorOptions = () => {
+    if (usesNewStructure) {
+      const opts: Record<string, unknown> = {}
+      for (const key of touchedKeys) {
+        if (key in optionValues) {
+          opts[key] = optionValues[key]
+        }
+      }
+      generatorOptions = opts
+    } else {
+      const defaults = getPresetDefaultsBySlug(fileSlug, initialPreset) as Record<string, unknown>
+      const updated = JSON.parse(JSON.stringify(defaults))
+      for (const key of touchedKeys) {
+        const camelKey = toCamelCase(key)
+        if (key in updated) {
+          updated[key] = optionValues[key]
+        } else {
+          setNestedValue(updated, camelKey, optionValues[key])
+        }
+      }
+      // legacy는 전체 옵션이 필요하므로 touched가 하나라도 있으면 전체 전달
+      generatorOptions = touchedKeys.size > 0 ? updated : {}
+    }
   }
 
   /** 신규 OptionForm의 옵션 변경 핸들러 */
   const handleNewOptionChange = (key: string, value: unknown) => {
     optionValues = { ...optionValues, [key]: value }
+    touchedKeys = new Set([...touchedKeys, key])
+    syncGeneratorOptions()
+  }
 
-    if (usesNewStructure) {
-      generatorOptions = { ...optionValues }
-    } else {
-      // legacy: 신규 values → generatorOptions 동기화
-      const updated = JSON.parse(JSON.stringify(generatorOptions))
-      const camelKey = toCamelCase(key)
-
-      // radio 타입 (name으로 직접 매핑)
-      if (key in updated) {
-        updated[key] = value
-      } else {
-        setNestedValue(updated, camelKey, value)
-      }
-      generatorOptions = updated
-    }
+  /** 모든 옵션을 초기 상태로 되돌린다 */
+  const handleClear = () => {
+    selectedPreset = null
+    touchedKeys = new Set()
+    generatorOptions = {}
+    optionValues = usesNewStructure ? buildEmptyValues() : {}
   }
 
   let generateLabel = $derived(locale === 'ko' ? '생성' : 'Generate')
   let migrateLabel = $derived(locale === 'ko' ? '마이그레이션' : 'Migrate')
   let presetLabel = $derived(locale === 'ko' ? '프리셋' : 'Preset')
   let relatedFilesLabel = $derived(locale === 'ko' ? '함께 쓰면 좋아요' : 'Goes well with')
+  let clearLabel = $derived(locale === 'ko' ? '초기화' : 'Clear')
 
   /** 현재 로케일에 맞는 관련 파일 설명을 반환 */
   const getRelatedDescription = (file: RelatedFile): string =>
     locale === 'ko' ? file.descriptionKo : file.descriptionEn
 </script>
 
-<div class="mx-auto flex max-w-7xl flex-col lg:flex-row">
+<div class="mx-auto flex h-full max-w-7xl flex-col lg:flex-row">
   <!-- 좌측 패널: 옵션 -->
-  <div class="w-full lg:h-[calc(100vh-65px)] lg:w-1/2 lg:overflow-y-auto">
+  <div class="w-full lg:w-1/2 lg:overflow-y-auto">
     <div class="mx-auto max-w-xl px-6 py-8">
       {#if supportsMigration}
         <div class="mb-6 flex gap-1 rounded-lg bg-gray-100 p-1">
@@ -290,9 +345,18 @@
 
       {#if activeTab === 'generate'}
         <div class="border-b border-border pb-6">
-          <h2 class="text-xs font-semibold uppercase tracking-wider text-gray-400">
-            {presetLabel}
-          </h2>
+          <div class="flex items-center justify-between">
+            <h2 class="text-xs font-semibold uppercase tracking-wider text-gray-400">
+              {presetLabel}
+            </h2>
+            <button
+              type="button"
+              class="text-xs text-gray-400 hover:text-gray-600"
+              onclick={handleClear}
+            >
+              {clearLabel}
+            </button>
+          </div>
           <div class="mt-3">
             <PresetSelector {presets} {selectedPreset} onpresetchange={handlePresetChange} />
           </div>
@@ -357,9 +421,7 @@
   </div>
 
   <!-- 우측 패널: 미리보기 -->
-  <div
-    class="w-full border-t border-border lg:sticky lg:top-0 lg:h-screen lg:w-1/2 lg:border-t-0 lg:border-l"
-  >
+  <div class="w-full border-t border-border lg:h-full lg:w-1/2 lg:border-t-0 lg:border-l">
     <CodePreview fileName={generatedOutput.fileName} code={generatedOutput.code} {locale} />
   </div>
 </div>

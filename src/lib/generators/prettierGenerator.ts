@@ -38,11 +38,11 @@ export const generatePrettierConfig = (options: Record<string, unknown>): string
   lines.push('/** @type {import("prettier").Config} */')
   lines.push('export default {')
 
-  // 기본값과 다른 옵션만 출력한다
-  for (const [key, defaultValue] of Object.entries(PRETTIER_DEFAULTS)) {
-    const currentValue = key in options ? options[key] : defaultValue
-    if (JSON.stringify(currentValue) !== JSON.stringify(defaultValue)) {
-      lines.push(`  ${key}: ${toJsValue(currentValue)},`)
+  // 사용자가 명시적으로 설정한 모든 옵션을 출력한다.
+  // 기본값과 같더라도 options에 포함되어 있으면 출력한다.
+  for (const [key] of Object.entries(PRETTIER_DEFAULTS)) {
+    if (key in options) {
+      lines.push(`  ${key}: ${toJsValue(options[key])},`)
     }
   }
 

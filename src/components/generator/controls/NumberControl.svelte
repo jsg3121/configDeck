@@ -1,13 +1,14 @@
 <script lang="ts">
   /**
-   * 숫자 입력 — 직접 입력 + min/max 검증 컨트롤.
-   * Prettier printWidth, tabWidth 등에 사용한다.
+   * 숫자 입력 — 직접 입력 + 자주 쓰는 값 버튼 컨트롤.
+   * 넘버패드를 포함한 모든 숫자 입력을 허용하며,
+   * quickValues로 자주 사용하는 값을 버튼으로 제공한다.
    */
   import type { NumberControl as NumberControlType } from '@/types/generator'
 
   interface Props {
     control: NumberControlType
-    value: number
+    value: number | null
     locale: string
     onchange: (key: string, value: number) => void
   }
@@ -36,6 +37,11 @@
     if (!Number.isNaN(parsed)) {
       onchange(control.key, clamp(parsed))
     }
+  }
+
+  /** 버튼 클릭으로 값을 설정한다 */
+  const handleQuickSelect = (quickValue: number) => {
+    onchange(control.key, quickValue)
   }
 </script>
 
@@ -71,10 +77,26 @@
       step={control.step ?? 1}
       oninput={handleInput}
       aria-describedby="{control.key}-desc"
-      class="w-24 rounded-md border border-border bg-surface px-3 py-1.5 text-sm text-gray-700 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+      class="w-24 rounded-md border border-border bg-surface px-3 py-1.5 text-sm text-gray-700 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
     />
     {#if control.unit}
       <span class="text-xs text-gray-400">{control.unit}</span>
     {/if}
   </div>
+
+  {#if control.quickValues && control.quickValues.length > 0}
+    <div class="mt-1 flex flex-wrap gap-1.5">
+      {#each control.quickValues as quickValue (quickValue)}
+        <button
+          type="button"
+          onclick={() => handleQuickSelect(quickValue)}
+          class="rounded-md border px-2.5 py-1 text-xs transition-colors {value === quickValue
+            ? 'border-primary bg-primary/10 text-primary'
+            : 'border-border text-gray-500 hover:border-gray-300 hover:text-gray-700'}"
+        >
+          {quickValue}
+        </button>
+      {/each}
+    </div>
+  {/if}
 </div>

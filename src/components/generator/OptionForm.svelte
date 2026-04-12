@@ -211,139 +211,157 @@
   {@const coreControls = section.controls.filter((c) => c.tier === 'core')}
   {@const advancedControls = section.controls.filter((c) => c.tier === 'advanced')}
 
-  <fieldset class="border-b border-border py-6">
-    <legend class="text-sm font-semibold text-gray-900">
-      {getSectionTitle(section)}
-    </legend>
-    {#if getSectionDescription(section)}
-      <p class="mt-1 text-xs text-gray-400">{getSectionDescription(section)}</p>
-    {/if}
+  {@const hasCore = coreControls.length > 0}
+  {@const hasAdvanced = advancedControls.length > 0}
+  {@const isAdvancedOnlySection = !hasCore && hasAdvanced}
 
-    <!-- Core 옵션 (항상 표시) -->
-    <div class="mt-4 flex flex-col gap-4">
-      {#each coreControls as control (control.key)}
-        <div
-          id="control-{control.key}"
-          class="transition-colors duration-500 {highlightedKey === control.key
-            ? 'rounded-md bg-primary/5 p-2 ring-1 ring-primary/20'
-            : ''}"
-        >
-          {#if control.type === 'radio'}
-            <RadioControl
-              {control}
-              value={getControlValue(control) as string}
-              {locale}
-              {onchange}
-            />
-          {:else if control.type === 'checkbox'}
-            <CheckboxControl
-              {control}
-              value={getControlValue(control) as boolean}
-              {locale}
-              {onchange}
-            />
-          {:else if control.type === 'select'}
-            <SelectControl
-              {control}
-              value={getControlValue(control) as string}
-              {locale}
-              {onchange}
-            />
-          {:else if control.type === 'number'}
-            <NumberControl
-              {control}
-              value={getControlValue(control) as number}
-              {locale}
-              {onchange}
-            />
-          {:else if control.type === 'text'}
-            <TextControl {control} value={getControlValue(control) as string} {locale} {onchange} />
-          {:else if control.type === 'tags'}
-            <TagsControl
-              {control}
-              value={getControlValue(control) as string[]}
-              {locale}
-              {onchange}
-            />
-          {:else if control.type === 'key-value'}
-            <KeyValueControl
-              {control}
-              value={getControlValue(control) as Record<string, string>}
-              {locale}
-              {onchange}
-            />
-          {/if}
-        </div>
-      {/each}
-    </div>
-
-    <!-- Advanced 옵션 (토글로 펼침) -->
-    {#if advancedControls.length > 0}
-      {#if showAdvanced}
-        <div class="mt-4 flex flex-col gap-4 border-t border-dashed border-border pt-4">
-          {#each advancedControls as control (control.key)}
-            <div
-              id="control-{control.key}"
-              class="transition-colors duration-500 {highlightedKey === control.key
-                ? 'rounded-md bg-primary/5 p-2 ring-1 ring-primary/20'
-                : ''}"
-            >
-              {#if control.type === 'radio'}
-                <RadioControl
-                  {control}
-                  value={getControlValue(control) as string}
-                  {locale}
-                  {onchange}
-                />
-              {:else if control.type === 'checkbox'}
-                <CheckboxControl
-                  {control}
-                  value={getControlValue(control) as boolean}
-                  {locale}
-                  {onchange}
-                />
-              {:else if control.type === 'select'}
-                <SelectControl
-                  {control}
-                  value={getControlValue(control) as string}
-                  {locale}
-                  {onchange}
-                />
-              {:else if control.type === 'number'}
-                <NumberControl
-                  {control}
-                  value={getControlValue(control) as number}
-                  {locale}
-                  {onchange}
-                />
-              {:else if control.type === 'text'}
-                <TextControl
-                  {control}
-                  value={getControlValue(control) as string}
-                  {locale}
-                  {onchange}
-                />
-              {:else if control.type === 'tags'}
-                <TagsControl
-                  {control}
-                  value={getControlValue(control) as string[]}
-                  {locale}
-                  {onchange}
-                />
-              {:else if control.type === 'key-value'}
-                <KeyValueControl
-                  {control}
-                  value={getControlValue(control) as Record<string, string>}
-                  {locale}
-                  {onchange}
-                />
-              {/if}
-            </div>
-          {/each}
-        </div>
+  <!-- advanced-only 섹션은 토글이 닫힌 상태에서 전체 숨김 -->
+  {#if !isAdvancedOnlySection || showAdvanced}
+    <div class="border-b border-border py-6">
+      <div class="mb-4 flex items-center gap-2">
+        <div class="h-px flex-1 bg-border"></div>
+        <h3 class="shrink-0 text-xs font-semibold uppercase tracking-wider text-gray-400">
+          {getSectionTitle(section)}
+        </h3>
+        <div class="h-px flex-1 bg-border"></div>
+      </div>
+      {#if getSectionDescription(section)}
+        <p class="-mt-2 mb-4 text-center text-xs text-gray-400">
+          {getSectionDescription(section)}
+        </p>
       {/if}
-    {/if}
-  </fieldset>
+
+      <!-- Core 옵션 (항상 표시) -->
+      <div class="flex flex-col gap-4">
+        {#each coreControls as control (control.key)}
+          <div
+            id="control-{control.key}"
+            class="transition-colors duration-500 {highlightedKey === control.key
+              ? 'rounded-md bg-primary/5 p-2 ring-1 ring-primary/20'
+              : ''}"
+          >
+            {#if control.type === 'radio'}
+              <RadioControl
+                {control}
+                value={getControlValue(control) as string}
+                {locale}
+                {onchange}
+              />
+            {:else if control.type === 'checkbox'}
+              <CheckboxControl
+                {control}
+                value={getControlValue(control) as boolean}
+                {locale}
+                {onchange}
+              />
+            {:else if control.type === 'select'}
+              <SelectControl
+                {control}
+                value={getControlValue(control) as string}
+                {locale}
+                {onchange}
+              />
+            {:else if control.type === 'number'}
+              <NumberControl
+                {control}
+                value={getControlValue(control) as number | null}
+                {locale}
+                {onchange}
+              />
+            {:else if control.type === 'text'}
+              <TextControl
+                {control}
+                value={getControlValue(control) as string}
+                {locale}
+                {onchange}
+              />
+            {:else if control.type === 'tags'}
+              <TagsControl
+                {control}
+                value={getControlValue(control) as string[]}
+                {locale}
+                {onchange}
+              />
+            {:else if control.type === 'key-value'}
+              <KeyValueControl
+                {control}
+                value={getControlValue(control) as Record<string, string>}
+                {locale}
+                {onchange}
+              />
+            {/if}
+          </div>
+        {/each}
+      </div>
+
+      <!-- Advanced 옵션 (토글로 펼침) -->
+      {#if advancedControls.length > 0}
+        {#if showAdvanced}
+          <div class="mt-4 flex flex-col gap-4 border-t border-dashed border-border pt-4">
+            {#each advancedControls as control (control.key)}
+              <div
+                id="control-{control.key}"
+                class="transition-colors duration-500 {highlightedKey === control.key
+                  ? 'rounded-md bg-primary/5 p-2 ring-1 ring-primary/20'
+                  : ''}"
+              >
+                {#if control.type === 'radio'}
+                  <RadioControl
+                    {control}
+                    value={getControlValue(control) as string}
+                    {locale}
+                    {onchange}
+                  />
+                {:else if control.type === 'checkbox'}
+                  <CheckboxControl
+                    {control}
+                    value={getControlValue(control) as boolean}
+                    {locale}
+                    {onchange}
+                  />
+                {:else if control.type === 'select'}
+                  <SelectControl
+                    {control}
+                    value={getControlValue(control) as string}
+                    {locale}
+                    {onchange}
+                  />
+                {:else if control.type === 'number'}
+                  <NumberControl
+                    {control}
+                    value={getControlValue(control) as number | null}
+                    {locale}
+                    {onchange}
+                  />
+                {:else if control.type === 'text'}
+                  <TextControl
+                    {control}
+                    value={getControlValue(control) as string}
+                    {locale}
+                    {onchange}
+                  />
+                {:else if control.type === 'tags'}
+                  <TagsControl
+                    {control}
+                    value={getControlValue(control) as string[]}
+                    {locale}
+                    {onchange}
+                  />
+                {:else if control.type === 'key-value'}
+                  <KeyValueControl
+                    {control}
+                    value={getControlValue(control) as Record<string, string>}
+                    {locale}
+                    {onchange}
+                  />
+                {/if}
+              </div>
+            {/each}
+          </div>
+        {/if}
+      {/if}
+    </div>
+  {/if}
 {/each}
 
 <!-- "전체 옵션 보기" 토글 버튼 (advanced 옵션이 있을 때만 표시) -->

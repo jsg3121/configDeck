@@ -86,15 +86,17 @@ export interface SelectControl extends BaseControl {
   default: string
 }
 
-/** 숫자 입력 — 스피너 + 직접 입력 */
+/** 숫자 입력 — 직접 입력 + 자주 쓰는 값 버튼 */
 export interface NumberControl extends BaseControl {
   type: 'number'
   default: number
   min?: number
   max?: number
   step?: number
-  /** 입력 필드 우측에 표시할 단위 (예: 'px', 'ms') */
+  /** 입력 ��드 우측에 표시할 단위 (예: 'px', 'ms') */
   unit?: string
+  /** 자주 사용하는 값을 버튼으로 표시. 예: [80, 100, 120] */
+  quickValues?: number[]
 }
 
 /** 문자열 입력 — 한 줄 텍스트 */

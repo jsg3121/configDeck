@@ -2,7 +2,7 @@
   /** 프리셋 버튼 그룹을 렌더링한다 */
   interface Props {
     presets: string[]
-    selectedPreset: string
+    selectedPreset: string | null
     onpresetchange: (presetName: string) => void
   }
 

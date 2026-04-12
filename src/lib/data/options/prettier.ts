@@ -30,9 +30,8 @@ export const prettierOptions: FileOptionDefinition = {
             'Prettier 공식 기본 옵션. 거의 모든 프로젝트가 80 또는 100~120으로 명시적 설정한다.',
           docsUrl: `${PRETTIER_DOCS}#print-width`,
           default: 80,
-          min: 40,
-          max: 320,
-          step: 10,
+          step: 1,
+          quickValues: [80, 100, 120],
         },
         {
           type: 'number',
@@ -45,9 +44,8 @@ export const prettierOptions: FileOptionDefinition = {
           rationale: 'Standard JS, Airbnb 모두 2를 사용. 프로젝트 기본 스타일 결정 요소.',
           docsUrl: `${PRETTIER_DOCS}#tab-width`,
           default: 2,
-          min: 1,
-          max: 8,
           step: 1,
+          quickValues: [2, 4],
         },
         {
           type: 'checkbox',
