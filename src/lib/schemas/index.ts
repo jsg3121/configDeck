@@ -38,8 +38,6 @@ export {
 /** legacy slug → 프리셋 기본값 제공 함수 매핑. 마이그레이션 시 해당 항목을 제거한다 */
 const LEGACY_PRESET_PROVIDERS: Record<string, (presetName: string) => unknown> = {
   'eslint-config': getEslintPresetDefaults,
-  gitignore: getGitignorePresetDefaults,
-  'env-example': getEnvExamplePresetDefaults,
 }
 
 /**

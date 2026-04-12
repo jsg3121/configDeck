@@ -5,6 +5,8 @@
 import type { Preset } from '@/types/generator'
 
 import { editorconfigPresets } from './editorconfig'
+import { envExamplePresets } from './envExample'
+import { gitignorePresets } from './gitignore'
 import { nextConfigPresets } from './nextConfig'
 import { prettierPresets } from './prettier'
 import { tsconfigPresets } from './tsconfig'
@@ -19,12 +21,8 @@ const presetDefinitions: Record<string, Preset[]> = {
   'vite-config': vitePresets,
   'vitest-config': vitestPresets,
   'next-config': nextConfigPresets,
-  // M4: 'tsconfig': tsconfigPresets,
-  // M5: 'vite-config': vitePresets,
-  // M6: 'vitest-config': vitestPresets,
-  // M7: 'next-config': nextConfigPresets,
-  // M8: 'gitignore': gitignorePresets,
-  // M9: 'env-example': envExamplePresets,
+  gitignore: gitignorePresets,
+  env: envExamplePresets,
   // M10: 'eslint-config': eslintPresets,
 }
 

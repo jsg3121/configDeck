@@ -423,25 +423,15 @@ src/components/generator/controls/
 
 #### M8. .gitignore 마이그레이션
 
-- [ ] **Phase 8.1** — .gitignore 패턴 사전 조사 (OS/IDE/프레임워크별)
-- [ ] **Phase 8.2** — 주요 섹션 선정
-- [ ] **Phase 8.3** — 옵션 정의 작성
-- [ ] **Phase 8.4** — 프리셋 작성
-- [ ] **Phase 8.5** — 생성기 갱신 (섹션 템플릿 조합)
-- [ ] **Phase 8.6** — 파일 메타/연결 + legacy 스키마 제거
-- [ ] **Phase 8.7** — 테스트 및 검증
-- [ ] **✅ M8 완료 Checkpoint**: 작업 보고 + M9(.env.example) 착수 승인
+- [x] **Phase 8.1~8.5** — .gitignore 옵션 정의 12개 (core 4 / advanced 8, 3개 섹션) + 프리셋 3종 + 생성기 재작성
+- [x] **Phase 8.6~8.7** — 파일 메타/연결 + legacy 분기 제거 + 빌드 통과
+- [x] **✅ M8 완료**
 
 #### M9. .env.example 마이그레이션
 
-- [ ] **Phase 9.1** — .env.example 관행 사전 조사
-- [ ] **Phase 9.2** — 주요 카테고리 선정
-- [ ] **Phase 9.3** — 옵션 정의 작성
-- [ ] **Phase 9.4** — 프리셋 작성
-- [ ] **Phase 9.5** — 생성기 갱신 (카테고리별 변수 + 주석)
-- [ ] **Phase 9.6** — 파일 메타/연결 + legacy 스키마 제거
-- [ ] **Phase 9.7** — 테스트 및 검증
-- [ ] **✅ M9 완료 Checkpoint**: 작업 보고 + M10(ESLint) 착수 승인
+- [x] **Phase 9.1~9.5** — .env.example 옵션 정의 8개 (core 3 / advanced 5, 3개 섹션) + 프리셋 3종 + 생성기 재작성
+- [x] **Phase 9.6~9.7** — 파일 메타/연결 + legacy 분기 제거 + 빌드 35페이지 통과
+- [x] **✅ M9 완료** — M10(ESLint) 착수 대기
 
 #### M10. ESLint 마이그레이션 (가장 복잡, 마지막)
 

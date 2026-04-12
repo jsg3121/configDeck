@@ -5,6 +5,8 @@
 import type { FileOptionDefinition } from '@/types/generator'
 
 import { editorconfigOptions } from './editorconfig'
+import { envExampleOptions } from './envExample'
+import { gitignoreOptions } from './gitignore'
 import { nextConfigOptions } from './nextConfig'
 import { prettierOptions } from './prettier'
 import { tsconfigOptions } from './tsconfig'
@@ -19,12 +21,8 @@ const optionDefinitions: Record<string, FileOptionDefinition> = {
   'vite-config': viteOptions,
   'vitest-config': vitestOptions,
   'next-config': nextConfigOptions,
-  // M4: 'tsconfig': tsconfigOptions,
-  // M5: 'vite-config': viteOptions,
-  // M6: 'vitest-config': vitestOptions,
-  // M7: 'next-config': nextConfigOptions,
-  // M8: 'gitignore': gitignoreOptions,
-  // M9: 'env-example': envExampleOptions,
+  gitignore: gitignoreOptions,
+  env: envExampleOptions,
   // M10: 'eslint-config': eslintOptions,
 }
 

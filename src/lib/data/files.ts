@@ -139,23 +139,8 @@ export default {
     descriptionEn: 'Generate a .gitignore file for your OS, IDE, and framework.',
     descriptionKo: 'OS, IDE, 프레임워크에 맞는 .gitignore 파일을 생성합니다.',
     supportsMigration: false,
-    presets: ['Node', 'React', 'Full Stack'],
-    sections: [
-      {
-        titleEn: 'Patterns',
-        titleKo: '패턴',
-        descriptionEn: 'Select which patterns to include.',
-        descriptionKo: '포함할 패턴을 선택하세요.',
-        type: 'checkbox' as const,
-        options: [
-          { label: 'Node (node_modules, npm-debug.log)', value: 'node', checked: true },
-          { label: 'macOS (.DS_Store, .AppleDouble)', value: 'macos', checked: true },
-          { label: 'VS Code (.vscode/, *.code-workspace)', value: 'vscode', checked: true },
-          { label: 'JetBrains (.idea/, *.iml)', value: 'jetbrains', checked: false },
-          { label: 'Build output (dist/, build/)', value: 'build', checked: true },
-        ],
-      },
-    ],
+    presets: ['Node', 'Full Stack', 'Minimal'],
+    sections: [],
     sampleCode: `# Dependencies
 node_modules/
 npm-debug.log*
@@ -256,7 +241,7 @@ insert_final_newline = true
 trim_trailing_whitespace = false`,
   },
   {
-    slug: 'env-example',
+    slug: 'env',
     fileName: '.env.example',
     titleEn: '.env.example Generator',
     titleKo: '.env.example 생성기',
@@ -264,22 +249,7 @@ trim_trailing_whitespace = false`,
     descriptionKo: '팀 온보딩과 환경 설정을 위한 .env.example 템플릿을 생성합니다.',
     supportsMigration: false,
     presets: ['Frontend', 'Backend', 'Full Stack'],
-    sections: [
-      {
-        titleEn: 'Sections',
-        titleKo: '섹션',
-        descriptionEn: 'Select which environment variable sections to include.',
-        descriptionKo: '포함할 환경 변수 섹션을 선택하세요.',
-        type: 'checkbox' as const,
-        options: [
-          { label: 'App (PORT, NODE_ENV)', value: 'app', checked: true },
-          { label: 'Database (DATABASE_URL)', value: 'database', checked: false },
-          { label: 'Auth (JWT_SECRET, SESSION_SECRET)', value: 'auth', checked: false },
-          { label: 'API keys (API_KEY, API_SECRET)', value: 'api-keys', checked: false },
-          { label: 'AWS (AWS_ACCESS_KEY_ID, AWS_REGION)', value: 'aws', checked: false },
-        ],
-      },
-    ],
+    sections: [],
     sampleCode: `# App
 PORT=3000
 NODE_ENV=development
@@ -303,12 +273,12 @@ export const RELATED_FILES: Record<string, readonly string[]> = {
   'eslint-config': ['prettier-config', 'editorconfig'],
   'prettier-config': ['eslint-config', 'editorconfig'],
   tsconfig: ['eslint-config', 'vite-config'],
-  gitignore: ['editorconfig', 'env-example'],
+  gitignore: ['editorconfig', 'env'],
   'vite-config': ['tsconfig', 'vitest-config'],
   'vitest-config': ['vite-config', 'tsconfig'],
   'next-config': ['tsconfig', 'eslint-config'],
   editorconfig: ['gitignore', 'prettier-config'],
-  'env-example': ['gitignore', 'editorconfig'],
+  env: ['gitignore', 'editorconfig'],
 }
 
 /**

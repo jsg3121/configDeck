@@ -401,7 +401,7 @@ insert_final_newline = true`,
       },
       {
         fileName: '.env.example',
-        slug: 'env-example',
+        slug: 'env',
         options: [
           { label: 'PORT', value: 'port', checked: true },
           { label: 'DATABASE_URL', value: 'database', checked: true },

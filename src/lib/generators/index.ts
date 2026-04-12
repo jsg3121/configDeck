@@ -71,7 +71,7 @@ const GENERATOR_MAP: Record<
     fileName: '.editorconfig',
     language: 'ini',
   },
-  'env-example': {
+  env: {
     generate: generateEnvExample as (options: never) => string,
     fileName: '.env.example',
     language: 'shell',

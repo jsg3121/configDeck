@@ -1,14 +1,19 @@
 /**
  * .gitignore 코드를 생성한다.
- * 카테고리별 패턴 블록을 조합한다.
+ * 사용자가 선택한(touched) 섹션의 패턴 블록만 출력한다.
  */
-import type { GitignoreOptions } from '@/lib/schemas'
 
 /** 카테고리별 .gitignore 패턴 블록 */
 const PATTERN_BLOCKS: Record<string, { header: string; patterns: string[] }> = {
   node: {
     header: '# Dependencies',
-    patterns: ['node_modules/', 'npm-debug.log*', 'yarn-debug.log*', 'yarn-error.log*'],
+    patterns: [
+      'node_modules/',
+      'npm-debug.log*',
+      'yarn-debug.log*',
+      'yarn-error.log*',
+      'pnpm-debug.log*',
+    ],
   },
   build: {
     header: '# Build output',
@@ -22,6 +27,14 @@ const PATTERN_BLOCKS: Record<string, { header: string; patterns: string[] }> = {
     header: '# macOS',
     patterns: ['.DS_Store', '.AppleDouble', '.LSOverride'],
   },
+  windows: {
+    header: '# Windows',
+    patterns: ['Thumbs.db', 'ehthumbs.db', 'Desktop.ini'],
+  },
+  linux: {
+    header: '# Linux',
+    patterns: ['*~', '.directory'],
+  },
   vscode: {
     header: '# VS Code',
     patterns: ['.vscode/', '*.code-workspace'],
@@ -34,18 +47,26 @@ const PATTERN_BLOCKS: Record<string, { header: string; patterns: string[] }> = {
     header: '# Next.js',
     patterns: ['.next/', 'out/'],
   },
+  nuxt: {
+    header: '# Nuxt',
+    patterns: ['.nuxt/', '.output/'],
+  },
   astro: {
     header: '# Astro',
-    patterns: ['dist/', '.astro/'],
+    patterns: ['.astro/'],
+  },
+  coverage: {
+    header: '# Test coverage',
+    patterns: ['coverage/'],
   },
 }
 
 /** .gitignore 전체 코드를 생성한다 */
-export const generateGitignore = (options: GitignoreOptions): string => {
+export const generateGitignore = (options: Record<string, unknown>): string => {
   const blocks: string[] = []
 
-  for (const [key, isEnabled] of Object.entries(options)) {
-    if (isEnabled && PATTERN_BLOCKS[key]) {
+  for (const [key, value] of Object.entries(options)) {
+    if (value === true && PATTERN_BLOCKS[key]) {
       const block = PATTERN_BLOCKS[key]
       blocks.push(`${block.header}\n${block.patterns.join('\n')}`)
     }
