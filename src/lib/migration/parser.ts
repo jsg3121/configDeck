@@ -24,9 +24,18 @@ export const detectConfigFormat = (input: string): ConfigFormat => {
   return 'unknown'
 }
 
+/** JSON-like 문자열을 정규 JSON으로 정리한다 (trailing comma, 주석 제거) */
+const cleanJsonInput = (input: string): string => {
+  return input
+    .replace(/\/\/.*$/gm, '') // 한 줄 주석 제거
+    .replace(/\/\*[\s\S]*?\*\//g, '') // 블록 주석 제거
+    .replace(/,(\s*[}\]])/g, '$1') // trailing comma 제거
+}
+
 /** JSON 형식의 레거시 ESLint 설정을 파싱한다 */
 const parseJsonConfig = (input: string): LegacyEslintConfig => {
-  const parsed = JSON.parse(input) as Record<string, unknown>
+  const cleaned = cleanJsonInput(input)
+  const parsed = JSON.parse(cleaned) as Record<string, unknown>
   return {
     extends: normalizeStringOrArray(parsed.extends),
     plugins: normalizeStringOrArray(parsed.plugins),
@@ -42,12 +51,8 @@ const parseCommonJsConfig = (input: string): LegacyEslintConfig => {
   const objectMatch = input.match(/module\.exports\s*=\s*(\{[\s\S]*\})/)
   if (!objectMatch?.[1]) return {}
 
-  // JSON 호환 형태로 변환 시도 (주석 제거, trailing comma 처리)
-  const cleaned = objectMatch[1]
-    .replace(/\/\/.*$/gm, '')
-    .replace(/\/\*[\s\S]*?\*\//g, '')
-    .replace(/,(\s*[}\]])/g, '$1')
-    .replace(/(['"])?(\w+)(['"])?\s*:/g, '"$2":')
+  // JSON 호환 형태로 변환 (주석/trailing comma 제거 + 키에 따옴표 추가)
+  const cleaned = cleanJsonInput(objectMatch[1]).replace(/(['"])?(\w+)(['"])?\s*:/g, '"$2":')
 
   try {
     return parseJsonConfig(cleaned)

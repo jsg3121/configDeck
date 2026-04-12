@@ -236,10 +236,17 @@
   /** 마이그레이션 결과 */
   let migrationResult = $state<MigrationResult | null>(null)
 
+  /** 생성 탭의 기본 출력 (파일명/언어 참조용) */
+  const baseOutput = generateConfigBySlug(fileSlug, {})
+
   /** 미리보기에 표시할 코드 — 마이그레이션 탭이면 변환 결과, 아니면 생성 결과 */
   let generatedOutput = $derived(
     activeTab === 'migrate' && migrationResult
-      ? { fileName: 'eslint.config.mjs', code: migrationResult.outputCode, language: 'javascript' }
+      ? {
+          fileName: baseOutput.fileName || 'eslint.config.mjs',
+          code: migrationResult.outputCode,
+          language: baseOutput.language || 'javascript',
+        }
       : generateConfigBySlug(fileSlug, generatorOptions),
   )
 

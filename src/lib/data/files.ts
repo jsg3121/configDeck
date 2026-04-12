@@ -12,7 +12,7 @@ export const FILE_DEFINITIONS = [
       'Generate a modern ESLint flat config with TypeScript, framework support, and custom rules.',
     descriptionKo:
       'TypeScript, 프레임워크 지원, 커스텀 규칙이 포함된 최신 ESLint flat config를 생성합니다.',
-    supportsMigration: false,
+    supportsMigration: true,
     presets: ['TypeScript Strict', 'Next.js', 'Airbnb', 'Standard', 'Vue'],
     sections: [],
     sampleCode: `// eslint.config.mjs
