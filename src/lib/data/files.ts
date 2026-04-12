@@ -93,21 +93,8 @@ export default [
     descriptionEn: 'Generate a Prettier config with your preferred formatting rules.',
     descriptionKo: '선호하는 포맷팅 규칙으로 Prettier 설정을 생성합니다.',
     supportsMigration: false,
-    presets: ['Default', 'Minimal', 'Opinionated'],
-    sections: [
-      {
-        titleEn: 'Formatting',
-        titleKo: '포맷팅',
-        descriptionEn: 'Configure your formatting preferences.',
-        descriptionKo: '포맷팅 환경설정을 구성하세요.',
-        type: 'checkbox' as const,
-        options: [
-          { label: 'singleQuote', value: 'single-quote', checked: true },
-          { label: 'semi', value: 'semi', checked: false },
-          { label: 'trailingComma: all', value: 'trailing-comma', checked: true },
-        ],
-      },
-    ],
+    presets: ['Prettier Default', 'Standard JS', 'Airbnb-like', 'Minimal'],
+    sections: [],
     sampleCode: `/** @type {import("prettier").Config} */
 export default {
   singleQuote: true,

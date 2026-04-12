@@ -29,11 +29,10 @@
   const handleKeyChange = (oldKey: string, event: Event) => {
     const target = event.target as HTMLInputElement
     const newKey = target.value
-    const newValue = { ...value }
-    const val = newValue[oldKey]
-    delete newValue[oldKey]
-    newValue[newKey] = val
-    onchange(control.key, newValue)
+    const updated = Object.fromEntries(
+      Object.entries(value).map(([k, v]) => (k === oldKey ? [newKey, v] : [k, v])),
+    )
+    onchange(control.key, updated)
   }
 
   /** 값을 변경한다 */
@@ -44,15 +43,13 @@
 
   /** 행을 추가한다 */
   const addRow = () => {
-    const newKey = ''
-    onchange(control.key, { ...value, [newKey]: '' })
+    onchange(control.key, { ...value, '': '' })
   }
 
   /** 행을 삭제한다 */
   const removeRow = (entryKey: string) => {
-    const newValue = { ...value }
-    delete newValue[entryKey]
-    onchange(control.key, newValue)
+    const updated = Object.fromEntries(Object.entries(value).filter(([k]) => k !== entryKey))
+    onchange(control.key, updated)
   }
 </script>
 

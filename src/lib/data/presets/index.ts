@@ -4,9 +4,11 @@
  */
 import type { Preset } from '@/types/generator'
 
+import { prettierPresets } from './prettier'
+
 /** slug → Preset 배열 맵 */
 const presetDefinitions: Record<string, Preset[]> = {
-  // M2: 'prettier-config': prettierPresets,
+  'prettier-config': prettierPresets,
   // M3: 'editorconfig': editorconfigPresets,
   // M4: 'tsconfig': tsconfigPresets,
   // M5: 'vite-config': vitePresets,

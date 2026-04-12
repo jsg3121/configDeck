@@ -105,11 +105,11 @@
    */
   const deduplicateRadioControls = (adaptedSections: NewOptionSection[]): NewOptionSection[] => {
     return adaptedSections.map((section) => {
-      const seen = new Set<string>()
+      const seen: string[] = []
       const dedupedControls = section.controls.filter((control) => {
         if (control.type === 'radio') {
-          if (seen.has(control.key)) return false
-          seen.add(control.key)
+          if (seen.includes(control.key)) return false
+          seen.push(control.key)
         }
         return true
       })

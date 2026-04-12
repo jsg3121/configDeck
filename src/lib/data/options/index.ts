@@ -4,9 +4,11 @@
  */
 import type { FileOptionDefinition } from '@/types/generator'
 
+import { prettierOptions } from './prettier'
+
 /** slug → FileOptionDefinition 맵. 마이그레이션 순서대로 등록된다 */
 const optionDefinitions: Record<string, FileOptionDefinition> = {
-  // M2: 'prettier-config': prettierOptions,
+  'prettier-config': prettierOptions,
   // M3: 'editorconfig': editorconfigOptions,
   // M4: 'tsconfig': tsconfigOptions,
   // M5: 'vite-config': viteOptions,

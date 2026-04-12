@@ -357,17 +357,16 @@ src/components/generator/controls/
 - [x] **Phase 1.4** — `OptionForm.svelte` 디스패처 전환 + legacy 어댑터 함수 추가 (기존 9개 파일 회귀 없음 확인)
 - [x] **Phase 1.5** — 공통 직렬화 유틸 (`src/lib/generators/serialize.ts`: JSON/JS/INI/dotenv + `omitDefaults`)
 - [x] **Phase 1.6** — "전체 옵션 보기" 토글 + 옵션 검색(`Ctrl+K`) UI
-- [ ] **✅ M1 완료 Checkpoint**: 인프라 전체 검토, 회귀 테스트, Phase 2(Prettier) 착수 승인
+- [x] **✅ M1 완료 Checkpoint**: 인프라 전체 검토, 회귀 테스트, Phase 2(Prettier) 착수 승인
 
 #### M2. Prettier 마이그레이션
 
-- [ ] **Phase 2.1** — Prettier 공식 옵션 사전 조사 (보고서 없음, 작업자 맥락 파악용)
-- [ ] **Phase 2.2** — 주요 옵션 선정 및 근거 기록 — **Checkpoint**: 선정 근거 사용자 리뷰
-- [ ] **Phase 2.3** — `src/lib/data/options/prettier.ts` 옵션 정의 작성 (description 필수)
-- [ ] **Phase 2.4** — `src/lib/data/presets/prettier-*.ts` 프리셋 작성 (source 링크 필수)
-- [ ] **Phase 2.5** — [src/lib/generators/prettierGenerator.ts](../../../../src/lib/generators/prettierGenerator.ts) 갱신
-- [ ] **Phase 2.6** — 파일 메타/연결 업데이트 + `src/lib/schemas/prettierSchema.ts` 제거
-- [ ] **Phase 2.7** — 테스트 및 검증 (빌드/타입/수동)
+- [x] **Phase 2.1** — Prettier 공식 옵션 사전 조사 (core 8개 / advanced 10개 선정)
+- [x] **Phase 2.2** — `src/lib/data/options/prettier.ts` 옵션 정의 작성 (18개 옵션, description/docsUrl 포함)
+- [x] **Phase 2.3** — `src/lib/data/presets/prettier.ts` 프리셋 4종 작성 (Prettier Default, Standard JS, Airbnb-like, Minimal)
+- [x] **Phase 2.4** — [src/lib/generators/prettierGenerator.ts](../../../../src/lib/generators/prettierGenerator.ts) 갱신 (기본값 생략 로직)
+- [x] **Phase 2.5** — 파일 메타/연결 업데이트 + `schemas/index.ts` 신규 프리셋 분기 추가
+- [x] **Phase 2.6** — 테스트 및 검증 (타입 체크 + 린트 + 빌드 35페이지 통과)
 - [ ] **✅ M2 완료 Checkpoint**: 작업 보고 + M3(EditorConfig) 착수 승인
 
 #### M3. EditorConfig 마이그레이션
