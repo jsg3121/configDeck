@@ -367,17 +367,17 @@ src/components/generator/controls/
 - [x] **Phase 2.4** — [src/lib/generators/prettierGenerator.ts](../../../../src/lib/generators/prettierGenerator.ts) 갱신 (기본값 생략 로직)
 - [x] **Phase 2.5** — 파일 메타/연결 업데이트 + `schemas/index.ts` 신규 프리셋 분기 추가
 - [x] **Phase 2.6** — 테스트 및 검증 (타입 체크 + 린트 + 빌드 35페이지 통과)
-- [ ] **✅ M2 완료 Checkpoint**: 작업 보고 + M3(EditorConfig) 착수 승인
+- [x] **✅ M2 완료 Checkpoint**: 작업 보고 + M3(EditorConfig) 착수 승인
 
 #### M3. EditorConfig 마이그레이션
 
-- [ ] **Phase 3.1** — EditorConfig 사전 조사
-- [ ] **Phase 3.2** — 주요 옵션 선정
-- [ ] **Phase 3.3** — 옵션 정의 작성
-- [ ] **Phase 3.4** — 프리셋 작성
-- [ ] **Phase 3.5** — 생성기 갱신 (INI 직렬화 검증)
-- [ ] **Phase 3.6** — 파일 메타/연결 + legacy 스키마 제거
-- [ ] **Phase 3.7** — 테스트 및 검증
+- [x] **Phase 3.1** — EditorConfig 공식 스펙 사전 조사 (8개 속성 파악)
+- [x] **Phase 3.2** — 주요 옵션 선정 (core 6개 / advanced 2개)
+- [x] **Phase 3.3** — `src/lib/data/options/editorconfig.ts` 옵션 정의 작성 (8개 옵션, description/docsUrl 포함)
+- [x] **Phase 3.4** — `src/lib/data/presets/editorconfig.ts` 프리셋 4종 작성 (Standard, Tabs, 4-Space, Minimal)
+- [x] **Phase 3.5** — `src/lib/generators/editorconfigGenerator.ts` 갱신 (touched 키만 출력, markdown 예외 섹션)
+- [x] **Phase 3.6** — 파일 메타/연결 + `schemas/index.ts` legacy 분기 제거
+- [x] **Phase 3.7** — 테스트 및 검증 (타입 체크 + 빌드 35페이지 통과)
 - [ ] **✅ M3 완료 Checkpoint**: 작업 보고 + M4(TSConfig) 착수 승인
 
 #### M4. TSConfig 마이그레이션 (핵심)

@@ -331,23 +331,8 @@ module.exports = nextConfig`,
       'Generate an .editorconfig file for consistent coding styles across editors and IDEs.',
     descriptionKo: '에디터와 IDE 간 일관된 코딩 스타일을 위한 .editorconfig 파일을 생성합니다.',
     supportsMigration: false,
-    presets: ['Standard', 'Tabs', 'Minimal'],
-    sections: [
-      {
-        titleEn: 'Formatting',
-        titleKo: '포맷팅',
-        descriptionEn: 'Configure editor formatting rules.',
-        descriptionKo: '에디터 포맷팅 규칙을 구성하세요.',
-        type: 'checkbox' as const,
-        options: [
-          { label: 'Indent style: space', value: 'indent-space', checked: true },
-          { label: 'Indent size: 2', value: 'indent-2', checked: true },
-          { label: 'End of line: LF', value: 'eol-lf', checked: true },
-          { label: 'Trim trailing whitespace', value: 'trim-trailing', checked: true },
-          { label: 'Insert final newline', value: 'final-newline', checked: true },
-        ],
-      },
-    ],
+    presets: ['Standard', 'Tabs', '4-Space', 'Minimal'],
+    sections: [],
     sampleCode: `root = true
 
 [*]

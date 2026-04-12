@@ -43,7 +43,6 @@ const LEGACY_PRESET_PROVIDERS: Record<string, (presetName: string) => unknown> =
   'vite-config': getVitePresetDefaults,
   'vitest-config': getVitestPresetDefaults,
   'next-config': getNextConfigPresetDefaults,
-  editorconfig: getEditorconfigPresetDefaults,
   'env-example': getEnvExamplePresetDefaults,
 }
 
