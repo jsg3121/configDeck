@@ -6,6 +6,7 @@ import type { Preset } from '@/types/generator'
 
 import { editorconfigPresets } from './editorconfig'
 import { envExamplePresets } from './envExample'
+import { eslintPresets } from './eslint'
 import { gitignorePresets } from './gitignore'
 import { nextConfigPresets } from './nextConfig'
 import { prettierPresets } from './prettier'
@@ -23,7 +24,7 @@ const presetDefinitions: Record<string, Preset[]> = {
   'next-config': nextConfigPresets,
   gitignore: gitignorePresets,
   env: envExamplePresets,
-  // M10: 'eslint-config': eslintPresets,
+  'eslint-config': eslintPresets,
 }
 
 /** slug로 프리셋 목록을 조회한다. 미등록 파일은 빈 배열을 반환한다 */

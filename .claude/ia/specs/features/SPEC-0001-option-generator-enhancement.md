@@ -435,25 +435,25 @@ src/components/generator/controls/
 
 #### M10. ESLint 마이그레이션 (가장 복잡, 마지막)
 
-- [ ] **Phase 10.0** — ESLint 범위 결정: 핵심 rule 30~50개 후보 + 프리셋 목록 — **Checkpoint**: 범위 및 프리셋 사용자 승인
-- [ ] **Phase 10.1** — ESLint 사전 조사 (core rules, Flat config 구조)
-- [ ] **Phase 10.2** — 주요 rule 선정 및 근거 기록
-- [ ] **Phase 10.3** — 옵션 정의 작성
-- [ ] **Phase 10.4** — 프리셋 작성 (`eslint:recommended`, Airbnb, Standard, Next.js, TypeScript Strict)
-- [ ] **Phase 10.5** — 생성기 갱신 (Flat config 9+ 기준)
-- [ ] **Phase 10.6** — 파일 메타/연결 + legacy 스키마 제거
-- [ ] **Phase 10.7** — 테스트 및 검증
-- [ ] **✅ M10 완료 Checkpoint**: 작업 보고 + M11(Legacy 정리) 착수 승인
+- [x] **Phase 10.0** — ESLint 범위 결정: B안(프리셋 + 주요 rule 8개 core + 20개 advanced) + 플러그인 선택 방식
+- [x] **Phase 10.1~10.2** — ESLint 옵션 조사 + rule 선정 (core 11개 / advanced 20개 = 31개, 4개 섹션)
+- [x] **Phase 10.3** — `src/lib/data/options/eslint.ts` 옵션 정의 (언어&프레임워크, 플러그인, 주요규칙, 코드품질)
+- [x] **Phase 10.4** — `src/lib/data/presets/eslint.ts` 프리셋 5종 (TypeScript Strict, Next.js, Airbnb, Standard, Vue)
+- [x] **Phase 10.5** — `src/lib/generators/eslintGenerator.ts` 재작성 (Flat Config, TS rule 자동 대체, 플러그인 조합)
+- [x] **Phase 10.6** — 파일 메타/연결 + `schemas/index.ts` legacy 분기 완전 제거 (모든 파일 마이그레이션 완료)
+- [x] **Phase 10.7** — 빌드 35페이지 통과
+- [x] **✅ M10 완료**: 모든 9개 파일 마이그레이션 완료
 
-#### M11. Legacy 정리 및 최종 검증
+#### M11. .eslintrc → Flat Config 마이그레이션 기능 + Legacy 정리
 
-- [ ] **Phase 11.1** — 제거 대상 목록 작성 — **Checkpoint**: 제거 목록 사용자 승인
+- [ ] **Phase 11.1** — .eslintrc 파일 업로드 → Flat Config 변환 기능 구현
+- [ ] **Phase 11.2** — Legacy 제거 대상 목록 작성 — **Checkpoint**: 제거 목록 사용자 승인
   - `OptionField`, 기존 `OptionSection`, `OptionInputType` ([src/types/generator.ts](../../../../src/types/generator.ts))
   - `FileGenerator.svelte`의 legacy 어댑터 함수
-  - [src/lib/data/files.ts](../../../../src/lib/data/files.ts)의 legacy 필드
+  - [src/lib/data/files.ts](../../../../src/lib/data/files.ts)의 legacy 필드 (sections, sampleCode)
   - `src/lib/schemas/` 잔여 파일
-- [ ] **Phase 11.2** — 제거 실행 (빌드/타입 통과 확인하며 순차 제거)
-- [ ] **Phase 11.3** — 최종 검증 (전체 9개 파일 생성기 수동 테스트)
+- [ ] **Phase 11.3** — 제거 실행 (빌드/타입 통과 확인하며 순차 제거)
+- [ ] **Phase 11.4** — 최종 검증 (전체 9개 파일 생성기 수동 테스트)
 - [ ] **✅ M11 완료 Checkpoint**: SPEC-0001 상태를 `완료`로 업데이트, Changelog 마무리
 
 ## 7. 리스크 & 대응 (Risks & Mitigations)

@@ -12,62 +12,9 @@ export const FILE_DEFINITIONS = [
       'Generate a modern ESLint flat config with TypeScript, framework support, and custom rules.',
     descriptionKo:
       'TypeScript, 프레임워크 지원, 커스텀 규칙이 포함된 최신 ESLint flat config를 생성합니다.',
-    supportsMigration: true,
-    presets: ['Minimal', 'Recommended', 'Strict'],
-    sections: [
-      {
-        titleEn: 'Language',
-        titleKo: '언어',
-        descriptionEn: 'Choose the base language for your project.',
-        descriptionKo: '프로젝트의 기본 언어를 선택하세요.',
-        type: 'radio' as const,
-        name: 'language',
-        options: [
-          { label: 'JavaScript', value: 'javascript', checked: false },
-          { label: 'TypeScript', value: 'typescript', checked: true },
-        ],
-      },
-      {
-        titleEn: 'Framework',
-        titleKo: '프레임워크',
-        descriptionEn: 'Select your project framework for tailored rules.',
-        descriptionKo: '프로젝트 프레임워크를 선택하면 맞춤 규칙이 적용됩니다.',
-        type: 'radio' as const,
-        name: 'framework',
-        options: [
-          { label: 'None', value: 'none', checked: true },
-          { label: 'React', value: 'react', checked: false },
-          { label: 'Vue', value: 'vue', checked: false },
-          { label: 'Next.js', value: 'nextjs', checked: false },
-          { label: 'Node', value: 'node', checked: false },
-        ],
-      },
-      {
-        titleEn: 'Rules',
-        titleKo: '규칙',
-        descriptionEn: 'Enable individual lint rules for your project.',
-        descriptionKo: '프로젝트에 적용할 린트 규칙을 선택하세요.',
-        type: 'checkbox' as const,
-        options: [
-          { label: 'Import sorting', value: 'import-sorting', checked: true },
-          { label: 'No console (warn)', value: 'no-console', checked: true },
-          { label: 'Prefer const', value: 'prefer-const', checked: true },
-          { label: 'No unused vars', value: 'no-unused-vars', checked: false },
-        ],
-      },
-      {
-        titleEn: 'Integrations',
-        titleKo: '통합',
-        descriptionEn: 'Add support for additional tools and frameworks.',
-        descriptionKo: '추가 도구 및 프레임워크 지원을 추가하세요.',
-        type: 'checkbox' as const,
-        options: [
-          { label: 'Prettier integration', value: 'prettier', checked: true },
-          { label: 'Svelte support', value: 'svelte', checked: false },
-          { label: 'Astro support', value: 'astro', checked: false },
-        ],
-      },
-    ],
+    supportsMigration: false,
+    presets: ['TypeScript Strict', 'Next.js', 'Airbnb', 'Standard', 'Vue'],
+    sections: [],
     sampleCode: `// eslint.config.mjs
 import eslintPluginAstro from 'eslint-plugin-astro'
 import tseslint from 'typescript-eslint'

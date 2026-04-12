@@ -6,6 +6,7 @@ import type { FileOptionDefinition } from '@/types/generator'
 
 import { editorconfigOptions } from './editorconfig'
 import { envExampleOptions } from './envExample'
+import { eslintOptions } from './eslint'
 import { gitignoreOptions } from './gitignore'
 import { nextConfigOptions } from './nextConfig'
 import { prettierOptions } from './prettier'
@@ -23,7 +24,7 @@ const optionDefinitions: Record<string, FileOptionDefinition> = {
   'next-config': nextConfigOptions,
   gitignore: gitignoreOptions,
   env: envExampleOptions,
-  // M10: 'eslint-config': eslintOptions,
+  'eslint-config': eslintOptions,
 }
 
 /** slug로 옵션 정의를 조회한다. 미등록 파일은 undefined를 반환한다 */

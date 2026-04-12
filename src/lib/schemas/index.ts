@@ -1,20 +1,12 @@
 /**
- * 모든 스키마를 통합 export하고, slug 기반으로 프리셋 기본값을 가져오는 진입점.
- * 마이그레이션된 파일은 신규 프리셋에서, 미마이그레이션 파일은 legacy 스키마에서 조회한다.
- * M11(Legacy 정리) 때 legacy 관련 코드를 모두 제거한다.
+ * slug 기반으로 프리셋 기본값을 가져오는 진입점.
+ * 모든 파일이 신규 옵션 구조로 마이그레이션 완료되어 신규 프리셋에서만 조회한다.
+ *
+ * Legacy 스키마 파일(xxxSchema.ts)은 M11(Legacy 정리)에서 제거 예정.
  */
-import { isMigrated } from '@/lib/data/options'
-import { getPresets as getNewPresets } from '@/lib/data/presets'
+import { getPresets } from '@/lib/data/presets'
 
-import { getEditorconfigPresetDefaults } from './editorconfigSchema'
-import { getEnvExamplePresetDefaults } from './envExampleSchema'
-import { getEslintPresetDefaults } from './eslintSchema'
-import { getGitignorePresetDefaults } from './gitignoreSchema'
-import { getNextConfigPresetDefaults } from './nextConfigSchema'
-import { getTsconfigPresetDefaults } from './tsconfigSchema'
-import { getVitePresetDefaults } from './viteSchema'
-import { getVitestPresetDefaults } from './vitestSchema'
-
+// Legacy 타입 re-export — 아직 참조하는 코드가 있을 수 있으므로 유지. M11에서 제거.
 export type { EditorconfigOptions } from './editorconfigSchema'
 export type { EnvExampleOptions } from './envExampleSchema'
 export type { EslintOptions } from './eslintSchema'
@@ -24,34 +16,9 @@ export type { TsconfigOptions } from './tsconfigSchema'
 export type { ViteOptions } from './viteSchema'
 export type { VitestOptions } from './vitestSchema'
 
-export {
-  getEditorconfigPresetDefaults,
-  getEnvExamplePresetDefaults,
-  getEslintPresetDefaults,
-  getGitignorePresetDefaults,
-  getNextConfigPresetDefaults,
-  getTsconfigPresetDefaults,
-  getVitePresetDefaults,
-  getVitestPresetDefaults,
-}
-
-/** legacy slug → 프리셋 기본값 제공 함수 매핑. 마이그레이션 시 해당 항목을 제거한다 */
-const LEGACY_PRESET_PROVIDERS: Record<string, (presetName: string) => unknown> = {
-  'eslint-config': getEslintPresetDefaults,
-}
-
-/**
- * slug에 해당하는 프리셋 기본값을 반환한다.
- * 마이그레이션된 파일 → 신규 프리셋(src/lib/data/presets/)에서 조회
- * 미마이그레이션 파일 → legacy 스키마(src/lib/schemas/)에서 조회
- */
+/** slug에 해당하는 프리셋 기본값을 반환한다 */
 export const getPresetDefaultsBySlug = (slug: string, presetName: string): unknown => {
-  if (isMigrated(slug)) {
-    const presets = getNewPresets(slug)
-    const matched = presets.find((p) => p.name === presetName)
-    return matched ? matched.values : (presets[0]?.values ?? {})
-  }
-
-  const provider = LEGACY_PRESET_PROVIDERS[slug]
-  return provider ? provider(presetName) : {}
+  const presets = getPresets(slug)
+  const matched = presets.find((p) => p.name === presetName)
+  return matched ? matched.values : (presets[0]?.values ?? {})
 }
