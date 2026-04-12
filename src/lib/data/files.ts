@@ -222,33 +222,8 @@ export default defineConfig({
     descriptionEn: 'Generate a Next.js config with images, redirects, and webpack customization.',
     descriptionKo: '이미지, 리다이렉트, webpack 커스터마이즈를 위한 Next.js 설정을 생성합니다.',
     supportsMigration: false,
-    presets: ['Minimal', 'Standard', 'Advanced'],
-    sections: [
-      {
-        titleEn: 'Core',
-        titleKo: '코어',
-        descriptionEn: 'Configure core Next.js options.',
-        descriptionKo: 'Next.js 핵심 옵션을 구성하세요.',
-        type: 'checkbox' as const,
-        options: [
-          { label: 'React strict mode', value: 'strict-mode', checked: true },
-          { label: 'Image optimization', value: 'images', checked: false },
-          { label: 'Standalone output', value: 'standalone', checked: false },
-        ],
-      },
-      {
-        titleEn: 'Advanced',
-        titleKo: '고급',
-        descriptionEn: 'Configure advanced Next.js options.',
-        descriptionKo: 'Next.js 고급 옵션을 구성하세요.',
-        type: 'checkbox' as const,
-        options: [
-          { label: 'Custom headers', value: 'headers', checked: false },
-          { label: 'Redirects', value: 'redirects', checked: false },
-          { label: 'Webpack customization', value: 'webpack', checked: false },
-        ],
-      },
-    ],
+    presets: ['Standard', 'Docker', 'Static Export', 'Minimal'],
+    sections: [],
     sampleCode: `/** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,

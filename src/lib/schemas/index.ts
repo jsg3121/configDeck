@@ -39,7 +39,6 @@ export {
 const LEGACY_PRESET_PROVIDERS: Record<string, (presetName: string) => unknown> = {
   'eslint-config': getEslintPresetDefaults,
   gitignore: getGitignorePresetDefaults,
-  'next-config': getNextConfigPresetDefaults,
   'env-example': getEnvExamplePresetDefaults,
 }
 

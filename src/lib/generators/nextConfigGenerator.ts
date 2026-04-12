@@ -1,45 +1,124 @@
 /**
  * Next.js config 코드를 생성한다.
+ * 신규 옵션 구조 기반으로, 사용자가 설정한(touched) 옵션만 출력한다.
  */
-import type { NextConfigOptions } from '@/lib/schemas'
 
 /** Next.js config 전체 코드를 생성한다 */
-export const generateNextConfig = (options: NextConfigOptions): string => {
+export const generateNextConfig = (options: Record<string, unknown>): string => {
   const configEntries: string[] = []
+  const asyncFunctions: string[] = []
 
-  if (options.strictMode) {
+  // reactStrictMode
+  if (options.reactStrictMode === true) {
     configEntries.push('  reactStrictMode: true,')
   }
 
-  if (options.images) {
+  // output
+  if ('output' in options && options.output !== '') {
+    configEntries.push(`  output: '${options.output}',`)
+  }
+
+  // basePath
+  if ('basePath' in options && options.basePath !== '') {
+    configEntries.push(`  basePath: '${options.basePath}',`)
+  }
+
+  // images
+  if (options.imagesEnabled === true) {
+    const imageEntries: string[] = []
+
+    if (
+      'imagesFormats' in options &&
+      Array.isArray(options.imagesFormats) &&
+      options.imagesFormats.length > 0
+    ) {
+      const formats = (options.imagesFormats as string[]).map((f) => `'${f}'`).join(', ')
+      imageEntries.push(`    formats: [${formats}],`)
+    } else {
+      imageEntries.push("    formats: ['image/avif', 'image/webp'],")
+    }
+
+    if (
+      'imagesDomains' in options &&
+      Array.isArray(options.imagesDomains) &&
+      options.imagesDomains.length > 0
+    ) {
+      imageEntries.push('    remotePatterns: [')
+      for (const domain of options.imagesDomains as string[]) {
+        imageEntries.push('      {')
+        imageEntries.push("        protocol: 'https',")
+        imageEntries.push(`        hostname: '${domain}',`)
+        imageEntries.push('      },')
+      }
+      imageEntries.push('    ],')
+    }
+
     configEntries.push('  images: {')
-    configEntries.push("    formats: ['image/avif', 'image/webp'],")
+    configEntries.push(...imageEntries)
     configEntries.push('  },')
   }
 
-  if (options.standalone) {
-    configEntries.push("  output: 'standalone',")
+  // turbopack
+  if (options.turbopack === true) {
+    configEntries.push('  experimental: {')
+    configEntries.push('    turbo: {},')
+    configEntries.push('  },')
+  }
+
+  // async functions (redirects, rewrites, headers)
+  if (options.redirects === true) {
+    asyncFunctions.push('  async redirects() {')
+    asyncFunctions.push('    return [')
+    asyncFunctions.push('      {')
+    asyncFunctions.push("        source: '/old-page',")
+    asyncFunctions.push("        destination: '/new-page',")
+    asyncFunctions.push('        permanent: true,')
+    asyncFunctions.push('      },')
+    asyncFunctions.push('    ]')
+    asyncFunctions.push('  },')
+  }
+
+  if (options.rewrites === true) {
+    asyncFunctions.push('  async rewrites() {')
+    asyncFunctions.push('    return [')
+    asyncFunctions.push('      {')
+    asyncFunctions.push("        source: '/api/:path*',")
+    asyncFunctions.push("        destination: 'http://localhost:3001/api/:path*',")
+    asyncFunctions.push('      },')
+    asyncFunctions.push('    ]')
+    asyncFunctions.push('  },')
+  }
+
+  if (options.headers === true) {
+    asyncFunctions.push('  async headers() {')
+    asyncFunctions.push('    return [')
+    asyncFunctions.push('      {')
+    asyncFunctions.push("        source: '/(.*)',")
+    asyncFunctions.push('        headers: [')
+    asyncFunctions.push("          { key: 'X-Frame-Options', value: 'DENY' },")
+    asyncFunctions.push("          { key: 'X-Content-Type-Options', value: 'nosniff' },")
+    asyncFunctions.push('        ],')
+    asyncFunctions.push('      },')
+    asyncFunctions.push('    ]')
+    asyncFunctions.push('  },')
+  }
+
+  // webpack
+  if (options.webpack === true) {
+    asyncFunctions.push('  webpack(config) {')
+    asyncFunctions.push('    // Customize webpack config here')
+    asyncFunctions.push('    return config')
+    asyncFunctions.push('  },')
   }
 
   const lines: string[] = []
   lines.push("/** @type {import('next').NextConfig} */")
   lines.push('const nextConfig = {')
   lines.push(...configEntries)
+  lines.push(...asyncFunctions)
   lines.push('}')
   lines.push('')
   lines.push('module.exports = nextConfig')
-
-  // headers/redirects/webpack은 고급 옵션 — 주석으로 안내
-  const advancedComments: string[] = []
-  if (options.headers) advancedComments.push('// TODO: Add custom headers in async headers() {}')
-  if (options.redirects) advancedComments.push('// TODO: Add redirects in async redirects() {}')
-  if (options.webpack)
-    advancedComments.push('// TODO: Add webpack customization in webpack(config) {}')
-
-  if (advancedComments.length > 0) {
-    lines.push('')
-    lines.push(...advancedComments)
-  }
 
   return lines.join('\n')
 }

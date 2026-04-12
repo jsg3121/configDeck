@@ -413,13 +413,12 @@ src/components/generator/controls/
 
 #### M7. Next.js Config 마이그레이션
 
-- [ ] **Phase 7.1** — Next.js config 사전 조사
-- [ ] **Phase 7.2** — 주요 옵션 선정
-- [ ] **Phase 7.3** — 옵션 정의 작성
-- [ ] **Phase 7.4** — 프리셋 작성
-- [ ] **Phase 7.5** — 생성기 갱신 (함수형 옵션 처리)
-- [ ] **Phase 7.6** — 파일 메타/연결 + legacy 스키마 제거
-- [ ] **Phase 7.7** — 테스트 및 검증
+- [x] **Phase 7.1~7.2** — Next.js 옵션 조사 + 주요 옵션 선정 (core 3개 / advanced 8개 = 11개, 4개 섹션)
+- [x] **Phase 7.3** — `src/lib/data/options/nextConfig.ts` 옵션 정의 (코어, 이미지, 라우팅, 빌드&번들)
+- [x] **Phase 7.4** — `src/lib/data/presets/nextConfig.ts` 프리셋 4종 (Standard, Docker, Static Export, Minimal)
+- [x] **Phase 7.5** — `src/lib/generators/nextConfigGenerator.ts` 재작성 (async 함수 템플릿, remotePatterns, experimental)
+- [x] **Phase 7.6** — 파일 메타/연결 + `schemas/index.ts` legacy 분기 제거
+- [x] **Phase 7.7** — 빌드 35페이지 통과
 - [ ] **✅ M7 완료 Checkpoint**: 작업 보고 + M8(.gitignore) 착수 승인
 
 #### M8. .gitignore 마이그레이션

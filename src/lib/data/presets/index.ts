@@ -5,6 +5,7 @@
 import type { Preset } from '@/types/generator'
 
 import { editorconfigPresets } from './editorconfig'
+import { nextConfigPresets } from './nextConfig'
 import { prettierPresets } from './prettier'
 import { tsconfigPresets } from './tsconfig'
 import { vitePresets } from './vite'
@@ -17,6 +18,7 @@ const presetDefinitions: Record<string, Preset[]> = {
   tsconfig: tsconfigPresets,
   'vite-config': vitePresets,
   'vitest-config': vitestPresets,
+  'next-config': nextConfigPresets,
   // M4: 'tsconfig': tsconfigPresets,
   // M5: 'vite-config': vitePresets,
   // M6: 'vitest-config': vitestPresets,

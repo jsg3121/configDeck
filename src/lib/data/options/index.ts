@@ -5,6 +5,7 @@
 import type { FileOptionDefinition } from '@/types/generator'
 
 import { editorconfigOptions } from './editorconfig'
+import { nextConfigOptions } from './nextConfig'
 import { prettierOptions } from './prettier'
 import { tsconfigOptions } from './tsconfig'
 import { viteOptions } from './vite'
@@ -17,6 +18,7 @@ const optionDefinitions: Record<string, FileOptionDefinition> = {
   tsconfig: tsconfigOptions,
   'vite-config': viteOptions,
   'vitest-config': vitestOptions,
+  'next-config': nextConfigOptions,
   // M4: 'tsconfig': tsconfigOptions,
   // M5: 'vite-config': viteOptions,
   // M6: 'vitest-config': vitestOptions,
