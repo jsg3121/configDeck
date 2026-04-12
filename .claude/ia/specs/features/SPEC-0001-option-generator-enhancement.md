@@ -351,12 +351,12 @@ src/components/generator/controls/
 
 #### M1. 인프라 구축
 
-- [ ] **Phase 1.1** — `OptionControl` 판별 유니온 및 타입 시스템 설계 ([src/types/generator.ts](../../../../src/types/generator.ts))
-- [ ] **Phase 1.2** — 데이터 디렉터리 구조 생성 (`src/lib/data/options/`, `src/lib/data/presets/`), 동적 import 맵 준비
-- [ ] **Phase 1.3** — UI 컨트롤 서브컴포넌트 7종 구현 (`src/components/generator/controls/*.svelte`)
-- [ ] **Phase 1.4** — `OptionForm.svelte` 디스패처 전환 + legacy 어댑터 함수 추가 (기존 9개 파일 회귀 없음 확인)
-- [ ] **Phase 1.5** — 공통 직렬화 유틸 (`src/lib/generators/serialize.ts`: JSON/JS/INI/dotenv + `omitDefaults`)
-- [ ] **Phase 1.6** — "전체 옵션 보기" 토글 + 옵션 검색(`Ctrl+K`) UI
+- [x] **Phase 1.1** — `OptionControl` 판별 유니온 및 타입 시스템 설계 ([src/types/generator.ts](../../../../src/types/generator.ts))
+- [x] **Phase 1.2** — 데이터 디렉터리 구조 생성 (`src/lib/data/options/`, `src/lib/data/presets/`), 동적 import 맵 준비
+- [x] **Phase 1.3** — UI 컨트롤 서브컴포넌트 7종 구현 (`src/components/generator/controls/*.svelte`)
+- [x] **Phase 1.4** — `OptionForm.svelte` 디스패처 전환 + legacy 어댑터 함수 추가 (기존 9개 파일 회귀 없음 확인)
+- [x] **Phase 1.5** — 공통 직렬화 유틸 (`src/lib/generators/serialize.ts`: JSON/JS/INI/dotenv + `omitDefaults`)
+- [x] **Phase 1.6** — "전체 옵션 보기" 토글 + 옵션 검색(`Ctrl+K`) UI
 - [ ] **✅ M1 완료 Checkpoint**: 인프라 전체 검토, 회귀 테스트, Phase 2(Prettier) 착수 승인
 
 #### M2. Prettier 마이그레이션

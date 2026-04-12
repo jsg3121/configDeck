@@ -4,29 +4,34 @@
    * 프리셋 기본값을 기준으로 생성기 옵션을 관리하고,
    * 섹션 UI 변경 시 스키마 옵션을 동기화하여 실시간 코드를 생성한다.
    */
+  import { getOptionDefinition, isMigrated } from '@/lib/data/options'
   import { generateConfigBySlug } from '@/lib/generators'
   import type { MigrationResult } from '@/lib/migration'
   import { getPresetDefaultsBySlug } from '@/lib/schemas'
+  import type { NewOptionSection, OptionControl } from '@/types/generator'
 
   import CodePreview from './CodePreview.svelte'
   import MigrationPanel from './MigrationPanel.svelte'
   import OptionForm from './OptionForm.svelte'
   import PresetSelector from './PresetSelector.svelte'
 
-  interface OptionField {
+  // ---------------------------------------------------------------------------
+  // Legacy 타입 — 마이그레이션 완료(M11) 시 제거 예정
+  // ---------------------------------------------------------------------------
+  interface LegacyOptionField {
     label: string
     value: string
     checked: boolean
   }
 
-  interface OptionSection {
+  interface LegacyOptionSection {
     titleEn: string
     titleKo: string
     descriptionEn: string
     descriptionKo: string
     type: 'radio' | 'checkbox'
     name?: string
-    options: OptionField[]
+    options: LegacyOptionField[]
   }
 
   interface RelatedFile {
@@ -40,7 +45,7 @@
   interface Props {
     fileSlug: string
     locale: string
-    sections: OptionSection[]
+    sections: LegacyOptionSection[]
     presets: string[]
     supportsMigration: boolean
     relatedFiles?: RelatedFile[]
@@ -55,34 +60,66 @@
     relatedFiles = [],
   }: Props = $props()
 
-  /** 초기 프리셋을 결정한다 (두 번째 프리셋 또는 첫 번째) */
-  const initialPreset = presets[1] ?? presets[0]
+  // ---------------------------------------------------------------------------
+  // Legacy → 신규 구조 어댑터 (M11에서 제거)
+  // ---------------------------------------------------------------------------
 
-  /** 현재 선택된 프리셋 — Svelte 5 반응성을 위해 let 필수 */
-  let selectedPreset = $state(initialPreset)
-  /** 현재 활성 탭 */
-  let activeTab = $state<'generate' | 'migrate'>('generate')
-  /** 생성기에 전달할 스키마 옵션 */
-  let generatorOptions = $state<Record<string, unknown>>(
-    getPresetDefaultsBySlug(fileSlug, initialPreset) as Record<string, unknown>,
-  )
-  /** UI 표시용 섹션 상태 */
-  let currentSections = $state<OptionSection[]>(JSON.parse(JSON.stringify(sections)))
-
-  /** 마이그레이션 결과 */
-  let migrationResult = $state<MigrationResult | null>(null)
-
-  /** 미리보기에 표시할 코드 — 마이그레이션 탭이면 변환 결과, 아니면 생성 결과 */
-  let generatedOutput = $derived(
-    activeTab === 'migrate' && migrationResult
-      ? { fileName: 'eslint.config.mjs', code: migrationResult.outputCode, language: 'javascript' }
-      : generateConfigBySlug(fileSlug, generatorOptions),
-  )
-
-  /** 마이그레이션 결과 수신 핸들러 */
-  const handleMigrationResult = (result: MigrationResult | null) => {
-    migrationResult = result
+  /** legacy OptionSection을 신규 NewOptionSection으로 변환한다 */
+  const adaptLegacySections = (legacySections: LegacyOptionSection[]): NewOptionSection[] => {
+    return legacySections.map((section) => ({
+      title: section.titleKo,
+      titleEn: section.titleEn,
+      description: section.descriptionKo,
+      descriptionEn: section.descriptionEn,
+      controls: section.options.map((option): OptionControl => {
+        if (section.type === 'radio') {
+          return {
+            type: 'radio',
+            key: section.name ?? option.value,
+            label: section.titleKo,
+            labelEn: section.titleEn,
+            description: section.descriptionKo,
+            descriptionEn: section.descriptionEn,
+            tier: 'core',
+            options: section.options.map((o) => ({ label: o.label, value: o.value })),
+            default: section.options.find((o) => o.checked)?.value ?? section.options[0].value,
+          }
+        }
+        return {
+          type: 'checkbox',
+          key: option.value,
+          label: option.label,
+          labelEn: option.label,
+          description: '',
+          descriptionEn: '',
+          tier: 'core',
+          default: option.checked,
+        }
+      }),
+    }))
   }
+
+  /**
+   * legacy 어댑터의 radio 섹션은 각 option을 별도 control로 변환하므로
+   * radio 그룹이 중복 렌더링된다. 이를 제거하기 위해 radio 컨트롤을 그룹당 1개만 남긴다.
+   */
+  const deduplicateRadioControls = (adaptedSections: NewOptionSection[]): NewOptionSection[] => {
+    return adaptedSections.map((section) => {
+      const seen = new Set<string>()
+      const dedupedControls = section.controls.filter((control) => {
+        if (control.type === 'radio') {
+          if (seen.has(control.key)) return false
+          seen.add(control.key)
+        }
+        return true
+      })
+      return { ...section, controls: dedupedControls }
+    })
+  }
+
+  // ---------------------------------------------------------------------------
+  // 유틸 함수 (어댑터에서도 사용하므로 먼저 선언)
+  // ---------------------------------------------------------------------------
 
   /** kebab-case → camelCase 변환 */
   const toCamelCase = (str: string): string =>
@@ -114,49 +151,102 @@
     return undefined
   }
 
-  /** 프리셋 변경 시 옵션과 섹션 UI를 모두 초기화한다 */
+  /** legacy 옵션 값을 신규 values 맵으로 변환한다 */
+  const buildValuesFromLegacy = (
+    legacySections: LegacyOptionSection[],
+    opts: Record<string, unknown>,
+  ): Record<string, unknown> => {
+    const values: Record<string, unknown> = {}
+    for (const section of legacySections) {
+      if (section.type === 'radio' && section.name) {
+        values[section.name] = opts[section.name] ?? section.options.find((o) => o.checked)?.value
+      } else {
+        for (const option of section.options) {
+          const camelKey = toCamelCase(option.value)
+          const found = findNestedValue(opts, camelKey)
+          values[option.value] = typeof found === 'boolean' ? found : option.checked
+        }
+      }
+    }
+    return values
+  }
+
+  // ---------------------------------------------------------------------------
+  // 상태 관리
+  // ---------------------------------------------------------------------------
+
+  /** 이 파일이 신규 옵션 구조로 마이그레이션되었는지 */
+  const usesNewStructure = isMigrated(fileSlug)
+
+  /** 초기 프리셋을 결정한다 (두 번째 프리셋 또는 첫 번째) */
+  const initialPreset = presets[1] ?? presets[0]
+
+  /** 현재 선택된 프리셋 — Svelte 5 반응성을 위해 let 필수 */
+  let selectedPreset = $state(initialPreset)
+  /** 현재 활성 탭 */
+  let activeTab = $state<'generate' | 'migrate'>('generate')
+  /** 생성기에 전달할 스키마 옵션 */
+  let generatorOptions = $state<Record<string, unknown>>(
+    getPresetDefaultsBySlug(fileSlug, initialPreset) as Record<string, unknown>,
+  )
+
+  /** 신규 OptionForm에 전달할 값 맵 */
+  let optionValues = $state<Record<string, unknown>>(
+    usesNewStructure
+      ? { ...(generatorOptions as Record<string, unknown>) }
+      : buildValuesFromLegacy(sections, generatorOptions),
+  )
+
+  /** 신규 OptionForm에 전달할 섹션 목록 */
+  let formSections = $derived<NewOptionSection[]>(
+    usesNewStructure
+      ? (getOptionDefinition(fileSlug)?.sections ?? [])
+      : deduplicateRadioControls(adaptLegacySections(sections)),
+  )
+
+  /** 마이그레이션 결과 */
+  let migrationResult = $state<MigrationResult | null>(null)
+
+  /** 미리보기에 표시할 코드 — 마이그레이션 탭이면 변환 결과, 아니면 생성 결과 */
+  let generatedOutput = $derived(
+    activeTab === 'migrate' && migrationResult
+      ? { fileName: 'eslint.config.mjs', code: migrationResult.outputCode, language: 'javascript' }
+      : generateConfigBySlug(fileSlug, generatorOptions),
+  )
+
+  /** 마이그레이션 결과 수신 핸들러 */
+  const handleMigrationResult = (result: MigrationResult | null) => {
+    migrationResult = result
+  }
+
+  /** 프리셋 변경 시 옵션 값을 초기화한다 */
   const handlePresetChange = (presetName: string) => {
     selectedPreset = presetName
     const defaults = getPresetDefaultsBySlug(fileSlug, presetName) as Record<string, unknown>
     generatorOptions = JSON.parse(JSON.stringify(defaults))
 
-    currentSections = sections.map((section) => ({
-      ...section,
-      options: section.options.map((option) => {
-        if (section.type === 'radio' && section.name) {
-          return { ...option, checked: defaults[section.name] === option.value }
-        }
-        const camelKey = toCamelCase(option.value)
-        const found = findNestedValue(defaults, camelKey)
-        return { ...option, checked: typeof found === 'boolean' ? found : option.checked }
-      }),
-    }))
+    optionValues = usesNewStructure
+      ? { ...(generatorOptions as Record<string, unknown>) }
+      : buildValuesFromLegacy(sections, generatorOptions)
   }
 
-  /** 옵션 UI 변경 시 섹션 상태와 생성기 옵션을 동기화한다 */
-  const handleOptionChange = (sectionIndex: number, optionValue: string, checked: boolean) => {
-    const section = currentSections[sectionIndex]
+  /** 신규 OptionForm의 옵션 변경 핸들러 */
+  const handleNewOptionChange = (key: string, value: unknown) => {
+    optionValues = { ...optionValues, [key]: value }
 
-    if (section.type === 'radio') {
-      currentSections[sectionIndex] = {
-        ...section,
-        options: section.options.map((o) => ({ ...o, checked: o.value === optionValue })),
-      }
-      if (section.name) {
-        const updated = JSON.parse(JSON.stringify(generatorOptions))
-        if (section.name in updated) {
-          updated[section.name] = optionValue
-        }
-        generatorOptions = updated
-      }
+    if (usesNewStructure) {
+      generatorOptions = { ...optionValues }
     } else {
-      currentSections[sectionIndex] = {
-        ...section,
-        options: section.options.map((o) => (o.value === optionValue ? { ...o, checked } : o)),
-      }
-      const camelKey = toCamelCase(optionValue)
+      // legacy: 신규 values → generatorOptions 동기화
       const updated = JSON.parse(JSON.stringify(generatorOptions))
-      setNestedValue(updated, camelKey, checked)
+      const camelKey = toCamelCase(key)
+
+      // radio 타입 (name으로 직접 매핑)
+      if (key in updated) {
+        updated[key] = value
+      } else {
+        setNestedValue(updated, camelKey, value)
+      }
       generatorOptions = updated
     }
   }
@@ -208,7 +298,12 @@
           </div>
         </div>
 
-        <OptionForm sections={currentSections} {locale} onoptionchange={handleOptionChange} />
+        <OptionForm
+          sections={formSections}
+          values={optionValues}
+          {locale}
+          onchange={handleNewOptionChange}
+        />
 
         {#if relatedFiles.length > 0}
           <aside class="mt-10 border-t border-border pt-8">
