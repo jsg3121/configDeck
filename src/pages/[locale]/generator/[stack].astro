@@ -27,14 +27,11 @@ const pageTitle =
     : `${currentStack.name} Generator — ConfigDeck`
 const pageDescription = locale === 'ko' ? currentStack.descriptionKo : currentStack.descriptionEn
 
-/**
- * includedFiles를 직렬화 가능한 형태로 변환한다.
- * Astro → Svelte props는 Plain Object만 전달 가능하다.
- */
-const serializableFiles = currentStack.includedFiles.map((f) => ({
+/** 파일 목록을 직렬화 가능한 형태로 변환한다 */
+const serializableFiles = currentStack.files.map((f) => ({
   fileName: f.fileName,
   slug: f.slug,
-  options: f.options.map((o) => ({ label: o.label, value: o.value, checked: o.checked })),
+  preset: f.preset,
 }))
 ---
 
@@ -94,6 +91,6 @@ const serializableFiles = currentStack.includedFiles.map((f) => ({
     </div>
 
     <!-- 인터랙티브: Svelte 아일랜드 -->
-    <StackGenerator client:load locale={locale} includedFiles={serializableFiles} />
+    <StackGenerator client:load locale={locale} files={serializableFiles} />
   </main>
 </Layout>
