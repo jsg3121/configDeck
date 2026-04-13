@@ -1,6 +1,6 @@
 <script lang="ts">
   /** 파일 탭 바를 렌더링한다. 활성화된 파일만 탭으로 표시한다. */
-  import { getFileIcon } from '@/lib/data/icons'
+  import { getFileIcon, getIconColor } from '@/lib/data/icons'
 
   interface Props {
     fileNames: string[]
@@ -26,7 +26,7 @@
         onclick={() => ontabchange(fileName)}
       >
         {#if icon}
-          <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill={icon.color}>
+          <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill={getIconColor(icon, 'dark')}>
             <path d={icon.path} />
           </svg>
         {/if}
