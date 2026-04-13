@@ -28,18 +28,26 @@
   }
 
   /** 키를 변경한다 */
-  const handleKeyChange = (oldKey: string, event: Event) => {
+  const handleKeyChange = (oldKey: string, oldValue: string, event: Event) => {
     const target = event.target as HTMLInputElement
     const newKey = target.value
-    const updated = Object.fromEntries(
-      Object.entries(value).map(([k, v]) => (k === oldKey ? [newKey, v] : [k, v])),
-    )
-    onchange(control.key, updated)
+
+    // oldKey가 value에 존재하면 키 이름만 변경, 없으면 새 항목 추가
+    if (oldKey in value) {
+      const updated = Object.fromEntries(
+        Object.entries(value).map(([k, v]) => (k === oldKey ? [newKey, v] : [k, v])),
+      )
+      onchange(control.key, updated)
+    } else {
+      // 빈 행에서 새 키 입력 시 새 항목으로 추가
+      onchange(control.key, { ...value, [newKey]: oldValue })
+    }
   }
 
   /** 값을 변경한다 */
   const handleValueChange = (entryKey: string, event: Event) => {
     const target = event.target as HTMLInputElement
+    // 빈 키인 경우에도 값 변경이 가능하도록 처리
     onchange(control.key, { ...value, [entryKey]: target.value })
   }
 
@@ -83,7 +91,7 @@
           type="text"
           value={entryKey}
           placeholder={control.keyPlaceholder ?? 'key'}
-          onchange={(e) => handleKeyChange(entryKey, e)}
+          onchange={(e) => handleKeyChange(entryKey, entryValue, e)}
           class="flex-1 rounded-md border border-border bg-surface px-3 py-1.5 text-sm text-gray-700 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
         />
         <span class="text-xs text-gray-400">&rarr;</span>
