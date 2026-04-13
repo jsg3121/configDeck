@@ -243,8 +243,8 @@
           {@const coreSections = getCoreSections(file.slug)}
 
           <div class="border-b border-border">
-            <!-- 아코디언 헤더 -->
-            <div class="flex items-center gap-2 py-3 px-2">
+            <!-- 아코디언 헤더 — 스크롤 시 상단 고정 -->
+            <div class="sticky top-0 z-10 flex items-center gap-2 bg-white py-3 px-2">
               <input
                 type="checkbox"
                 checked={isEnabled}
