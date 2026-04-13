@@ -25,7 +25,13 @@
 - [seo-specialist](seo-specialist.md) — 시맨틱 HTML, 메타태그, 구조화 데이터, 다국어 SEO 전문
 - [ui-publisher](ui-publisher.md) — Astro/Svelte 컴포넌트 구현, Tailwind 스타일링 전문
 - [ux-designer](ux-designer.md) — 사용자 플로우, 레이아웃, 인터랙션, 반응형 설계 전문
-- [qa-agent](qa-agent.md) — 설정 유효성 검증, 테스트, 코드 품질 검증 전문
+- [qa-agent](qa-agent.md) — QA 오케스트레이터. 서브에이전트를 조율하여 종합 QA 리포트 생성
+
+### QA 서브에이전트
+
+- [unit-tester](unit-tester.md) — Vitest 단위 테스트 실행 및 결과 분석
+- [e2e-tester](e2e-tester.md) — Playwright E2E 테스트 실행 및 결과 분석
+- [static-analyzer](static-analyzer.md) — ESLint, Prettier, TypeScript 정적 분석
 
 ### 비즈니스 분석 에이전트
 
@@ -72,6 +78,21 @@ config-maker (TSConfig 조사) ─┘
 config-maker ──생성──→ qa-agent
      ↑                    │
      └──── 피드백 ────────┘
+```
+
+### QA 검증 파이프라인 (Fan-out/Fan-in)
+
+```
+                    qa-agent (오케스트레이터)
+                           │
+           ┌───────────────┼───────────────┐
+           ▼               ▼               ▼
+      unit-tester     e2e-tester    static-analyzer
+      (Vitest)        (Playwright)  (ESLint/TS)
+           │               │               │
+           └───────────────┼───────────────┘
+                           ▼
+                    QA 리포트 생성
 ```
 
 ### 페이지 구현 (Expert Pool)
