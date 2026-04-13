@@ -227,7 +227,7 @@
   let includedFilesLabel = $derived(locale === 'ko' ? '포함 파일' : 'Included Files')
 </script>
 
-<div class="mx-auto flex h-full max-w-7xl flex-col lg:flex-row">
+<div class="mx-auto flex h-full w-full flex-col lg:flex-row">
   <!-- 좌측 패널: 아코디언 -->
   <div class="w-full lg:w-105 lg:shrink-0 lg:overflow-y-auto">
     <div class="px-4 py-6">
@@ -363,7 +363,9 @@
   </div>
 
   <!-- 우측 패널: 파일 탭 + 미리보기 -->
-  <div class="w-full border-t border-border lg:h-full lg:border-t-0 lg:border-l">
+  <div
+    class="w-full border-t border-border lg:w-[calc(100%-444px)] lg:h-full lg:border-t-0 lg:border-l"
+  >
     <div class="flex h-full flex-col bg-code-bg">
       <FileTabBar
         fileNames={activeFileNames}

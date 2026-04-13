@@ -156,7 +156,7 @@
     locale === 'ko' ? file.descriptionKo : file.descriptionEn
 </script>
 
-<div class="mx-auto flex h-full max-w-7xl flex-col lg:flex-row">
+<div class="mx-auto flex h-full w-full flex-col lg:flex-row">
   <!-- 좌측 패널: 옵션 -->
   <div class="w-full lg:w-1/2 lg:overflow-y-auto">
     <div class="mx-auto max-w-full px-6 py-8">
@@ -261,7 +261,9 @@
   </div>
 
   <!-- 우측 패널: 미리보기 -->
-  <div class="w-full border-t border-border lg:h-full lg:w-1/2 lg:border-t-0 lg:border-l">
+  <div
+    class="w-full border-t border-border lg:w-[calc(100%-444px)] lg:h-full lg:border-t-0 lg:border-l"
+  >
     <CodePreview fileName={generatedOutput.fileName} code={generatedOutput.code} {locale} />
   </div>
 </div>

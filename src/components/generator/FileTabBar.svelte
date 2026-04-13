@@ -11,7 +11,9 @@
   let { fileNames, activeTab, ontabchange }: Props = $props()
 </script>
 
-<div class="overflow-x-auto border-b border-gray-700">
+<div
+  class="overflow-x-auto border-b border-gray-700 scrollbar-none [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+>
   <div class="flex">
     {#each fileNames as fileName (fileName)}
       {@const icon = getFileIcon(fileName)}
