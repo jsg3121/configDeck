@@ -34,3 +34,5 @@
 | [0007](records/ADR-0007-page-structure-redesign.md)    | 페이지 구조 재설계 (파일/스택별 생성기 통합)      | 승인됨 | 2026-04-06 |
 | [0008](records/ADR-0008-option-schema-redesign.md)     | 옵션 스키마 재설계 (입력 타입/옵션 정의 분리)     | 승인됨 | 2026-04-09 |
 | [0009](records/ADR-0009-stack-generator-ux-pattern.md) | 스택 생성기 UX 패턴 선정 (아코디언 인라인 옵션)   | 승인됨 | 2026-04-13 |
+| [0010](records/ADR-0010-article-content-strategy.md)   | 아티클 콘텐츠 수집 및 갱신 전략                   | 승인됨 | 2026-04-13 |
+| [0011](records/ADR-0011-article-ai-summarization.md)   | 아티클 AI 요약 자동화 전략 (Gemini API)           | 승인됨 | 2026-04-13 |
