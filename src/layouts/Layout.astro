@@ -1,7 +1,7 @@
 ---
 import '@/styles/global.css'
 
-import { DEFAULT_LOCALE, getAllLocaleAlternates, type Locale } from '@/i18n'
+import { DEFAULT_LOCALE, getAllLocaleAlternates, SUPPORTED_LOCALES, type Locale } from '@/i18n'
 
 import Footer from '@/components/common/Footer.astro'
 import Header from '@/components/common/Header.astro'
@@ -20,6 +20,8 @@ interface Props {
   ogImage?: string
   /** 검색엔진 색인 방지 */
   noindex?: boolean
+  /** JSON-LD 구조화 데이터 배열 */
+  jsonLd?: Record<string, unknown>[]
 }
 
 const {
@@ -31,11 +33,15 @@ const {
   currentPath,
   ogImage,
   noindex = false,
+  jsonLd = [],
 } = Astro.props
 
-const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? 'https://configdeck.dev')
+const siteUrl = Astro.site ?? new URL('https://configdeck.dev')
+const canonicalUrl = new URL(Astro.url.pathname, siteUrl)
 const localeAlternates = getAllLocaleAlternates(pagePath)
 const ogLocaleMap: Record<Locale, string> = { en: 'en_US', ko: 'ko_KR' }
+const defaultOgImage = new URL('/og-image.png', siteUrl).href
+const ogImageUrl = ogImage ?? defaultOgImage
 ---
 
 <!doctype html>
@@ -53,13 +59,17 @@ const ogLocaleMap: Record<Locale, string> = { en: 'en_US', ko: 'ko_KR' }
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="canonical" href={canonicalUrl.href} />
 
-    <!-- hreflang -->
+    <!-- hreflang (절대 URL) -->
     {
       localeAlternates.map(({ locale: altLocale, href }) => (
-        <link rel="alternate" hreflang={altLocale} href={href} />
+        <link rel="alternate" hreflang={altLocale} href={new URL(href, siteUrl).href} />
       ))
     }
-    <link rel="alternate" hreflang="x-default" href={localeAlternates[0].href} />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href={new URL(localeAlternates[0].href, siteUrl).href}
+    />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
@@ -67,18 +77,42 @@ const ogLocaleMap: Record<Locale, string> = { en: 'en_US', ko: 'ko_KR' }
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalUrl.href} />
     <meta property="og:locale" content={ogLocaleMap[locale]} />
+    {
+      SUPPORTED_LOCALES.filter((l) => l !== locale).map((altLocale) => (
+        <meta property="og:locale:alternate" content={ogLocaleMap[altLocale]} />
+      ))
+    }
     <meta property="og:site_name" content="ConfigDeck" />
-    {ogImage && <meta property="og:image" content={ogImage} />}
+    <meta property="og:image" content={ogImageUrl} />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    {ogImage && <meta name="twitter:image" content={ogImage} />}
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <!-- JSON-LD 구조화 데이터 -->
+    {
+      jsonLd.map((data) => (
+        <script
+          is:inline
+          type="application/ld+json"
+          set:html={JSON.stringify({ '@context': 'https://schema.org', ...data })}
+        />
+      ))
+    }
   </head>
   <body class="bg-surface-alt font-sans text-gray-900">
     {!bare && <Header locale={locale} currentPath={currentPath ?? pagePath} />}
-    <slot />
+    {
+      bare ? (
+        <slot />
+      ) : (
+        <main>
+          <slot />
+        </main>
+      )
+    }
     {!bare && <Footer locale={locale} />}
   </body>
 </html>
