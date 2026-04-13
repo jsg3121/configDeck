@@ -23,13 +23,14 @@
 
 ## ADR 목록
 
-| 번호                                                | 제목                                         | 상태   | 날짜       |
-|-----------------------------------------------------|----------------------------------------------|--------|------------|
-| [0001](records/ADR-0001-adr-adoption.md)            | ADR 도입                                     | 승인됨 | 2026-04-06 |
-| [0002](records/ADR-0002-framework.md)               | 프레임워크 선택 (Astro + Svelte)             | 승인됨 | 2026-04-06 |
-| [0003](records/ADR-0003-package-manager.md)         | 패키지 매니저 선택 (pnpm)                    | 승인됨 | 2026-04-06 |
-| [0004](records/ADR-0004-deployment.md)              | 배포 환경 선택 (Cloudflare Pages)            | 승인됨 | 2026-04-06 |
-| [0005](records/ADR-0005-share-link.md)              | 공유 링크 (URL 기반 옵션 인코딩)             | 승인됨 | 2026-04-06 |
-| [0006](records/ADR-0006-generator-centric-ia.md)    | 생성기 중심 IA 재설계                        | 승인됨 | 2026-04-06 |
-| [0007](records/ADR-0007-page-structure-redesign.md) | 페이지 구조 재설계 (파일/스택별 생성기 통합) | 승인됨 | 2026-04-06 |
-| [0008](records/ADR-0008-option-schema-redesign.md)  | 옵션 스키마 재설계 (입력 타입/옵션 정의 분리) | 승인됨 | 2026-04-09 |
+| 번호                                                   | 제목                                              | 상태   | 날짜       |
+|--------------------------------------------------------|---------------------------------------------------|--------|------------|
+| [0001](records/ADR-0001-adr-adoption.md)               | ADR 도입                                          | 승인됨 | 2026-04-06 |
+| [0002](records/ADR-0002-framework.md)                  | 프레임워크 선택 (Astro + Svelte)                  | 승인됨 | 2026-04-06 |
+| [0003](records/ADR-0003-package-manager.md)            | 패키지 매니저 선택 (pnpm)                         | 승인됨 | 2026-04-06 |
+| [0004](records/ADR-0004-deployment.md)                 | 배포 환경 선택 (Cloudflare Pages)                 | 승인됨 | 2026-04-06 |
+| [0005](records/ADR-0005-share-link.md)                 | 공유 링크 (URL 기반 옵션 인코딩)                  | 승인됨 | 2026-04-06 |
+| [0006](records/ADR-0006-generator-centric-ia.md)       | 생성기 중심 IA 재설계                             | 승인됨 | 2026-04-06 |
+| [0007](records/ADR-0007-page-structure-redesign.md)    | 페이지 구조 재설계 (파일/스택별 생성기 통합)      | 승인됨 | 2026-04-06 |
+| [0008](records/ADR-0008-option-schema-redesign.md)     | 옵션 스키마 재설계 (입력 타입/옵션 정의 분리)     | 승인됨 | 2026-04-09 |
+| [0009](records/ADR-0009-stack-generator-ux-pattern.md) | 스택 생성기 UX 패턴 선정 (아코디언 인라인 옵션)   | 승인됨 | 2026-04-13 |
