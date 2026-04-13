@@ -115,7 +115,7 @@
 | | 마이그레이션 확장 | Prettier, tsconfig, Vite 마이그레이션 지원 |
 | | AI 도구 설정 파일 지원 | .cursorrules, copilot-instructions.md, CLAUDE.md 등. ESLint 앵커의 차세대 킬러 피처 후보 |
 | | 일본어 추가 | AI 번역 + 수동 교정 또는 일본어 가능 커뮤니티 기여자 확보 |
-| | 스택 번들 확장 | Astro, Node API 프리셋 추가 |
+| | 스택 번들 확장 | Astro, Node.js 프리셋 추가 |
 | | 콘텐츠 유지 자동화 | ESLint/TypeScript/Vite GitHub 릴리즈 모니터링 체계 구축 |
 | | 수익 확장 | 애드센스 광고 최적화 + MAU 5만 이상 시 팀 preset 유료화, 스폰서십 검토 |
 

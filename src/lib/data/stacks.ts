@@ -68,7 +68,7 @@ export const STACK_DEFINITIONS = [
   },
   {
     slug: 'node-api',
-    name: 'Node API + TypeScript',
+    name: 'Node.js + TypeScript',
     icon: '🟢',
     descriptionEn:
       'Generate config files for a Node.js API project with TypeScript. Includes ESLint, Prettier, TypeScript, and environment configuration.',

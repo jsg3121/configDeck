@@ -44,7 +44,7 @@
 |------|------|
 | 파일 생성 | 옵션 조합에 맞는 설정 파일 생성 (복사/다운로드/ZIP) |
 | 옵션 조합 | 파일별 세부 옵션을 체크박스, 드롭다운, 토글 등으로 제공 |
-| 프리셋 | React+Vite+TS, Next.js+TS, Astro+TS, Node API+TS |
+| 프리셋 | React+Vite+TS, Next.js+TS, Astro+TS, Node.js+TS |
 | 설명 | 각 옵션의 효과, 사용 환경, 충돌 여부, 권장 조합 안내 |
 | 마이그레이션 | 레거시 설정 → 최신 형식 변환 (상세: `references/migration-spec.md`) |
 | 다국어 | UI/설명/문서 번역, 생성 파일 내부는 원문 유지 |
