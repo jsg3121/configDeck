@@ -67,7 +67,7 @@ export const STACK_DEFINITIONS = [
     ] satisfies StackFile[],
   },
   {
-    slug: 'node-api',
+    slug: 'nodejs',
     name: 'Node.js + TypeScript',
     icon: '🟢',
     descriptionEn:

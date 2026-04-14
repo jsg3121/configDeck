@@ -79,7 +79,7 @@ const STACK_ICON_MAP: Record<string, string> = {
   'react-vite-ts': 'react',
   nextjs: 'nextdotjs',
   astro: 'astro',
-  'node-api': 'nodedotjs',
+  nodejs: 'nodedotjs',
 } as const
 
 /** 파일명 → 아이콘 slug 매핑 */
