@@ -1,0 +1,247 @@
+---
+import { buildLocalizedPath, getTranslation, SUPPORTED_LOCALES, type Locale } from '@/i18n'
+import { getCollection, render } from 'astro:content'
+
+import Layout from '@/layouts/Layout.astro'
+
+const TOOLS = ['eslint', 'prettier', 'typescript', 'nextjs', 'react', 'astro', 'nodejs'] as const
+type Tool = (typeof TOOLS)[number]
+
+export const getStaticPaths = async () => {
+  const paths = []
+
+  for (const locale of SUPPORTED_LOCALES) {
+    try {
+      const allArticles = await getCollection('articles')
+      const localeArticles = allArticles.filter((article) => article.id.startsWith(`${locale}/`))
+
+      for (const article of localeArticles) {
+        const slug = article.id.replace(`${locale}/`, '').replace('.md', '')
+        const { Content } = await render(article)
+        paths.push({
+          params: { locale, tool: article.data.tool, slug },
+          props: { article, Content },
+        })
+      }
+    } catch {
+      // 컬렉션이 비어있는 경우
+    }
+  }
+
+  return paths
+}
+
+const { locale, tool, slug } = Astro.params as { locale: Locale; tool: Tool; slug: string }
+const { article, Content } = Astro.props
+
+const toolColors: Record<Tool, { bg: string; text: string; border: string }> = {
+  eslint: { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-200' },
+  prettier: { bg: 'bg-pink-50', text: 'text-pink-700', border: 'border-pink-200' },
+  typescript: { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200' },
+  nextjs: { bg: 'bg-gray-50', text: 'text-gray-700', border: 'border-gray-200' },
+  react: { bg: 'bg-cyan-50', text: 'text-cyan-700', border: 'border-cyan-200' },
+  astro: { bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-200' },
+  nodejs: { bg: 'bg-green-50', text: 'text-green-700', border: 'border-green-200' },
+}
+
+const toolToGenerator: Record<Tool, string> = {
+  eslint: 'eslint',
+  prettier: 'prettier',
+  typescript: 'tsconfig',
+  nextjs: 'next',
+  react: 'react',
+  astro: 'astro',
+  nodejs: 'node',
+}
+
+const formatDate = (date: Date): string => {
+  return date.toLocaleDateString(locale === 'ko' ? 'ko-KR' : 'en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
+}
+
+const toolName = getTranslation(locale, `article.tools.${tool}`)
+const pageTitle = `${article.data.title} — ${toolName} | ConfigDeck`
+const pageDescription = article.data.summary
+
+// 같은 도구의 다른 아티클 가져오기
+let relatedArticles: (typeof article)[] = []
+try {
+  const allArticles = await getCollection('articles')
+  relatedArticles = allArticles
+    .filter((a) => a.id.startsWith(`${locale}/`) && a.data.tool === tool && a.id !== article.id)
+    .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+    .slice(0, 3)
+} catch {
+  // 빈 배열 유지
+}
+
+// JSON-LD 구조화 데이터
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: article.data.title,
+  description: article.data.summary,
+  datePublished: article.data.pubDate.toISOString(),
+  author: {
+    '@type': 'Organization',
+    name: 'ConfigDeck',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'ConfigDeck',
+    url: 'https://configdeck.dev',
+  },
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': Astro.url.href,
+  },
+  about: {
+    '@type': 'SoftwareApplication',
+    name: toolName,
+  },
+}
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  locale={locale}
+  pagePath={`/article/${tool}/${slug}`}
+  currentPath="/article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} slot="head" />
+
+  <article class="mx-auto max-w-4xl px-6 py-16">
+    <!-- 뒤로가기 -->
+    <a
+      href={buildLocalizedPath(locale, `/article/${tool}`)}
+      class="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700"
+    >
+      <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"
+        ></path>
+      </svg>
+      {getTranslation(locale, `article.tools.${tool}`)}
+      {locale === 'ko' ? ' 아티클' : ' Articles'}
+    </a>
+
+    <!-- 헤더 -->
+    <header class="mt-8">
+      <div class="flex flex-wrap items-center gap-3">
+        <span
+          class={`rounded-full px-3 py-1 text-sm font-medium ${toolColors[tool].bg} ${toolColors[tool].text}`}
+        >
+          {toolName}
+        </span>
+      </div>
+
+      <h1 class="mt-4 text-3xl font-extrabold tracking-tight text-gray-900 lg:text-4xl">
+        {article.data.title}
+      </h1>
+
+      <div class="mt-4 flex items-center gap-4 text-sm text-gray-500">
+        <time datetime={article.data.pubDate.toISOString()}>
+          {formatDate(article.data.pubDate)}
+        </time>
+        <span>·</span>
+        <a
+          href={article.data.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-1 text-primary hover:underline"
+        >
+          {locale === 'ko' ? '원문 보기' : 'View Original'}
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+            ></path>
+          </svg>
+        </a>
+      </div>
+    </header>
+
+    <!-- 요약 카드 -->
+    <div class={`mt-8 rounded-xl border p-6 ${toolColors[tool].bg} ${toolColors[tool].border}`}>
+      <h2 class={`text-lg font-semibold ${toolColors[tool].text}`}>
+        {locale === 'ko' ? '요약' : 'Summary'}
+      </h2>
+      <p class="mt-2 text-gray-700">{article.data.summary}</p>
+    </div>
+
+    <!-- 상세 내용 -->
+    <div class="prose prose-lg mt-10 max-w-none">
+      <Content />
+    </div>
+
+    <!-- 설정 생성 CTA -->
+    <div
+      class="mt-12 rounded-xl border border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10 p-8"
+    >
+      <div class="flex flex-col items-center text-center sm:flex-row sm:text-left">
+        <div class="flex-1">
+          <h2 class="text-xl font-bold text-gray-900">
+            {
+              locale === 'ko'
+                ? `${toolName} 설정 파일이 필요하신가요?`
+                : `Need a ${toolName} config file?`
+            }
+          </h2>
+          <p class="mt-2 text-gray-600">
+            {
+              locale === 'ko'
+                ? 'ConfigDeck에서 최신 설정을 몇 초 만에 생성하세요.'
+                : 'Generate the latest config in seconds with ConfigDeck.'
+            }
+          </p>
+        </div>
+        <a
+          href={buildLocalizedPath(locale, `/generator/${toolToGenerator[tool]}`)}
+          class="mt-4 inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-semibold text-white hover:bg-primary-hover sm:mt-0"
+        >
+          {getTranslation(locale, 'article.generateConfig')}
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- 관련 아티클 -->
+    {
+      relatedArticles.length > 0 && (
+        <div class="mt-16">
+          <h2 class="text-xl font-bold text-gray-900">
+            {locale === 'ko' ? `다른 ${toolName} 소식` : `More ${toolName} Updates`}
+          </h2>
+          <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {relatedArticles.map((related) => {
+              const relatedSlug = related.id.replace(`${locale}/`, '').replace('.md', '')
+              return (
+                <a
+                  href={buildLocalizedPath(locale, `/article/${related.data.tool}/${relatedSlug}`)}
+                  class="group rounded-lg border border-border bg-white p-4 transition-shadow hover:shadow-md"
+                >
+                  <time class="text-xs text-gray-400">{formatDate(related.data.pubDate)}</time>
+                  <h3 class="mt-2 line-clamp-2 font-semibold text-gray-900 group-hover:text-primary">
+                    {related.data.title}
+                  </h3>
+                  <p class="mt-2 line-clamp-2 text-sm text-gray-500">{related.data.summary}</p>
+                </a>
+              )
+            })}
+          </div>
+        </div>
+      )
+    }
+  </article>
+</Layout>

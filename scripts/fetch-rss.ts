@@ -69,6 +69,31 @@ export const FEED_CONFIGS: FeedConfig[] = [
 ]
 
 /**
+ * HTML 엔티티를 디코딩한다.
+ */
+const decodeHtmlEntities = (text: string): string => {
+  const entities: Record<string, string> = {
+    '&amp;': '&',
+    '&lt;': '<',
+    '&gt;': '>',
+    '&quot;': '"',
+    '&apos;': "'",
+    '&#39;': "'",
+    '&nbsp;': ' ',
+  }
+
+  let decoded = text
+  for (const [entity, char] of Object.entries(entities)) {
+    decoded = decoded.replaceAll(entity, char)
+  }
+
+  // 숫자 엔티티 처리 (&#123; 형식)
+  decoded = decoded.replace(/&#(\d+);/g, (_, code) => String.fromCharCode(parseInt(code, 10)))
+
+  return decoded
+}
+
+/**
  * XML 텍스트에서 특정 태그의 내용을 추출한다.
  */
 const extractTagContent = (xml: string, tagName: string): string | undefined => {
@@ -83,6 +108,9 @@ const extractTagContent = (xml: string, tagName: string): string | undefined => 
   if (cdataMatch) {
     content = cdataMatch[1]
   }
+
+  // HTML 엔티티 디코딩
+  content = decodeHtmlEntities(content)
 
   return content
 }

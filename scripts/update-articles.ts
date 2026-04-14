@@ -8,7 +8,12 @@ import * as fs from 'node:fs'
 import * as path from 'node:path'
 
 import { fetchAllFeeds, filterNewItems, type RSSItem } from './fetch-rss'
-import { generateSlug, generateSummaries, type ArticleSummary } from './generate-summary'
+import {
+  generateSlug,
+  generateSummaries,
+  toMarkdownContent,
+  type ArticleSummary,
+} from './generate-summary'
 
 const ARTICLES_DIR = path.join(process.cwd(), 'src/content/articles')
 const LOCALES = ['ko', 'en'] as const
@@ -52,17 +57,7 @@ const saveArticle = (article: ArticleSummary, locale: 'ko' | 'en'): void => {
 
   const slug = generateSlug(article)
   const filePath = path.join(localeDir, `${slug}.md`)
-
-  const content = `---
-id: "${article.id}"
-tool: "${article.tool}"
-title: "${article.title.replace(/"/g, '\\"')}"
-link: "${article.link}"
-pubDate: ${article.pubDate.toISOString()}
----
-
-${article.summary[locale]}
-`
+  const content = toMarkdownContent(article, locale)
 
   fs.writeFileSync(filePath, content, 'utf-8')
   console.log(`Saved: ${locale}/${slug}.md`)
