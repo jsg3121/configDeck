@@ -2,7 +2,6 @@
 import { buildLocalizedPath, getTranslation, SUPPORTED_LOCALES, type Locale } from '@/i18n'
 
 import Layout from '@/layouts/Layout.astro'
-import Header from '@/components/common/Header.astro'
 import FileGenerator from '@/components/generator/FileGenerator.svelte'
 import { FILE_DEFINITIONS, getRelatedFiles, type FileDefinition } from '@/lib/data/files'
 
@@ -41,11 +40,8 @@ const relatedFiles = getRelatedFiles(fileSlug).map((file) => ({
   locale={locale}
   pagePath={`/generator/${fileSlug}`}
   currentPath={`/generator/${fileSlug}`}
-  bare
 >
-  <Header locale={locale} currentPath={`/generator/${fileSlug}`} />
-
-  <main class="w-full max-w-7xl mx-auto flex flex-col lg:h-[calc(100vh-65px)] lg:overflow-hidden">
+  <div class="w-full max-w-7xl mx-auto flex flex-col lg:min-h-[calc(100vh-65px-157px)]">
     <!-- SEO: Astro 정적 영역 — 좌측 패널 폭에 맞춤 -->
     <div class="mx-auto w-full max-w-7xl shrink-0 px-6">
       <div class="w-full">
@@ -87,5 +83,5 @@ const relatedFiles = getRelatedFiles(fileSlug).map((file) => ({
         relatedFiles={relatedFiles}
       />
     </div>
-  </main>
+  </div>
 </Layout>
