@@ -52,12 +52,31 @@ const formatDate = (date: Date): string => {
     day: 'numeric',
   })
 }
+
+// JSON-LD 구조화 데이터
+const siteUrl = 'https://configdeck.dev'
+const collectionJsonLd = {
+  '@type': 'CollectionPage',
+  name: getTranslation(locale, 'seo.articleTitle'),
+  description: getTranslation(locale, 'seo.articleDescription'),
+  url: `${siteUrl}/${locale}/article`,
+  isPartOf: {
+    '@type': 'WebSite',
+    name: 'ConfigDeck',
+    url: siteUrl,
+  },
+  about: {
+    '@type': 'Thing',
+    name: locale === 'ko' ? '개발 도구 업데이트' : 'Developer Tool Updates',
+  },
+}
 ---
 
 <Layout
   title={getTranslation(locale, 'seo.articleTitle')}
   description={getTranslation(locale, 'seo.articleDescription')}
   locale={locale}
+  jsonLd={[collectionJsonLd]}
   pagePath="/article"
   currentPath="/article"
 >

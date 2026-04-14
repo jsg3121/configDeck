@@ -22,6 +22,10 @@ interface Props {
   noindex?: boolean
   /** JSON-LD 구조화 데이터 배열 */
   jsonLd?: Record<string, unknown>[]
+  /** og:type 오버라이드 (기본: website) */
+  ogType?: 'website' | 'article'
+  /** 아티클 발행일 (og:type이 article일 때 사용) */
+  articlePublishedTime?: Date
 }
 
 const {
@@ -34,6 +38,8 @@ const {
   ogImage,
   noindex = false,
   jsonLd = [],
+  ogType = 'website',
+  articlePublishedTime,
 } = Astro.props
 
 const siteUrl = Astro.site ?? new URL('https://configdeck.dev')
@@ -72,11 +78,16 @@ const ogImageUrl = ogImage ?? defaultOgImage
     />
 
     <!-- Open Graph -->
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalUrl.href} />
     <meta property="og:locale" content={ogLocaleMap[locale]} />
+    {
+      ogType === 'article' && articlePublishedTime && (
+        <meta property="article:published_time" content={articlePublishedTime.toISOString()} />
+      )
+    }
     {
       SUPPORTED_LOCALES.filter((l) => l !== locale).map((altLocale) => (
         <meta property="og:locale:alternate" content={ogLocaleMap[altLocale]} />

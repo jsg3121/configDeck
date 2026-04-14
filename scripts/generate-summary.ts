@@ -64,23 +64,37 @@ const buildPrompt = (item: RSSItem): string => {
 ${item.description ? `- 내용: ${item.description}` : ''}
 
 ## 작성 가이드라인
-1. **summary**: 핵심 내용을 2-3문장으로 요약 (아티클 카드에 표시됨)
-2. **details**: 상세 설명을 마크다운 형식으로 작성 (3-5 문단, 각 문단 2-3문장)
-   - 이번 업데이트의 배경과 목적
-   - 주요 변경사항 상세 설명
-   - 개발자에게 미치는 실질적 영향
-   - 권장 조치사항 (해당되는 경우)
+
+### summary (카드용 요약)
+- 핵심 내용을 2-3문장으로 요약
+- 마크다운 문법 사용하지 않음
+
+### details (상세 설명)
+내용에 맞는 구조로 자유롭게 작성하되, 다음 형식 규칙을 따르세요:
+
+**형식 규칙:**
+- 문단 사이에 빈 줄 넣기
+- 중요 용어, 기능명, 버전은 **볼드** 처리
+- 코드, 명령어, 패키지명, 파일명은 \`백틱\` 사용
+- 3개 이상 나열 시 bullet list(-) 사용
+- 코드 예시가 있으면 코드블록(\`\`\`) 사용 (언어 명시)
+- 내용에 맞는 섹션 제목(##)을 자유롭게 사용
+
+**구조 예시 (참고용, 강제 아님):**
+- 릴리스 노트 → 주요 변경사항, 업그레이드 방법 중심
+- 공지/발표 → 배경, 영향, 앞으로의 방향 중심
+- 보안 패치 → 취약점 설명, 영향 범위, 즉시 조치 사항 중심
 
 ## 응답 형식
 반드시 아래 JSON 형식으로만 응답해주세요. 다른 텍스트는 포함하지 마세요:
 {
   "ko": {
-    "summary": "한국어 요약 (2-3문장)",
-    "details": "한국어 상세 설명 (마크다운, 3-5문단)"
+    "summary": "한국어 요약 (2-3문장, 마크다운 없이)",
+    "details": "한국어 상세 설명 (마크다운 형식)"
   },
   "en": {
-    "summary": "English summary (2-3 sentences)",
-    "details": "English detailed description (markdown, 3-5 paragraphs)"
+    "summary": "English summary (2-3 sentences, no markdown)",
+    "details": "English detailed description (markdown format)"
   }
 }`
 }

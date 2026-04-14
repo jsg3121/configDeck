@@ -1,0 +1,236 @@
+---
+import { buildLocalizedPath, getTranslation, SUPPORTED_LOCALES, type Locale } from '@/i18n'
+import { getCollection } from 'astro:content'
+
+import Layout from '@/layouts/Layout.astro'
+
+const TOOLS = ['eslint', 'prettier', 'typescript', 'nextjs', 'react', 'astro', 'nodejs'] as const
+type Tool = (typeof TOOLS)[number]
+
+export const getStaticPaths = () => {
+  const tools = ['eslint', 'prettier', 'typescript', 'nextjs', 'react', 'astro', 'nodejs'] as const
+  const paths = []
+  for (const locale of SUPPORTED_LOCALES) {
+    for (const tool of tools) {
+      paths.push({ params: { locale, tool } })
+    }
+  }
+  return paths
+}
+
+const { locale, tool } = Astro.params as { locale: Locale; tool: Tool }
+
+const toolColors: Record<Tool, string> = {
+  eslint: 'bg-purple-100 text-purple-800',
+  prettier: 'bg-pink-100 text-pink-800',
+  typescript: 'bg-blue-100 text-blue-800',
+  nextjs: 'bg-gray-100 text-gray-800',
+  react: 'bg-cyan-100 text-cyan-800',
+  astro: 'bg-orange-100 text-orange-800',
+  nodejs: 'bg-green-100 text-green-800',
+}
+
+const toolToGenerator: Record<Tool, string> = {
+  eslint: 'eslint',
+  prettier: 'prettier',
+  typescript: 'tsconfig',
+  nextjs: 'next',
+  react: 'react',
+  astro: 'astro',
+  nodejs: 'node',
+}
+
+// 해당 도구의 아티클 가져오기
+let articles: Awaited<ReturnType<typeof getCollection<'articles'>>> = []
+try {
+  const allArticles = await getCollection('articles')
+  articles = allArticles
+    .filter((article) => article.id.startsWith(`${locale}/`) && article.data.tool === tool)
+    .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+} catch {
+  // 컬렉션이 비어있거나 없는 경우 빈 배열 유지
+}
+
+const formatDate = (date: Date): string => {
+  return date.toLocaleDateString(locale === 'ko' ? 'ko-KR' : 'en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  })
+}
+
+const toolName = getTranslation(locale, `article.tools.${tool}`)
+const pageTitle =
+  locale === 'ko' ? `${toolName} 업데이트 — ConfigDeck` : `${toolName} Updates — ConfigDeck`
+const pageDescription =
+  locale === 'ko'
+    ? `${toolName}의 최신 릴리스, 보안 패치, 기능 업데이트 소식을 확인하세요.`
+    : `Stay updated with the latest ${toolName} releases, security patches, and feature updates.`
+
+// JSON-LD 구조화 데이터
+const siteUrl = 'https://configdeck.dev'
+const collectionJsonLd = {
+  '@type': 'CollectionPage',
+  name: pageTitle,
+  description: pageDescription,
+  url: `${siteUrl}/${locale}/article/${tool}`,
+  isPartOf: {
+    '@type': 'WebSite',
+    name: 'ConfigDeck',
+    url: siteUrl,
+  },
+  about: {
+    '@type': 'SoftwareApplication',
+    name: toolName,
+  },
+}
+
+const breadcrumbJsonLd = {
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: locale === 'ko' ? '아티클' : 'Articles',
+      item: `${siteUrl}/${locale}/article`,
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: toolName,
+    },
+  ],
+}
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  locale={locale}
+  jsonLd={[collectionJsonLd, breadcrumbJsonLd]}
+  pagePath={`/article/${tool}`}
+  currentPath="/article"
+>
+  <section class="mx-auto max-w-7xl px-6 py-24">
+    <h1 class="text-4xl font-extrabold tracking-tight lg:text-5xl">
+      {toolName}
+      {locale === 'ko' ? ' 업데이트' : ' Updates'}
+    </h1>
+    <p class="mt-4 max-w-2xl text-lg text-gray-500">
+      {
+        locale === 'ko'
+          ? `${toolName}의 최신 릴리스, 보안 패치, 기능 업데이트 소식을 확인하세요.`
+          : `Stay updated with the latest ${toolName} releases, security patches, and feature updates.`
+      }
+    </p>
+
+    <!-- 도구 필터 탭 -->
+    <div class="mt-10 flex flex-wrap gap-2">
+      <a
+        href={buildLocalizedPath(locale, '/article')}
+        class="rounded-full bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
+      >
+        {getTranslation(locale, 'article.allTools')}
+      </a>
+      {
+        TOOLS.map((t) => (
+          <a
+            href={buildLocalizedPath(locale, `/article/${t}`)}
+            class={`rounded-full px-4 py-2 text-sm font-medium ${
+              t === tool ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            {getTranslation(locale, `article.tools.${t}`)}
+          </a>
+        ))
+      }
+    </div>
+
+    <!-- 설정 생성 CTA -->
+    <div
+      class="mt-10 rounded-xl border border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10 p-6"
+    >
+      <div class="flex flex-col items-center gap-4 sm:flex-row">
+        <div class="flex-1">
+          <h2 class="text-lg font-bold text-gray-900">
+            {
+              locale === 'ko'
+                ? `${toolName} 설정 파일이 필요하신가요?`
+                : `Need a ${toolName} config file?`
+            }
+          </h2>
+          <p class="mt-1 text-sm text-gray-600">
+            {
+              locale === 'ko'
+                ? 'ConfigDeck에서 최신 설정을 몇 초 만에 생성하세요.'
+                : 'Generate the latest config in seconds with ConfigDeck.'
+            }
+          </p>
+        </div>
+        <a
+          href={buildLocalizedPath(locale, `/generator/${toolToGenerator[tool]}`)}
+          class="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 font-semibold text-white hover:bg-primary-hover"
+        >
+          {getTranslation(locale, 'article.generateConfig')}
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- 아티클 목록 -->
+    <div class="mt-10">
+      <h2 class="text-2xl font-bold">
+        {locale === 'ko' ? `${toolName} 최신 소식` : `Latest ${toolName} Updates`}
+      </h2>
+
+      {
+        articles.length > 0 ? (
+          <div class="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {articles.map((article) => {
+              const slug = article.id.replace(`${locale}/`, '').replace('.md', '')
+              const articleUrl = buildLocalizedPath(locale, `/article/${article.data.tool}/${slug}`)
+              return (
+                <article class="group rounded-xl border border-border bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
+                  <div class="flex items-center justify-between">
+                    <span
+                      class={`rounded-full px-3 py-1 text-xs font-medium ${toolColors[article.data.tool]}`}
+                    >
+                      {getTranslation(locale, `article.tools.${article.data.tool}`)}
+                    </span>
+                    <time class="text-sm text-gray-400">{formatDate(article.data.pubDate)}</time>
+                  </div>
+
+                  <a href={articleUrl} class="block">
+                    <h3 class="mt-4 line-clamp-2 text-lg font-semibold text-gray-900 group-hover:text-primary">
+                      {article.data.title}
+                    </h3>
+                  </a>
+
+                  <p class="mt-2 line-clamp-3 text-sm text-gray-500">{article.data.summary}</p>
+
+                  <div class="mt-4 flex items-center gap-3">
+                    <a href={articleUrl} class="text-sm font-medium text-primary hover:underline">
+                      {locale === 'ko' ? '자세히 보기' : 'Read More'} &rarr;
+                    </a>
+                  </div>
+                </article>
+              )
+            })}
+          </div>
+        ) : (
+          <div class="mt-6 rounded-xl border border-dashed border-border py-16 text-center text-gray-400">
+            {locale === 'ko'
+              ? `${toolName} 관련 아티클이 아직 없습니다.`
+              : `No ${toolName} articles yet.`}
+          </div>
+        )
+      }
+    </div>
+  </section>
+</Layout>
