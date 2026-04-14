@@ -10,7 +10,8 @@
   "nav": {
     "generator": "Generator",
     "docs": "Docs",
-    "blog": "Blog"
+    "blog": "Blog",
+    "article": "Articles"
   },
   "home": {
     "heroTitle": "Build your project config",
@@ -108,7 +109,9 @@
     "docsTitle": "Documentation — ConfigDeck",
     "docsDescription": "Learn how to use ConfigDeck to generate config files for your project. Guides, API reference, and more.",
     "blogTitle": "Blog — ConfigDeck",
-    "blogDescription": "Updates, tutorials, and insights about developer tooling, config management, and ConfigDeck features."
+    "blogDescription": "Updates, tutorials, and insights about developer tooling, config management, and ConfigDeck features.",
+    "articleTitle": "Dev Tool Articles — ConfigDeck",
+    "articleDescription": "Stay up to date with the latest updates and releases from ESLint, Prettier, TypeScript, and more."
   },
   "docs": {
     "title": "Documentation",
@@ -133,5 +136,23 @@
     "comingSoonDescription": "We'll share tutorials, release notes, and insights about config management. Stay tuned!",
     "latestPosts": "Latest Posts",
     "noPosts": "No posts yet. Check back soon!"
+  },
+  "article": {
+    "title": "Articles",
+    "description": "Stay up to date with the latest updates and releases from ESLint, Prettier, TypeScript, and more.",
+    "latestUpdates": "Latest Updates",
+    "allTools": "All",
+    "noArticles": "No articles yet. Updates will be added soon!",
+    "viewOriginal": "View Original",
+    "generateConfig": "Generate Config",
+    "tools": {
+      "eslint": "ESLint",
+      "prettier": "Prettier",
+      "typescript": "TypeScript",
+      "nextjs": "Next.js",
+      "react": "React",
+      "astro": "Astro",
+      "nodejs": "Node.js"
+    }
   }
 }

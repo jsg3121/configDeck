@@ -10,7 +10,8 @@
   "nav": {
     "generator": "생성기",
     "docs": "문서",
-    "blog": "블로그"
+    "blog": "블로그",
+    "article": "아티클"
   },
   "home": {
     "heroTitle": "프로젝트 설정 파일을",
@@ -108,7 +109,9 @@
     "docsTitle": "문서 — ConfigDeck",
     "docsDescription": "ConfigDeck을 사용하여 프로젝트 설정 파일을 생성하는 방법을 알아보세요. 가이드, API 레퍼런스 등.",
     "blogTitle": "블로그 — ConfigDeck",
-    "blogDescription": "개발 도구, 설정 관리, ConfigDeck 기능에 대한 업데이트, 튜토리얼, 인사이트."
+    "blogDescription": "개발 도구, 설정 관리, ConfigDeck 기능에 대한 업데이트, 튜토리얼, 인사이트.",
+    "articleTitle": "개발 도구 아티클 — ConfigDeck",
+    "articleDescription": "ESLint, Prettier, TypeScript 등 개발 도구의 최신 업데이트와 릴리스 소식을 확인하세요."
   },
   "docs": {
     "title": "문서",
@@ -133,5 +136,23 @@
     "comingSoonDescription": "튜토리얼, 릴리스 노트, 설정 관리에 대한 인사이트를 공유할 예정입니다. 조금만 기다려 주세요!",
     "latestPosts": "최신 글",
     "noPosts": "아직 글이 없습니다. 조금만 기다려 주세요!"
+  },
+  "article": {
+    "title": "아티클",
+    "description": "ESLint, Prettier, TypeScript 등 개발 도구의 최신 업데이트와 릴리스 소식을 확인하세요.",
+    "latestUpdates": "최신 업데이트",
+    "allTools": "전체",
+    "noArticles": "아직 아티클이 없습니다. 곧 업데이트 소식이 추가됩니다!",
+    "viewOriginal": "원문 보기",
+    "generateConfig": "설정 생성하기",
+    "tools": {
+      "eslint": "ESLint",
+      "prettier": "Prettier",
+      "typescript": "TypeScript",
+      "nextjs": "Next.js",
+      "react": "React",
+      "astro": "Astro",
+      "nodejs": "Node.js"
+    }
   }
 }

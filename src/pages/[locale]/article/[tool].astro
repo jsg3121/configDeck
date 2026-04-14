@@ -1,0 +1,187 @@
+---
+import { buildLocalizedPath, getTranslation, SUPPORTED_LOCALES, type Locale } from '@/i18n'
+import { getCollection } from 'astro:content'
+
+import Layout from '@/layouts/Layout.astro'
+
+const TOOLS = ['eslint', 'prettier', 'typescript', 'nextjs', 'react', 'astro', 'nodejs'] as const
+type Tool = (typeof TOOLS)[number]
+
+export const getStaticPaths = () => {
+  const tools = ['eslint', 'prettier', 'typescript', 'nextjs', 'react', 'astro', 'nodejs'] as const
+  const paths = []
+  for (const locale of SUPPORTED_LOCALES) {
+    for (const tool of tools) {
+      paths.push({ params: { locale, tool } })
+    }
+  }
+  return paths
+}
+
+const { locale, tool } = Astro.params as { locale: Locale; tool: Tool }
+
+const toolColors: Record<Tool, string> = {
+  eslint: 'bg-purple-100 text-purple-800',
+  prettier: 'bg-pink-100 text-pink-800',
+  typescript: 'bg-blue-100 text-blue-800',
+  nextjs: 'bg-gray-100 text-gray-800',
+  react: 'bg-cyan-100 text-cyan-800',
+  astro: 'bg-orange-100 text-orange-800',
+  nodejs: 'bg-green-100 text-green-800',
+}
+
+const toolToGenerator: Record<Tool, string> = {
+  eslint: 'eslint',
+  prettier: 'prettier',
+  typescript: 'tsconfig',
+  nextjs: 'next',
+  react: 'react',
+  astro: 'astro',
+  nodejs: 'node',
+}
+
+// 해당 도구의 아티클만 가져오기
+let articles: Awaited<ReturnType<typeof getCollection<'articles'>>> = []
+try {
+  const allArticles = await getCollection('articles')
+  articles = allArticles
+    .filter((article) => article.id.startsWith(`${locale}/`) && article.data.tool === tool)
+    .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+} catch {
+  // 컬렉션이 비어있거나 없는 경우 빈 배열 유지
+}
+
+const formatDate = (date: Date): string => {
+  return date.toLocaleDateString(locale === 'ko' ? 'ko-KR' : 'en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  })
+}
+
+const toolName = getTranslation(locale, `article.tools.${tool}`)
+const pageTitle =
+  locale === 'ko' ? `${toolName} 아티클 — ConfigDeck` : `${toolName} Articles — ConfigDeck`
+const pageDescription =
+  locale === 'ko'
+    ? `${toolName}의 최신 업데이트와 릴리스 소식을 확인하세요.`
+    : `Stay up to date with the latest ${toolName} updates and releases.`
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  locale={locale}
+  pagePath={`/article/${tool}`}
+  currentPath="/article"
+>
+  <section class="mx-auto max-w-7xl px-6 py-24">
+    <div class="flex items-center gap-3">
+      <span class={`rounded-full px-4 py-2 text-sm font-medium ${toolColors[tool]}`}>
+        {toolName}
+      </span>
+      <h1 class="text-4xl font-extrabold tracking-tight lg:text-5xl">
+        {getTranslation(locale, 'article.title')}
+      </h1>
+    </div>
+    <p class="mt-4 max-w-2xl text-lg text-gray-500">
+      {pageDescription}
+    </p>
+
+    <!-- 도구 필터 탭 -->
+    <div class="mt-10 flex flex-wrap gap-2">
+      <a
+        href={buildLocalizedPath(locale, '/article')}
+        class="rounded-full bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
+      >
+        {getTranslation(locale, 'article.allTools')}
+      </a>
+      {
+        TOOLS.map((t) => (
+          <a
+            href={buildLocalizedPath(locale, `/article/${t}`)}
+            class={`rounded-full px-4 py-2 text-sm font-medium ${
+              t === tool ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            {getTranslation(locale, `article.tools.${t}`)}
+          </a>
+        ))
+      }
+    </div>
+
+    <!-- 아티클 목록 -->
+    <div class="mt-10">
+      <h2 class="text-2xl font-bold">{getTranslation(locale, 'article.latestUpdates')}</h2>
+
+      {
+        articles.length > 0 ? (
+          <div class="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {articles.map((article) => (
+              <article class="rounded-xl border border-border bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
+                <div class="flex items-center justify-between">
+                  <span
+                    class={`rounded-full px-3 py-1 text-xs font-medium ${toolColors[article.data.tool]}`}
+                  >
+                    {getTranslation(locale, `article.tools.${article.data.tool}`)}
+                  </span>
+                  <time class="text-sm text-gray-400">{formatDate(article.data.pubDate)}</time>
+                </div>
+
+                <h3 class="mt-4 line-clamp-2 text-lg font-semibold text-gray-900">
+                  {article.data.title}
+                </h3>
+
+                <p class="mt-2 line-clamp-3 text-sm text-gray-500">{article.body}</p>
+
+                <div class="mt-4 flex items-center gap-3">
+                  <a
+                    href={article.data.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-sm font-medium text-primary hover:underline"
+                  >
+                    {getTranslation(locale, 'article.viewOriginal')} &rarr;
+                  </a>
+                  <a
+                    href={buildLocalizedPath(
+                      locale,
+                      `/generator/${toolToGenerator[article.data.tool]}`,
+                    )}
+                    class="text-sm font-medium text-gray-500 hover:text-gray-700"
+                  >
+                    {getTranslation(locale, 'article.generateConfig')}
+                  </a>
+                </div>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div class="mt-6 rounded-xl border border-dashed border-border py-16 text-center text-gray-400">
+            {getTranslation(locale, 'article.noArticles')}
+          </div>
+        )
+      }
+    </div>
+
+    <!-- 설정 생성 CTA -->
+    <div class="mt-16 rounded-xl border border-primary/20 bg-primary/5 p-8 text-center">
+      <h2 class="text-xl font-bold text-gray-900">
+        {locale === 'ko' ? `${toolName} 설정 파일이 필요하신가요?` : `Need a ${toolName} config?`}
+      </h2>
+      <p class="mt-2 text-gray-500">
+        {
+          locale === 'ko'
+            ? 'ConfigDeck에서 몇 초 만에 생성하세요.'
+            : 'Generate it in seconds with ConfigDeck.'
+        }
+      </p>
+      <a
+        href={buildLocalizedPath(locale, `/generator/${toolToGenerator[tool]}`)}
+        class="mt-6 inline-block rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white hover:bg-primary-hover"
+      >
+        {getTranslation(locale, 'article.generateConfig')}
+      </a>
+    </div>
+  </section>
+</Layout>

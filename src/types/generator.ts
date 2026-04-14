@@ -61,7 +61,8 @@ export interface SelectControl extends BaseControl {
 /** 숫자 입력 — 직접 입력 + 자주 쓰는 값 버튼 */
 export interface NumberControl extends BaseControl {
   type: 'number'
-  default: number
+  /** 기본값. null이면 빈 입력 상태로 시작 */
+  default: number | null
   min?: number
   max?: number
   step?: number

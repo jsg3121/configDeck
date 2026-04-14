@@ -8,7 +8,10 @@ interface Props {
 
 const { locale, currentPath = '/' } = Astro.props
 
-const navigationItems = [{ labelKey: 'nav.generator', path: '/generator' }] as const
+const navigationItems = [
+  { labelKey: 'nav.generator', path: '/generator' },
+  { labelKey: 'nav.article', path: '/article' },
+] as const
 
 /**
  * 현재 경로가 네비게이션 항목과 일치하는지 확인한다.
@@ -36,8 +39,8 @@ const getLanguageSwitchPath = (targetLocale: Locale): string => {
       <span class="text-primary">Config</span>Deck
     </a>
 
-    <!-- 데스크톱 네비게이션 (추후 네비게이션 링크가 추가될 때 사용)-->
-    <!-- <nav class="hidden items-center gap-6 text-sm font-medium text-gray-600 md:flex">
+    <!-- 데스크톱 네비게이션 -->
+    <nav class="hidden items-center gap-6 text-sm font-medium text-gray-600 md:flex">
       {
         navigationItems.map((item) => (
           <a
@@ -51,7 +54,7 @@ const getLanguageSwitchPath = (targetLocale: Locale): string => {
           </a>
         ))
       }
-    </nav> -->
+    </nav>
 
     <!-- 유틸리티 영역 -->
     <div class="flex items-center gap-3">
