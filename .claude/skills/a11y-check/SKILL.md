@@ -1,6 +1,9 @@
 ---
 name: a11y-check
-description: 접근성(WCAG) 준수 검사 스킬. 시맨틱 HTML, aria 속성, 색상 대비, 키보드 내비게이션, 이미지 alt 텍스트 등을 검증한다. "접근성 체크", "a11y 검사", "WCAG 확인", "접근성 검토" 등의 요청에서 트리거된다.
+description: |
+  접근성(WCAG) 준수 검사 스킬. 시맨틱 HTML, aria 속성, 색상 대비, 키보드 내비게이션, 이미지 alt 텍스트 등을 검증한다.
+  TRIGGER when: "접근성 체크", "a11y 검사", "WCAG 확인", "접근성 검토", "스크린 리더", "키보드 접근성" 요청, 컴포넌트/페이지 접근성 검증 필요
+  DO NOT TRIGGER when: SEO 검사(seo-audit 사용), 일반 코드 리뷰(code-review 사용), 단순 HTML 구조 질문
 disable-model-invocation: true
 ---
 

@@ -1,7 +1,7 @@
 # ConfigDeck 서비스 기획서
 
-> **최종 수정**: 2026-04-07
-> **관련 ADR**: ADR-0006 (생성기 중심 IA 재설계), ADR-0007 (페이지 구조 재설계)
+> **최종 수정**: 2026-04-14
+> **관련 ADR**: ADR-0006 (생성기 중심 IA 재설계), ADR-0007 (페이지 구조 재설계), ADR-0010 (아티클 콘텐츠 전략), ADR-0011 (AI 요약 자동화)
 
 ---
 
@@ -61,8 +61,10 @@
 ├─ /generator                     # 생성기 허브
 │  ├─ /{file-name}               # 파일별 생성기 (SEO 랜딩 겸용)
 │  └─ /{stack-name}              # 스택별 생성기 (SEO 랜딩 겸용)
+├─ /article                       # 개발 도구 아티클 (SPEC-0002)
+│  └─ /{tool}                    # 도구별 필터 (eslint, prettier, typescript 등)
 ├─ /docs                          # 문서/가이드
-└─ /blog                          # 블로그
+└─ /blog                          # 블로그 (미구현, 추후 /article과 통합 검토)
 ```
 
 페이지 구조 상세 → `references/page-structure.md`
@@ -104,3 +106,4 @@
 | `references/page-structure.md` | 페이지별 레이아웃, 구성, 반응형 전략 상세 |
 | `references/migration-spec.md` | 마이그레이션 기능 동작 흐름, 지원 시나리오, UI 구성 |
 | `references/edge-cases.md` | 엣지케이스 및 예외 처리 규칙 |
+| `features/SPEC-0002-dev-tools-article-page.md` | 개발 도구 아티클 페이지 기획 |

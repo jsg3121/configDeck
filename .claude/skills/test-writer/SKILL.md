@@ -1,6 +1,9 @@
 ---
 name: test-writer
-description: 단위 테스트 작성 스킬. Vitest를 사용하여 설정 생성 로직, 유틸 함수, 스키마 검증 등의 단위 테스트를 작성한다. 기존 테스트 패턴을 분석하여 일관된 스타일로 생성한다. "테스트 작성", "테스트 만들어줘", "유닛 테스트", "vitest" 등의 요청에서 트리거된다.
+description: |
+  단위 테스트 작성 스킬. Vitest로 설정 생성 로직, 유틸 함수, 스키마 검증 등의 테스트를 작성한다.
+  TRIGGER when: "테스트 작성", "테스트 만들어줘", "유닛 테스트 추가", "vitest 테스트" 요청, 새 함수/모듈에 대한 테스트 작성 필요
+  DO NOT TRIGGER when: E2E 테스트(e2e-test 사용), 테스트 실행만 필요(qa-agent 사용), 기존 테스트 실행/분석
 disable-model-invocation: true
 ---
 

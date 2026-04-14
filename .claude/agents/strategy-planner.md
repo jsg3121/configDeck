@@ -1,6 +1,9 @@
 ---
 name: strategy-planner
-description: 분석 결과를 종합해 전략 방향과 실행 우선순위 도출이 필요할 때 사용. "전략 수립", "실행 계획", "로드맵", "우선순위", "Go-to-Market" 관련 작업에서 활용한다.
+description: |
+  MI+BA 분석 결과를 종합해 전략 방향과 실행 우선순위를 도출하는 전문 에이전트. 분석 없이 전략 제시 금지.
+  TRIGGER when: "전략 수립해줘", "실행 계획", "로드맵 작성", "우선순위 정리", "Go-to-Market 전략", biz-strategy 파이프라인의 Step 3, MI+BA 보고서가 준비된 상태
+  DO NOT TRIGGER when: 시장 조사(market-intelligence), 경쟁력 분석(business-analyst), MI/BA 보고서 없이 전략 요청, 종합 분석(biz-strategy 스킬)
 model: sonnet
 permissionMode: plan
 tools:

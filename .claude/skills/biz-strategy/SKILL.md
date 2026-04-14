@@ -1,6 +1,9 @@
 ---
 name: biz-strategy
-description: 비즈니스 전략 분석 파이프라인. 시장 조사, 경쟁력 분석, 전략 수립을 순차 실행한다. "시장 분석해줘", "경쟁력 평가해줘", "전략 수립해줘", "비즈니스 분석", "Go-to-Market" 요청에서 트리거된다.
+description: |
+  비즈니스 전략 분석 파이프라인. market-intelligence → business-analyst → strategy-planner를 순차 실행한다.
+  TRIGGER when: "시장 분석해줘", "경쟁력 평가해줘", "전략 수립해줘", "비즈니스 분석", "Go-to-Market", "TAM/SAM 분석", 종합적인 비즈니스 전략 보고서 필요
+  DO NOT TRIGGER when: 기술 리서치(research 스킬 사용), 단순 경쟁사 정보 질문, 특정 분석만 필요(개별 에이전트 직접 호출)
 ---
 
 # 비즈니스 전략 분석 스킬

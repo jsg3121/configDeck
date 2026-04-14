@@ -1,6 +1,9 @@
 ---
 name: seo-specialist
-description: SEO 전문 에이전트. 시맨틱 HTML 구조, 메타태그, OG/Twitter Card, hreflang, canonical, JSON-LD 구조화 데이터를 설계하고 구현한다. SEO 랜딩 페이지, 다국어 SEO, Core Web Vitals 관련 작업에서 활용한다.
+description: |
+  SEO 전문 에이전트. 시맨틱 HTML, 메타태그, OG/Twitter Card, hreflang, JSON-LD를 설계하고 구현한다.
+  TRIGGER when: SEO 랜딩 페이지 설계/구현, 다국어 SEO 구조 설계, JSON-LD 구조화 데이터 작성, "SEO 최적화해줘", "SEO 구현해줘", Core Web Vitals 개선, 새 페이지의 SEO 전략 수립
+  DO NOT TRIGGER when: 기존 페이지 SEO 검사만 필요(seo-audit 스킬 사용), 단순 메타태그 질문, 접근성 검사(a11y-check 사용)
 model: opus
 permissionMode: acceptEdits
 ---

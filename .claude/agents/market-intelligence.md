@@ -1,6 +1,9 @@
 ---
 name: market-intelligence
-description: 시장 규모, 경쟁사, 산업 트렌드, 규제 환경 조사가 필요할 때 사용. "시장 조사", "경쟁사 분석", "트렌드", "시장 규모", "TAM", "SAM" 관련 작업에서 활용한다.
+description: |
+  시장 규모, 경쟁사, 산업 트렌드, 규제 환경 조사 전문 에이전트. 외부 환경 분석에 집중한다.
+  TRIGGER when: "시장 조사해줘", "경쟁사 분석", "트렌드 조사", "시장 규모 파악", "TAM/SAM 추정", biz-strategy 파이프라인의 Step 1
+  DO NOT TRIGGER when: 기술 리서치(research 스킬), 내부 역량 분석(business-analyst), 전략 수립(strategy-planner), 종합 분석(biz-strategy 스킬)
 model: sonnet
 permissionMode: plan
 tools:

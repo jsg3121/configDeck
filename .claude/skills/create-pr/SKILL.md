@@ -1,6 +1,9 @@
 ---
 name: create-pr
-description: PR 생성 스킬. Pull Request를 생성할 때 사용한다. 대상 브랜치를 확인하고, 품질 검증(lint/코드 리뷰)을 먼저 수행한 후, PR 템플릿을 기반으로 작업 유형, 작업 사항, 라벨을 포함한 PR을 생성한다. main 머지 시에는 테스트까지 통과해야 PR을 생성한다. "PR 만들어줘", "PR 생성", "풀 리퀘스트" 등의 요청에서 트리거된다.
+description: |
+  PR 생성 스킬. 품질 검증(lint/코드 리뷰) 후 PR 템플릿 기반으로 PR을 생성한다. main 머지 시 테스트 통과 필수.
+  TRIGGER when: "PR 만들어줘", "PR 생성", "풀 리퀘스트 만들어줘", 작업 완료 후 PR 생성 필요
+  DO NOT TRIGGER when: 커밋만 필요(/commit 사용), 코드 리뷰만 필요(code-review 사용), 브랜치 생성/전환만 필요
 disable-model-invocation: true
 ---
 

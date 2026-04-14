@@ -1,6 +1,9 @@
 ---
 name: e2e-test
-description: E2E 테스트 작성 및 실행 스킬. Playwright를 사용하여 빌드된 사이트의 사용자 플로우를 테스트한다. 설정 생성기의 옵션 선택, 미리보기, 다운로드 흐름과 SEO 랜딩 페이지의 렌더링을 검증한다. "E2E 테스트", "Playwright", "브라우저 테스트", "통합 테스트" 등의 요청에서 트리거된다.
+description: |
+  E2E 테스트 작성 스킬. Playwright로 사용자 플로우(옵션 선택, 미리보기, 다운로드, SEO 랜딩)를 테스트한다.
+  TRIGGER when: "E2E 테스트 작성", "Playwright 테스트 만들어줘", "브라우저 테스트 추가", 새 사용자 플로우에 대한 테스트 작성 필요
+  DO NOT TRIGGER when: 단위 테스트(test-writer 사용), 테스트 실행만 필요(qa-agent 사용), 기존 테스트 실행/분석
 disable-model-invocation: true
 ---
 

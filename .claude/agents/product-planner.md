@@ -1,6 +1,9 @@
 ---
 name: product-planner
-description: 기획서(SPEC) 작성·관리 전문 에이전트. 사용자 요구사항과 서비스 맥락을 종합해 기능 단위 기획서를 작성하고, 기존 기획서를 업데이트하며, ADR과의 연결을 관리한다. "기획서 작성", "SPEC 작성", "기능 기획", "요구사항 정리", "기획 문서화" 관련 작업에서 활용한다.
+description: |
+  기획서(SPEC) 작성·관리 전문 에이전트. 기능 단위 기획서 작성, 업데이트, ADR 연결을 관리한다.
+  TRIGGER when: "기획서 작성해줘", "SPEC 작성", "기능 기획", "요구사항 정리해줘", "기획 문서화", 새 기능의 기획 문서 필요, 기존 SPEC 업데이트
+  DO NOT TRIGGER when: UX 설계(ux-designer), 기술 의사결정(ADR 직접 작성), 시장 분석(biz-strategy 스킬), UI 구현(ui-publisher)
 model: sonnet
 permissionMode: plan
 tools:

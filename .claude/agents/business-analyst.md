@@ -1,6 +1,9 @@
 ---
 name: business-analyst
-description: 서비스 경쟁력, 포지셔닝, 내부 역량 분석이 필요할 때 사용. "경쟁력 분석", "SWOT", "포지셔닝", "차별화", "가치 제안" 관련 작업에서 활용한다.
+description: |
+  서비스 경쟁력, 포지셔닝, 내부 역량 분석 전문 에이전트. MI 결과를 기반으로 내부 역량을 대조 분석한다.
+  TRIGGER when: "경쟁력 분석해줘", "SWOT 분석", "포지셔닝 평가", "차별화 분석", "가치 제안 정리", biz-strategy 파이프라인의 Step 2
+  DO NOT TRIGGER when: 시장 조사(market-intelligence), 전략 수립(strategy-planner), 기술 비교(research 스킬), 종합 분석(biz-strategy 스킬)
 model: sonnet
 permissionMode: plan
 tools:

@@ -1,6 +1,9 @@
 ---
 name: static-analyzer
-description: 정적 분석 전문 서브에이전트. ESLint, Prettier, TypeScript 타입 검사를 실행하고 결과를 분석한다. 코드 품질, 스타일 일관성, 타입 안전성을 검증한다. qa-agent의 서브에이전트로 호출된다.
+description: |
+  정적 분석 전문 서브에이전트. ESLint, Prettier, TypeScript 타입 검사를 실행하고 분석한다. qa-agent 전용 서브에이전트.
+  TRIGGER when: qa-agent가 정적 분석 실행을 요청할 때만 호출
+  DO NOT TRIGGER when: 직접 호출하지 않음(qa-agent를 통해서만 호출), 린트 검사만 필요(lint-check 스킬), 코드 리뷰(code-review 스킬)
 model: sonnet
 permissionMode: default
 tools:

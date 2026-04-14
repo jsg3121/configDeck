@@ -1,6 +1,9 @@
 ---
 name: unit-tester
-description: 단위 테스트 전문 서브에이전트. Vitest를 사용하여 설정 생성 로직, 유틸리티 함수, 스키마 검증 등의 단위 테스트를 실행하고 결과를 분석한다. qa-agent의 서브에이전트로 호출된다.
+description: |
+  단위 테스트 전문 서브에이전트. Vitest로 단위 테스트를 실행하고 결과를 분석한다. qa-agent 전용 서브에이전트.
+  TRIGGER when: qa-agent가 단위 테스트 실행을 요청할 때만 호출
+  DO NOT TRIGGER when: 직접 호출하지 않음(qa-agent를 통해서만 호출), 테스트 작성(test-writer 스킬), E2E 테스트(e2e-tester)
 model: sonnet
 permissionMode: default
 tools:
