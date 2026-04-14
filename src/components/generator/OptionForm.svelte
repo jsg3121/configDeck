@@ -140,12 +140,12 @@
     <!-- 백드롭 -->
     <button
       type="button"
-      class="fixed inset-0 bg-black/30"
+      class="fixed inset-0 bg-black/30 backdrop-blur-sm"
       onclick={() => {
         showSearch = false
         searchQuery = ''
       }}
-      aria-label="Close search"
+      aria-label={locale === 'ko' ? '검색 닫기' : 'Close search'}
     ></button>
 
     <!-- 검색 패널 -->
@@ -175,7 +175,25 @@
             : 'Search options by name or description...'}
           class="flex-1 border-0 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none"
         />
-        <kbd class="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] text-gray-400">ESC</kbd>
+        <button
+          type="button"
+          class="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/50"
+          onclick={() => {
+            showSearch = false
+            searchQuery = ''
+          }}
+          aria-label={locale === 'ko' ? '검색 닫기' : 'Close search'}
+        >
+          <svg
+            class="h-4 w-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
       </div>
 
       {#if searchResults.length > 0}
