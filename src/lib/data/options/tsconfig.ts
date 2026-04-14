@@ -13,6 +13,44 @@ export const tsconfigOptions: FileOptionDefinition = {
   slug: 'tsconfig',
   sections: [
     // -----------------------------------------------------------------
+    // Extends (프레임워크 베이스 설정)
+    // -----------------------------------------------------------------
+    {
+      title: '베이스 설정',
+      titleEn: 'Base Configuration',
+      description: '프레임워크 공식 tsconfig를 상속합니다. 권장 설정이 자동으로 적용됩니다.',
+      descriptionEn:
+        'Extend from official framework tsconfig. Recommended settings are automatically applied.',
+      controls: [
+        {
+          type: 'select',
+          key: 'extends',
+          label: '상속할 설정',
+          labelEn: 'Extends',
+          description:
+            '프레임워크 공식 tsconfig를 상속합니다. 선택 시 해당 프레임워크의 권장 설정이 적용됩니다.',
+          descriptionEn:
+            'Inherit from a framework tsconfig. The recommended settings will be applied automatically.',
+          tier: 'core',
+          rationale:
+            'Astro, Next.js 등 프레임워크는 공식 tsconfig를 제공하며, 이를 상속하는 것이 권장됩니다. 타입 지원과 최적화된 설정이 자동으로 적용됩니다.',
+          docsUrl: `${TS_DOCS}#extends`,
+          options: [
+            { label: '사용 안 함', value: '' },
+            { label: 'Astro (strict)', value: 'astro/tsconfigs/strict' },
+            { label: 'Astro (strictest)', value: 'astro/tsconfigs/strictest' },
+            { label: 'Astro (base)', value: 'astro/tsconfigs/base' },
+            { label: 'Next.js', value: 'next/core-web-vitals' },
+            { label: '@tsconfig/node20', value: '@tsconfig/node20/tsconfig.json' },
+            { label: '@tsconfig/node22', value: '@tsconfig/node22/tsconfig.json' },
+            { label: '@tsconfig/strictest', value: '@tsconfig/strictest/tsconfig.json' },
+            { label: '@tsconfig/vite-react', value: '@tsconfig/vite-react/tsconfig.json' },
+          ],
+          default: '',
+        },
+      ],
+    },
+    // -----------------------------------------------------------------
     // Language and Environment
     // -----------------------------------------------------------------
     {

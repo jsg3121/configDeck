@@ -72,6 +72,11 @@ export const generateTsconfigJson = (options: Record<string, unknown>): string =
 
   const tsconfig: Record<string, unknown> = {}
 
+  // extends는 최상위 속성으로 가장 먼저 위치
+  if ('extends' in options && typeof options.extends === 'string' && options.extends !== '') {
+    tsconfig.extends = options.extends
+  }
+
   if (Object.keys(compilerOptions).length > 0) {
     tsconfig.compilerOptions = compilerOptions
   }
