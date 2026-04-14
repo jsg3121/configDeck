@@ -2,7 +2,6 @@
 import { buildLocalizedPath, getTranslation, SUPPORTED_LOCALES, type Locale } from '@/i18n'
 
 import Layout from '@/layouts/Layout.astro'
-import Header from '@/components/common/Header.astro'
 import StackGenerator from '@/components/generator/StackGenerator.svelte'
 import { getStackIcon } from '@/lib/data/icons'
 import { STACK_DEFINITIONS, type StackDefinition } from '@/lib/data/stacks'
@@ -41,11 +40,8 @@ const serializableFiles = currentStack.files.map((f) => ({
   locale={locale}
   pagePath={`/generator/${stackSlug}`}
   currentPath={`/generator/${stackSlug}`}
-  bare
 >
-  <Header locale={locale} currentPath={`/generator/${stackSlug}`} />
-
-  <main class="w-full max-w-7xl mx-auto flex flex-col lg:h-[calc(100vh-65px)] lg:overflow-hidden">
+  <div class="w-full max-w-7xl mx-auto flex flex-col lg:h-[calc(100vh-65px)]">
     <!-- SEO: Astro 정적 영역 -->
     <div class="mx-auto w-full max-w-7xl shrink-0 px-6">
       <div class="w-full">
@@ -96,5 +92,5 @@ const serializableFiles = currentStack.files.map((f) => ({
     <div class="w-full min-h-0 flex-1">
       <StackGenerator client:load locale={locale} files={serializableFiles} />
     </div>
-  </main>
+  </div>
 </Layout>

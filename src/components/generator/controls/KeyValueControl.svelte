@@ -86,26 +86,26 @@
 
   <div class="mt-1 flex flex-col gap-2">
     {#each entries as [entryKey, entryValue], index (index)}
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2 min-w-0">
         <input
           type="text"
           value={entryKey}
           placeholder={control.keyPlaceholder ?? 'key'}
           onchange={(e) => handleKeyChange(entryKey, entryValue, e)}
-          class="flex-1 rounded-md border border-border bg-surface px-3 py-1.5 text-sm text-gray-700 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+          class="min-w-0 flex-1 rounded-md border border-border bg-surface px-3 py-1.5 text-sm text-gray-700 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
         />
-        <span class="text-xs text-gray-400">&rarr;</span>
+        <span class="shrink-0 text-xs text-gray-400">&rarr;</span>
         <input
           type="text"
           value={entryValue}
           placeholder={control.valuePlaceholder ?? 'value'}
           oninput={(e) => handleValueChange(entryKey, e)}
-          class="flex-1 rounded-md border border-border bg-surface px-3 py-1.5 text-sm text-gray-700 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+          class="min-w-0 flex-1 rounded-md border border-border bg-surface px-3 py-1.5 text-sm text-gray-700 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
         />
         <button
           type="button"
           onclick={() => removeRow(entryKey)}
-          class="rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-500"
+          class="shrink-0 rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-500"
           aria-label={locale === 'ko' ? '행 삭제' : 'Remove row'}
         >
           <svg class="h-4 w-4" viewBox="0 0 16 16" fill="currentColor">

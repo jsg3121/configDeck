@@ -1,22 +1,13 @@
 ---
-import { getTranslation, type Locale } from '@/i18n'
-
-interface Props {
-  locale: Locale
-}
-
-const { locale } = Astro.props
-
 const footerLinks = [
-  { labelKey: 'footer.github', href: 'https://github.com/jsg3121/configDeck' },
-  { labelKey: 'footer.changelog', href: 'https://github.com/jsg3121/configDeck/releases' },
-  { labelKey: 'footer.feedback', href: 'https://github.com/jsg3121/configDeck/issues' },
+  { label: 'GitHub', href: 'https://github.com/jsg3121/configDeck' },
+  { label: 'Developer', href: 'https://sungyujang.com/' },
+  { label: 'Contact', href: 'mailto:xodm95@gmail.com' },
 ] as const
 ---
 
 <footer class="border-t border-border">
   <div class="mx-auto max-w-7xl px-6 py-10 text-center text-sm text-gray-400">
-    <p>{getTranslation(locale, 'footer.tagline')}</p>
     <div class="mt-3 flex justify-center gap-4">
       {
         footerLinks.map((link) => (
@@ -26,10 +17,11 @@ const footerLinks = [
             rel="noopener noreferrer"
             class="hover:text-gray-600 transition-colors"
           >
-            {getTranslation(locale, link.labelKey)}
+            {link.label}
           </a>
         ))
       }
     </div>
+    <p class="mt-4">&copy; {new Date().getFullYear()} ConfigDeck. All rights reserved.</p>
   </div>
 </footer>

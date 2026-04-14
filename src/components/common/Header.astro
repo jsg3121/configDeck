@@ -40,19 +40,25 @@ const getLanguageSwitchPath = (targetLocale: Locale): string => {
     </a>
 
     <!-- 데스크톱 네비게이션 -->
-    <nav class="hidden items-center gap-6 text-sm font-medium text-gray-600 md:flex">
+    <nav class="hidden items-center gap-8 md:flex">
       {
-        navigationItems.map((item) => (
-          <a
-            href={buildLocalizedPath(locale, item.path)}
-            class:list={[
-              'hover:text-gray-900 transition-colors',
-              isActiveNavItem(item.path) && 'text-gray-900',
-            ]}
-          >
-            {getTranslation(locale, item.labelKey)}
-          </a>
-        ))
+        navigationItems.map((item) => {
+          const isActive = isActiveNavItem(item.path)
+          return (
+            <a
+              href={buildLocalizedPath(locale, item.path)}
+              class:list={[
+                'border-b-2 pb-0.5 text-sm font-medium transition-colors',
+                isActive
+                  ? 'border-primary text-gray-900'
+                  : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-900',
+              ]}
+              aria-current={isActive ? 'page' : undefined}
+            >
+              {getTranslation(locale, item.labelKey)}
+            </a>
+          )
+        })
       }
     </nav>
 
