@@ -37,9 +37,6 @@
   // 상태 관리
   // ---------------------------------------------------------------------------
 
-  /** 초기 프리셋을 결정한다 (두 번째 프리셋 또는 첫 번째) */
-  const initialPreset = presets[1] ?? presets[0]
-
   /** 신규 옵션 구조에서 모든 control의 빈 값(초기 상태)으로 구성된 맵을 반환한다 */
   const buildEmptyValues = (): Record<string, unknown> => {
     const definition = getOptionDefinition(fileSlug)
@@ -87,6 +84,9 @@
 
   /** OptionForm에 전달할 섹션 목록 */
   let formSections = $derived<NewOptionSection[]>(getOptionDefinition(fileSlug)?.sections ?? [])
+
+  /** 모바일 뷰 전환 탭 (옵션 / 미리보기) */
+  let mobileView = $state<'options' | 'preview'>('options')
 
   /** 마이그레이션 결과 */
   let migrationResult = $state<MigrationResult | null>(null)
@@ -150,6 +150,8 @@
   let presetLabel = $derived(locale === 'ko' ? '프리셋' : 'Preset')
   let relatedFilesLabel = $derived(locale === 'ko' ? '함께 쓰면 좋아요' : 'Goes well with')
   let clearLabel = $derived(locale === 'ko' ? '초기화' : 'Clear')
+  let optionsLabel = $derived(locale === 'ko' ? '옵션' : 'Options')
+  let previewLabel = $derived(locale === 'ko' ? '미리보기' : 'Preview')
 
   /** 현재 로케일에 맞는 관련 파일 설명을 반환 */
   const getRelatedDescription = (file: RelatedFile): string =>
@@ -157,8 +159,32 @@
 </script>
 
 <div class="mx-auto flex h-full w-full flex-col lg:flex-row">
+  <!-- 모바일 전용: 옵션/미리보기 탭 -->
+  <div class="flex border-b border-border lg:hidden">
+    <button
+      type="button"
+      class="flex-1 py-3 text-center text-sm font-medium transition-colors {mobileView === 'options'
+        ? 'border-b-2 border-primary text-primary'
+        : 'text-gray-500 hover:text-gray-700'}"
+      onclick={() => (mobileView = 'options')}
+    >
+      {optionsLabel}
+    </button>
+    <button
+      type="button"
+      class="flex-1 py-3 text-center text-sm font-medium transition-colors {mobileView === 'preview'
+        ? 'border-b-2 border-primary text-primary'
+        : 'text-gray-500 hover:text-gray-700'}"
+      onclick={() => (mobileView = 'preview')}
+    >
+      {previewLabel}
+    </button>
+  </div>
+
   <!-- 좌측 패널: 옵션 -->
-  <div class="w-full lg:w-1/2 lg:overflow-y-auto">
+  <div
+    class="w-full lg:w-1/2 lg:overflow-y-auto {mobileView === 'preview' ? 'hidden lg:block' : ''}"
+  >
     <div class="mx-auto max-w-full px-6 py-8">
       {#if supportsMigration}
         <div class="mb-6 flex gap-1 rounded-lg bg-gray-100 p-1">
@@ -262,7 +288,10 @@
 
   <!-- 우측 패널: 미리보기 -->
   <div
-    class="w-full border-t border-border lg:w-[calc(100%-444px)] lg:h-full lg:border-t-0 lg:border-l"
+    class="w-full border-t border-border lg:w-[calc(100%-444px)] lg:h-full lg:border-t-0 lg:border-l {mobileView ===
+    'options'
+      ? 'hidden lg:block'
+      : ''}"
   >
     <CodePreview fileName={generatedOutput.fileName} code={generatedOutput.code} {locale} />
   </div>

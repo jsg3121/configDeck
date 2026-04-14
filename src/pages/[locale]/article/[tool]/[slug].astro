@@ -4,8 +4,7 @@ import { getCollection, render } from 'astro:content'
 
 import Layout from '@/layouts/Layout.astro'
 
-const TOOLS = ['eslint', 'prettier', 'typescript', 'nextjs', 'react', 'astro', 'nodejs'] as const
-type Tool = (typeof TOOLS)[number]
+type Tool = 'eslint' | 'prettier' | 'typescript' | 'nextjs' | 'react' | 'astro' | 'nodejs'
 
 export const getStaticPaths = async () => {
   const paths = []

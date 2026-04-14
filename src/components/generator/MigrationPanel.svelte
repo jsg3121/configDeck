@@ -24,6 +24,8 @@
   let detectedFormat = $derived(detectConfigFormat(inputCode))
   /** 변환 경고 목록 */
   let warnings = $state<string[]>([])
+  /** 에러 메시지 */
+  let errorMessage = $state<string | null>(null)
   /** 파일 업로드 input ref */
   let fileInputRef = $state<HTMLInputElement | null>(null)
   /** 업로드된 파일명 */
@@ -41,10 +43,15 @@
       const parsed = parseEslintLegacyConfig(inputCode, detectedFormat)
       const result = migrateEslintConfig(parsed)
       warnings = result.warnings
+      errorMessage = null
       onmigrationresult(result)
-    } catch {
+    } catch (err) {
       onmigrationresult(null)
       warnings = []
+      errorMessage =
+        locale === 'ko'
+          ? '변환에 실패했습니다. 지원되는 형식(.eslintrc JSON 또는 CommonJS)인지 확인해주세요.'
+          : 'Migration failed. Please check if the file is in a supported format (.eslintrc JSON or CommonJS).'
     }
   }
 
@@ -79,6 +86,7 @@
     inputCode = ''
     uploadedFileName = ''
     warnings = []
+    errorMessage = null
     onmigrationresult(null)
     if (fileInputRef) fileInputRef.value = ''
   }
@@ -185,6 +193,27 @@
       <span class="rounded bg-gray-100 px-2 py-0.5 font-mono">
         {detectedFormat === 'unknown' ? '?' : detectedFormat}
       </span>
+    </div>
+  {/if}
+
+  {#if errorMessage}
+    <div class="rounded-md border border-red-200 bg-red-50 p-3">
+      <div class="flex items-start gap-2">
+        <svg
+          class="mt-0.5 h-4 w-4 shrink-0 text-red-500"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+        <p class="text-xs text-red-700">{errorMessage}</p>
+      </div>
     </div>
   {/if}
 

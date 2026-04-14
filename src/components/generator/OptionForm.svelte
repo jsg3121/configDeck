@@ -206,6 +206,25 @@
   </div>
 {/if}
 
+<!-- 검색 버튼 (상단) -->
+<div class="flex items-center justify-end pb-4">
+  <button
+    type="button"
+    class="flex items-center gap-2 rounded-md border border-border px-3 py-1.5 text-xs text-gray-500 hover:border-primary hover:text-primary"
+    onclick={() => (showSearch = true)}
+  >
+    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+      />
+    </svg>
+    <span>{locale === 'ko' ? '옵션 검색' : 'Search options'}</span>
+    <kbd class="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] text-gray-400">⌘K</kbd>
+  </button>
+</div>
+
 <!-- 섹션 렌더링 -->
 {#each sections as section (section.titleEn)}
   {@const coreControls = section.controls.filter((c) => c.tier === 'core')}

@@ -7,7 +7,7 @@
 import * as fs from 'node:fs'
 import * as path from 'node:path'
 
-import { fetchAllFeeds, filterNewItems, type RSSItem } from './fetch-rss'
+import { fetchAllFeeds, filterNewItems } from './fetch-rss'
 import {
   generateSlug,
   generateSummaries,
