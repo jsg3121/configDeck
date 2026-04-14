@@ -1,6 +1,9 @@
 ---
 name: code-review
-description: PR 전 코드 리뷰 스킬. Gemini 코드 리뷰 이전에 코드 품질, 잠재적 이슈, 타입 안전성을 사전 검증한다. 서브에이전트를 활용하여 사전 맥락 없이 순수하게 코드만으로 검토한다. "코드 리뷰", "리뷰해줘", "코드 검토", "PR 전 리뷰" 등의 요청에서 트리거된다.
+description: |
+  PR 전 코드 리뷰 스킬. 코드 품질, 잠재적 이슈, 타입 안전성을 사전 검증한다. 서브에이전트로 사전 맥락 없이 순수하게 코드만 검토한다.
+  TRIGGER when: "코드 리뷰", "리뷰해줘", "코드 검토", "PR 전 리뷰" 요청, PR 생성 전 품질 검증 필요
+  DO NOT TRIGGER when: 린트/포맷 검사만 필요(lint-check 사용), 테스트 실행(qa-agent 사용), 특정 버그 수정 요청
 disable-model-invocation: true
 ---
 

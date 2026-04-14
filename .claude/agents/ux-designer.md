@@ -1,12 +1,18 @@
 ---
 name: ux-designer
-description: UX 설계 전문 에이전트. 사용자 플로우, 페이지 레이아웃, 정보 구조, 인터랙션 패턴, 반응형 전략을 설계한다. 새 기능이나 페이지를 구현하기 전 UX 관점의 설계를 담당한다. "UX 설계", "플로우 설계", "레이아웃", "와이어프레임" 관련 작업에서 활용한다.
-model: opus
+description: |
+  UX 설계 전문 에이전트. 사용자 플로우, 페이지 레이아웃, 정보 구조, 인터랙션 패턴, 반응형 전략을 설계한다. 코드 작성 없이 설계만 담당.
+  TRIGGER when: "UX 설계해줘", "플로우 설계", "레이아웃 설계", "와이어프레임", 새 기능/페이지 구현 전 UX 설계 필요, 인터랙션 패턴 정의, 반응형 전략 수립
+  DO NOT TRIGGER when: UI 구현(ui-publisher 사용), 단순 스타일 변경, 기존 컴포넌트 수정, 기획서 작성(product-planner 사용)
+model: sonnet
 permissionMode: plan
 tools:
   - Read
   - Glob
   - Grep
+  - WebSearch
+  - WebFetch
+allowedTools:
   - WebSearch
   - WebFetch
 ---

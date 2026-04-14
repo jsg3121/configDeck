@@ -1,0 +1,166 @@
+---
+import { buildLocalizedPath, getTranslation, SUPPORTED_LOCALES, type Locale } from '@/i18n'
+import { getCollection } from 'astro:content'
+
+import Layout from '@/layouts/Layout.astro'
+
+export const getStaticPaths = () => {
+  return SUPPORTED_LOCALES.map((locale) => ({ params: { locale } }))
+}
+
+const { locale } = Astro.params as { locale: Locale }
+
+const TOOLS = ['eslint', 'prettier', 'typescript', 'nextjs', 'react', 'astro', 'nodejs'] as const
+type Tool = (typeof TOOLS)[number]
+
+const toolColors: Record<Tool, string> = {
+  eslint: 'bg-purple-100 text-purple-800',
+  prettier: 'bg-pink-100 text-pink-800',
+  typescript: 'bg-blue-100 text-blue-800',
+  nextjs: 'bg-gray-100 text-gray-800',
+  react: 'bg-cyan-100 text-cyan-800',
+  astro: 'bg-orange-100 text-orange-800',
+  nodejs: 'bg-green-100 text-green-800',
+}
+
+const toolToGenerator: Record<Tool, string> = {
+  eslint: 'eslint',
+  prettier: 'prettier',
+  typescript: 'tsconfig',
+  nextjs: 'next',
+  react: 'react',
+  astro: 'astro',
+  nodejs: 'node',
+}
+
+// 아티클 가져오기 (locale에 맞는 폴더에서)
+let articles: Awaited<ReturnType<typeof getCollection<'articles'>>> = []
+try {
+  const allArticles = await getCollection('articles')
+  // locale 폴더 기준으로 필터링 (파일 경로에 locale이 포함된 것만)
+  articles = allArticles
+    .filter((article) => article.id.startsWith(`${locale}/`))
+    .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+} catch {
+  // 컬렉션이 비어있거나 없는 경우 빈 배열 유지
+}
+
+const formatDate = (date: Date): string => {
+  return date.toLocaleDateString(locale === 'ko' ? 'ko-KR' : 'en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  })
+}
+
+// JSON-LD 구조화 데이터
+const siteUrl = 'https://configdeck.dev'
+const collectionJsonLd = {
+  '@type': 'CollectionPage',
+  name: getTranslation(locale, 'seo.articleTitle'),
+  description: getTranslation(locale, 'seo.articleDescription'),
+  url: `${siteUrl}/${locale}/article`,
+  isPartOf: {
+    '@type': 'WebSite',
+    name: 'ConfigDeck',
+    url: siteUrl,
+  },
+  about: {
+    '@type': 'Thing',
+    name: locale === 'ko' ? '개발 도구 업데이트' : 'Developer Tool Updates',
+  },
+}
+---
+
+<Layout
+  title={getTranslation(locale, 'seo.articleTitle')}
+  description={getTranslation(locale, 'seo.articleDescription')}
+  locale={locale}
+  jsonLd={[collectionJsonLd]}
+  pagePath="/article"
+  currentPath="/article"
+>
+  <section class="mx-auto max-w-7xl px-6 py-24">
+    <h1 class="text-4xl font-extrabold tracking-tight lg:text-5xl">
+      {getTranslation(locale, 'article.title')}
+    </h1>
+    <p class="mt-4 max-w-2xl text-lg text-gray-500">
+      {getTranslation(locale, 'article.description')}
+    </p>
+
+    <!-- 도구 필터 탭 -->
+    <div class="mt-10 flex flex-wrap gap-2">
+      <a
+        href={buildLocalizedPath(locale, '/article')}
+        class="rounded-full bg-primary px-4 py-2 text-sm font-medium text-white"
+      >
+        {getTranslation(locale, 'article.allTools')}
+      </a>
+      {
+        TOOLS.map((tool) => (
+          <a
+            href={buildLocalizedPath(locale, `/article/${tool}`)}
+            class="rounded-full bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
+          >
+            {getTranslation(locale, `article.tools.${tool}`)}
+          </a>
+        ))
+      }
+    </div>
+
+    <!-- 아티클 목록 -->
+    <div class="mt-10">
+      <h2 class="text-2xl font-bold">{getTranslation(locale, 'article.latestUpdates')}</h2>
+
+      {
+        articles.length > 0 ? (
+          <div class="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {articles.map((article) => {
+              const slug = article.id.replace(`${locale}/`, '').replace('.md', '')
+              const articleUrl = buildLocalizedPath(locale, `/article/${article.data.tool}/${slug}`)
+              return (
+                <article class="group rounded-xl border border-border bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
+                  <div class="flex items-center justify-between">
+                    <span
+                      class={`rounded-full px-3 py-1 text-xs font-medium ${toolColors[article.data.tool]}`}
+                    >
+                      {getTranslation(locale, `article.tools.${article.data.tool}`)}
+                    </span>
+                    <time class="text-sm text-gray-400">{formatDate(article.data.pubDate)}</time>
+                  </div>
+
+                  <a href={articleUrl} class="block">
+                    <h3 class="mt-4 line-clamp-2 text-lg font-semibold text-gray-900 group-hover:text-primary">
+                      {article.data.title}
+                    </h3>
+                  </a>
+
+                  <p class="mt-2 line-clamp-3 text-sm text-gray-500">{article.data.summary}</p>
+
+                  <div class="mt-4 flex items-center gap-3">
+                    <a href={articleUrl} class="text-sm font-medium text-primary hover:underline">
+                      {locale === 'ko' ? '자세히 보기' : 'Read More'} &rarr;
+                    </a>
+                    <a
+                      href={buildLocalizedPath(
+                        locale,
+                        `/generator/${toolToGenerator[article.data.tool]}`,
+                      )}
+                      class="text-sm font-medium text-gray-500 hover:text-gray-700"
+                    >
+                      {getTranslation(locale, 'article.generateConfig')}
+                    </a>
+                  </div>
+                </article>
+              )
+            })}
+          </div>
+        ) : (
+          <div class="mt-6 rounded-xl border border-dashed border-border py-16 text-center text-gray-400">
+            {getTranslation(locale, 'article.noArticles')}
+          </div>
+        )
+      }
+    </div>
+  </section>
+</Layout>

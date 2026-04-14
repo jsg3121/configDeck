@@ -1,0 +1,82 @@
+---
+import { getTranslation, getTranslationRaw, SUPPORTED_LOCALES, type Locale } from '@/i18n'
+
+import Layout from '@/layouts/Layout.astro'
+import FaqSection from '@/components/home/FaqSection.astro'
+import HeroSection from '@/components/home/HeroSection.astro'
+import HowItWorksSection from '@/components/home/HowItWorksSection.astro'
+import PresetSection from '@/components/home/PresetSection.astro'
+import SupportedFilesSection from '@/components/home/SupportedFilesSection.astro'
+
+export const getStaticPaths = () => {
+  return SUPPORTED_LOCALES.map((locale) => ({ params: { locale } }))
+}
+
+const { locale } = Astro.params as { locale: Locale }
+
+const faqs = getTranslationRaw(locale, 'home.faqs') as Array<{
+  question: string
+  answer: string
+}>
+const steps = getTranslationRaw(locale, 'home.steps') as Array<{
+  title: string
+  description: string
+}>
+
+const jsonLdSchemas: Record<string, unknown>[] = [
+  {
+    '@type': 'WebApplication',
+    name: 'ConfigDeck',
+    url: 'https://configdeck.dev',
+    description: getTranslation(locale, 'seo.homeDescription'),
+    applicationCategory: 'DeveloperApplication',
+    operatingSystem: 'Any',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD',
+    },
+    browserRequirements: 'Requires JavaScript',
+    inLanguage: ['en', 'ko'],
+  },
+  {
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
+  },
+  {
+    '@type': 'HowTo',
+    name:
+      locale === 'ko'
+        ? 'ConfigDeck으로 설정 파일 생성하기'
+        : 'How to generate config files with ConfigDeck',
+    description: getTranslation(locale, 'seo.homeDescription'),
+    step: steps.map((step, index) => ({
+      '@type': 'HowToStep',
+      position: index + 1,
+      name: step.title,
+      text: step.description,
+    })),
+  },
+]
+---
+
+<Layout
+  title={getTranslation(locale, 'seo.homeTitle')}
+  description={getTranslation(locale, 'seo.homeDescription')}
+  locale={locale}
+  pagePath="/"
+  jsonLd={jsonLdSchemas}
+>
+  <HeroSection locale={locale} />
+  <PresetSection locale={locale} />
+  <HowItWorksSection locale={locale} />
+  <SupportedFilesSection locale={locale} />
+  <FaqSection locale={locale} />
+</Layout>

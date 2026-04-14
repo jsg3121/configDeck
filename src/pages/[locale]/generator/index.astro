@@ -1,0 +1,199 @@
+---
+import { getTranslation, SUPPORTED_LOCALES, type Locale } from '@/i18n'
+
+import Layout from '@/layouts/Layout.astro'
+import FileCardSection from '@/components/generator/FileCardSection.astro'
+import StackPresetSection from '@/components/generator/StackPresetSection.astro'
+
+export const getStaticPaths = () => {
+  return SUPPORTED_LOCALES.map((locale) => ({ params: { locale } }))
+}
+
+const { locale } = Astro.params as { locale: Locale }
+
+const stackPresetCards = [
+  {
+    name: 'React + Vite + TS',
+    fileCount: 7,
+    slug: 'react-vite-ts',
+    includedFiles: [
+      '.gitignore',
+      '.editorconfig',
+      'tsconfig.json',
+      'eslint.config.mjs',
+      'prettier.config.mjs',
+      'vite.config.ts',
+      'vitest.config.ts',
+    ],
+  },
+  {
+    name: 'Next.js + TS',
+    fileCount: 6,
+    slug: 'nextjs',
+    includedFiles: [
+      '.gitignore',
+      '.editorconfig',
+      'tsconfig.json',
+      'eslint.config.mjs',
+      'prettier.config.mjs',
+      'next.config.js',
+    ],
+  },
+  {
+    name: 'Astro + TS',
+    fileCount: 5,
+    slug: 'astro',
+    includedFiles: [
+      '.gitignore',
+      '.editorconfig',
+      'tsconfig.json',
+      'eslint.config.mjs',
+      'prettier.config.mjs',
+    ],
+  },
+  {
+    name: 'Node.js + TS',
+    fileCount: 5,
+    slug: 'nodejs',
+    includedFiles: [
+      '.gitignore',
+      '.editorconfig',
+      'tsconfig.json',
+      'eslint.config.mjs',
+      'prettier.config.mjs',
+    ],
+  },
+] as const
+
+const commonFileCards = [
+  {
+    name: '.gitignore',
+    slug: 'gitignore',
+    descriptionEn: 'Git ignore patterns for your OS, IDE, and framework',
+    descriptionKo: 'OS, IDE, 프레임워크에 맞는 Git 무시 패턴',
+  },
+  {
+    name: '.editorconfig',
+    slug: 'editorconfig',
+    descriptionEn: 'Consistent coding styles across editors and IDEs',
+    descriptionKo: '에디터와 IDE 간 일관된 코딩 스타일',
+  },
+  {
+    name: '.env',
+    slug: 'env',
+    descriptionEn: 'Environment variable template for team onboarding',
+    descriptionKo: '팀 온보딩을 위한 환경 변수 템플릿',
+  },
+] as const
+
+const frontendFileCards = [
+  {
+    name: 'tsconfig.json',
+    slug: 'tsconfig',
+    descriptionEn: 'TypeScript compiler options, path aliases, and strict mode settings',
+    descriptionKo: 'TypeScript 컴파일러 옵션, 경로 별칭, strict 모드 설정',
+  },
+  {
+    name: 'eslint.config.mjs',
+    slug: 'eslint-config',
+    descriptionEn: 'ESLint flat config with TypeScript, React/Vue, and import sorting',
+    descriptionKo: 'TypeScript, React/Vue, import 정렬을 지원하는 ESLint flat config',
+  },
+  {
+    name: 'prettier.config.mjs',
+    slug: 'prettier-config',
+    descriptionEn: 'Code formatting rules for quotes, semicolons, and trailing commas',
+    descriptionKo: '따옴표, 세미콜론, 후행 쉼표 등 코드 포맷팅 규칙',
+  },
+  {
+    name: 'vite.config.ts',
+    slug: 'vite-config',
+    descriptionEn: 'Vite bundler setup with plugins, aliases, and dev server options',
+    descriptionKo: '플러그인, 별칭, 개발 서버 옵션이 포함된 Vite 번들러 설정',
+  },
+  {
+    name: 'vitest.config.ts',
+    slug: 'vitest-config',
+    descriptionEn: 'Vitest test runner with coverage, environment, and setup files',
+    descriptionKo: '커버리지, 환경, 셋업 파일이 포함된 Vitest 테스트 러너',
+  },
+  {
+    name: 'next.config.js',
+    slug: 'next-config',
+    descriptionEn: 'Next.js configuration for images, redirects, and webpack customization',
+    descriptionKo: '이미지, 리다이렉트, webpack 커스터마이즈를 위한 Next.js 설정',
+  },
+] as const
+---
+
+<Layout
+  title={getTranslation(locale, 'seo.generatorTitle')}
+  description={getTranslation(locale, 'seo.generatorDescription')}
+  locale={locale}
+  pagePath="/generator"
+  currentPath="/generator"
+>
+  <!-- 페이지 타이틀 -->
+  <section class="mx-auto max-w-7xl px-6 pt-16 pb-10">
+    <h1 class="text-4xl font-extrabold tracking-tight lg:text-5xl">
+      {getTranslation(locale, 'generator.title')}
+    </h1>
+    <p class="mt-4 max-w-full text-lg text-gray-500">
+      {getTranslation(locale, 'generator.description')}
+    </p>
+  </section>
+
+  <!-- 방법 1: 스택 프리셋 -->
+  <section class="mx-auto max-w-7xl px-6 pb-16">
+    <div class="flex items-center gap-3">
+      <span
+        class="inline-flex h-7 items-center rounded-full bg-primary/10 px-3 text-xs font-bold uppercase tracking-wider text-primary"
+      >
+        {getTranslation(locale, 'generator.methodLabel')} 1
+      </span>
+      <h2 class="text-2xl font-bold">
+        {getTranslation(locale, 'generator.methodStackTitle')}
+      </h2>
+    </div>
+    <p class="mt-2 max-w-3xl text-gray-500">
+      {getTranslation(locale, 'generator.methodStackDescription')}
+    </p>
+    <div class="mt-8">
+      <StackPresetSection locale={locale} stackPresets={stackPresetCards} />
+    </div>
+  </section>
+
+  <!-- 구분선 -->
+  <div class="mx-auto max-w-7xl px-6">
+    <hr class="border-border" />
+  </div>
+
+  <!-- 방법 2: 개별 설정 파일 -->
+  <section class="mx-auto max-w-7xl px-6 py-16">
+    <div class="flex items-center gap-3">
+      <span
+        class="inline-flex h-7 items-center rounded-full bg-primary/10 px-3 text-xs font-bold uppercase tracking-wider text-primary"
+      >
+        {getTranslation(locale, 'generator.methodLabel')} 2
+      </span>
+      <h2 class="text-2xl font-bold">
+        {getTranslation(locale, 'generator.methodFileTitle')}
+      </h2>
+    </div>
+    <p class="mt-2 max-w-3xl text-gray-500">
+      {getTranslation(locale, 'generator.methodFileDescription')}
+    </p>
+
+    <FileCardSection
+      locale={locale}
+      categoryLabelKey="generator.categoryCommon"
+      files={commonFileCards}
+    />
+
+    <FileCardSection
+      locale={locale}
+      categoryLabelKey="generator.categoryFrontend"
+      files={frontendFileCards}
+    />
+  </section>
+</Layout>

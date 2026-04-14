@@ -22,3 +22,13 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# test results
+tests/results/
+coverage/
+playwright-report/
+test-results/
+
+# QA reports (generated)
+.claude/qa/reports/*.md
+!.claude/qa/reports/.gitkeep

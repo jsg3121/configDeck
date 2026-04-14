@@ -1,6 +1,9 @@
 ---
 name: component-builder
-description: Astro/Svelte 컴포넌트 생성 스킬. 프로젝트의 디자인 패턴, 컨벤션, Tailwind 스타일링에 맞는 컴포넌트를 생성한다. "컴포넌트 만들어줘", "컴포넌트 생성", "UI 만들어줘" 등의 요청에서 트리거된다.
+description: |
+  Astro/Svelte 컴포넌트 생성 스킬. 프로젝트 컨벤션과 Tailwind 스타일링에 맞는 단일 컴포넌트를 생성한다.
+  TRIGGER when: "컴포넌트 만들어줘", "컴포넌트 생성", "버튼/카드/모달 만들어줘" 요청, 단일 컴포넌트 생성 필요
+  DO NOT TRIGGER when: 페이지 전체 구현(ui-publisher 에이전트 사용), 여러 컴포넌트가 연결된 복잡한 UI, UX 설계 필요(ux-designer 에이전트 사용)
 disable-model-invocation: true
 ---
 

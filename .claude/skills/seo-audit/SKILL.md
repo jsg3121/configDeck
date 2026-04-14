@@ -1,6 +1,9 @@
 ---
 name: seo-audit
-description: SEO 감사 스킬. 페이지의 메타태그, 헤딩 구조, 시맨틱 마크업, 구조화 데이터(JSON-LD), hreflang, canonical, OG 태그를 검사하고 개선점을 보고한다. "SEO 검사", "SEO 감사", "SEO 체크", "메타태그 확인" 등의 요청에서 트리거된다.
+description: |
+  SEO 감사 스킬. 메타태그, 헤딩 구조, 시맨틱 마크업, JSON-LD, hreflang, canonical, OG 태그를 검사하고 개선점을 보고한다.
+  TRIGGER when: "SEO 검사", "SEO 감사", "SEO 체크", "메타태그 확인", "구조화 데이터 확인" 요청, 특정 페이지 SEO 상태 점검 필요
+  DO NOT TRIGGER when: SEO 설계/구현(seo-specialist 에이전트 사용), 접근성 검사(a11y-check 사용), 새 SEO 랜딩 페이지 생성
 disable-model-invocation: true
 ---
 

@@ -1,0 +1,56 @@
+---
+import { buildLocalizedPath, getTranslation, SUPPORTED_LOCALES, type Locale } from '@/i18n'
+
+import Layout from '@/layouts/Layout.astro'
+
+export const getStaticPaths = () => {
+  return SUPPORTED_LOCALES.map((locale) => ({ params: { locale } }))
+}
+
+const { locale } = Astro.params as { locale: Locale }
+---
+
+<Layout
+  title={getTranslation(locale, 'seo.blogTitle')}
+  description={getTranslation(locale, 'seo.blogDescription')}
+  locale={locale}
+  pagePath="/blog"
+  currentPath="/blog"
+  noindex
+>
+  <section class="mx-auto max-w-7xl px-6 py-24">
+    <h1 class="text-4xl font-extrabold tracking-tight lg:text-5xl">
+      {getTranslation(locale, 'blog.title')}
+    </h1>
+    <p class="mt-4 max-w-full text-lg text-gray-500">
+      {getTranslation(locale, 'blog.description')}
+    </p>
+
+    <!-- Coming Soon 배너 -->
+    <div class="mt-10 rounded-xl border border-primary/20 bg-primary/5 p-8 text-center">
+      <div class="text-4xl">✍️</div>
+      <h2 class="mt-4 text-xl font-bold text-gray-900">
+        {getTranslation(locale, 'blog.comingSoon')}
+      </h2>
+      <p class="mt-2 text-gray-500">
+        {getTranslation(locale, 'blog.comingSoonDescription')}
+      </p>
+      <a
+        href={buildLocalizedPath(locale, '/generator')}
+        class="mt-6 inline-block rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white hover:bg-primary-hover"
+      >
+        {getTranslation(locale, 'home.startBuilding')}
+      </a>
+    </div>
+
+    <!-- 빈 포스트 목록 -->
+    <div class="mt-16">
+      <h2 class="text-2xl font-bold">{getTranslation(locale, 'blog.latestPosts')}</h2>
+      <div
+        class="mt-6 rounded-xl border border-dashed border-border py-16 text-center text-gray-400"
+      >
+        {getTranslation(locale, 'blog.noPosts')}
+      </div>
+    </div>
+  </section>
+</Layout>

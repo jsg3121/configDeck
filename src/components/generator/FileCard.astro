@@ -1,0 +1,41 @@
+---
+import { buildLocalizedPath, type Locale } from '@/i18n'
+
+import { getIconBySlug } from '@/lib/data/icons'
+
+interface Props {
+  locale: Locale
+  name: string
+  description: string
+  slug: string
+}
+
+const { locale, name, description, slug } = Astro.props
+
+const icon = getIconBySlug(slug)
+---
+
+<a
+  href={buildLocalizedPath(locale, `/generator/${slug}`)}
+  class="group flex items-start gap-4 rounded-xl border border-border bg-surface p-5 transition-[transform,box-shadow,border-color] duration-200 hover:border-primary hover:shadow-md motion-safe:hover:-translate-y-0.5"
+>
+  <div
+    class="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gray-100 transition-colors group-hover:bg-primary/10"
+  >
+    {
+      icon ? (
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill={icon.color} role="img" aria-label={name}>
+          <path d={icon.path} />
+        </svg>
+      ) : (
+        <span class="font-mono text-xs text-gray-500">{'{}'}</span>
+      )
+    }
+  </div>
+  <div>
+    <h4 class="font-mono text-sm font-semibold text-gray-900 group-hover:text-primary">
+      {name}
+    </h4>
+    <p class="mt-1 text-xs leading-relaxed text-gray-500">{description}</p>
+  </div>
+</a>

@@ -32,3 +32,7 @@
 
 - [test-writer](test-writer/SKILL.md) — Vitest 단위 테스트 작성. 설정 생성 로직, 유틸 함수의 테스트 코드 생성 (수동 호출)
 - [e2e-test](e2e-test/SKILL.md) — Playwright E2E 테스트. 설정 생성기 플로우, SEO 랜딩 렌더링 검증 (수동 호출)
+
+### 비즈니스 분석
+
+- [biz-strategy](biz-strategy/SKILL.md) — 비즈니스 전략 분석 파이프라인. MI→BA→SP 순차 실행으로 시장 조사, 경쟁력 분석, 전략 수립을 오케스트레이션 (자동 트리거 / 수동 호출)

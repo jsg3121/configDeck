@@ -1,0 +1,66 @@
+---
+import { buildLocalizedPath, getTranslation, type Locale } from '@/i18n'
+
+import { getStackIcon } from '@/lib/data/icons'
+
+interface StackPreset {
+  name: string
+  icon?: string
+  fileCount: number
+  slug: string
+  includedFiles: readonly string[]
+}
+
+interface Props {
+  locale: Locale
+  stackPresets: readonly StackPreset[]
+}
+
+const { locale, stackPresets } = Astro.props
+---
+
+<div>
+  <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+    {
+      stackPresets.map((preset) => (
+        <a
+          href={buildLocalizedPath(locale, `/generator/${preset.slug}`)}
+          class="group flex flex-col rounded-xl border border-border bg-surface p-6 transition-[transform,box-shadow,border-color] duration-200 hover:border-primary hover:shadow-lg motion-safe:hover:-translate-y-0.5"
+        >
+          {(() => {
+            const icon = getStackIcon(preset.slug)
+            return icon ? (
+              <svg
+                class="h-8 w-8"
+                viewBox="0 0 24 24"
+                fill={icon.color}
+                role="img"
+                aria-label={preset.name}
+              >
+                <path d={icon.path} />
+              </svg>
+            ) : null
+          })()}
+          <h3 class="mt-3 text-lg font-semibold text-gray-900 group-hover:text-primary">
+            {preset.name}
+          </h3>
+          <p class="mt-1 text-sm text-gray-500">
+            {preset.fileCount} {getTranslation(locale, 'generator.configFiles')}
+          </p>
+          <div class="mt-4 border-t border-border pt-4">
+            <p class="text-xs font-semibold uppercase tracking-wider text-gray-500">
+              {getTranslation(locale, 'generator.includedFiles')}
+            </p>
+            <ul class="mt-2 flex flex-wrap gap-1.5">
+              {preset.includedFiles.map((fileName) => (
+                <li class="rounded-md border border-primary/20 bg-primary/5 px-2 py-0.5 font-mono text-xs text-primary">
+                  {fileName}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </a>
+      ))
+    }
+  </div>
+</div>

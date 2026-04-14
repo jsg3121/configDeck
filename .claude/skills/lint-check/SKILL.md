@@ -1,6 +1,9 @@
 ---
 name: lint-check
-description: Prettier와 ESLint 전체 검사 스킬. 모든 소스 파일을 대상으로 포맷팅 위반과 린트 에러/경고를 검출하여 보고한다. "린트 체크", "포맷 확인", "코드 검사", "prettier 확인", "eslint 확인" 등의 요청에서 트리거된다.
+description: |
+  Prettier와 ESLint 전체 검사 스킬. 포맷팅 위반과 린트 에러/경고를 검출하여 보고한다.
+  TRIGGER when: "린트 체크", "포맷 확인", "코드 검사", "prettier 확인", "eslint 확인" 요청, 작업 완료 후 전체 코드 품질 확인 필요
+  DO NOT TRIGGER when: 코드 리뷰(code-review 사용), 종합 QA(qa-agent 사용), 자동 포맷팅 실행만 필요
 disable-model-invocation: true
 ---
 

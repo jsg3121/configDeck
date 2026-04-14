@@ -1,0 +1,100 @@
+---
+import { buildLocalizedPath, getTranslation, SUPPORTED_LOCALES, type Locale } from '@/i18n'
+
+import Layout from '@/layouts/Layout.astro'
+import Header from '@/components/common/Header.astro'
+import StackGenerator from '@/components/generator/StackGenerator.svelte'
+import { getStackIcon } from '@/lib/data/icons'
+import { STACK_DEFINITIONS, type StackDefinition } from '@/lib/data/stacks'
+
+export const getStaticPaths = () => {
+  return SUPPORTED_LOCALES.flatMap((locale) =>
+    STACK_DEFINITIONS.map((stackDef) => ({
+      params: { locale, stack: stackDef.slug },
+    })),
+  )
+}
+
+const { locale, stack: stackSlug } = Astro.params as { locale: Locale; stack: string }
+
+const currentStack = STACK_DEFINITIONS.find(
+  (stackDef) => stackDef.slug === stackSlug,
+) as StackDefinition
+
+const pageTitle =
+  locale === 'ko'
+    ? `${currentStack.name} 설정 생성기 — ConfigDeck`
+    : `${currentStack.name} Generator — ConfigDeck`
+const pageDescription = locale === 'ko' ? currentStack.descriptionKo : currentStack.descriptionEn
+
+/** 파일 목록을 직렬화 가능한 형태로 변환한다 */
+const serializableFiles = currentStack.files.map((f) => ({
+  fileName: f.fileName,
+  slug: f.slug,
+  preset: f.preset,
+}))
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  locale={locale}
+  pagePath={`/generator/${stackSlug}`}
+  currentPath={`/generator/${stackSlug}`}
+  bare
+>
+  <Header locale={locale} currentPath={`/generator/${stackSlug}`} />
+
+  <main class="w-full max-w-7xl mx-auto flex flex-col lg:h-[calc(100vh-65px)] lg:overflow-hidden">
+    <!-- SEO: Astro 정적 영역 -->
+    <div class="mx-auto w-full max-w-7xl shrink-0 px-6">
+      <div class="w-full">
+        <div class="mx-auto max-w-full pt-8">
+          <a
+            href={buildLocalizedPath(locale, '/generator')}
+            class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900"
+          >
+            <svg
+              class="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            {getTranslation(locale, 'common.backToGenerator')}
+          </a>
+
+          <div class="mt-6 mb-6">
+            <div class="flex items-center gap-3">
+              {
+                (() => {
+                  const icon = getStackIcon(currentStack.slug)
+                  return icon ? (
+                    <svg
+                      class="h-8 w-8"
+                      viewBox="0 0 24 24"
+                      fill={icon.color}
+                      role="img"
+                      aria-label={currentStack.name}
+                    >
+                      <path d={icon.path} />
+                    </svg>
+                  ) : null
+                })()
+              }
+              <h1 class="text-2xl font-bold tracking-tight">{currentStack.name}</h1>
+            </div>
+            <p class="mt-2 text-sm text-gray-500">{pageDescription}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 인터랙티브: Svelte 아일랜드 — 나머지 높이를 채움 -->
+    <div class="w-full min-h-0 flex-1">
+      <StackGenerator client:load locale={locale} files={serializableFiles} />
+    </div>
+  </main>
+</Layout>

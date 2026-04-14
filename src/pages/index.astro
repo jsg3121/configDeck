@@ -1,10 +1,6 @@
 ---
-import Layout from '@/layouts/Layout.astro'
+/**
+ * 루트(/) 접근 시 기본 locale(/en/)로 리다이렉트한다.
+ */
+return Astro.redirect('/en/')
 ---
-
-<Layout title="ConfigDeck">
-  <main>
-    <h1 class="text-3xl font-bold">ConfigDeck</h1>
-    <p>Build project config files with stack-based presets.</p>
-  </main>
-</Layout>

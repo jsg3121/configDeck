@@ -28,6 +28,35 @@ src/
 
 ## 컴포넌트 작성 기준
 
+### 컴포넌트 파일 크기 제한
+
+컴포넌트 파일 하나는 **150~200줄 미만**을 유지한다. 이 기준을 초과하면 기능 단위로 하위 컴포넌트를 분리한다.
+
+```
+# BAD: 300줄짜리 모놀리식 페이지 컴포넌트
+src/pages/[locale]/generator/index.astro  (300줄)
+  └── 스택 프리셋 섹션 + 개별 파일 카드 섹션 + 카테고리 구분 + 아이콘 정의 모두 포함
+
+# GOOD: 기능 단위로 분리하여 각 파일 150~200줄 미만
+src/pages/[locale]/generator/index.astro  (80줄)
+  ├── 섹션 조합 + 레이아웃만 담당
+  └── import:
+      ├── StackPresetSection.astro   (60줄) — 스택 프리셋 카드 그리드
+      ├── FileCardSection.astro      (80줄) — 개별 파일 카드 + 카테고리 구분
+      └── FileCard.astro             (30줄) — 단일 파일 카드 컴포넌트
+```
+
+**분리 기준:**
+- 시각적으로 독립된 섹션 (예: 히어로, 프리셋, FAQ)
+- 반복되는 카드/리스트 아이템
+- 재사용 가능성이 있는 UI 패턴 (예: 코드 미리보기, 옵션 폼)
+
+**분리하지 않는 경우:**
+- 분리해도 한쪽에서만 사용되고 라인 수가 이미 150줄 미만인 경우
+- 분리 시 props 전달이 과도하게 복잡해지는 경우 (props 5개 이상이면 재고)
+
+> **Why:** 파일이 길어지면 코드 탐색과 수정이 어려워진다. 150~200줄 미만이면 한 화면에서 전체 흐름을 파악할 수 있고, 기능 단위 분리는 재사용성과 테스트 용이성도 높인다.
+
 ### Astro vs Svelte 사용 구분
 
 - **`.astro` 컴포넌트**: 정적 콘텐츠, 레이아웃, 페이지 셸. 클라이언트 JS가 불필요한 모든 UI.
@@ -136,6 +165,28 @@ src/lib/utils/formatCode.ts               # 유틸 함수 → camelCase
 | 타입, 인터페이스 | PascalCase | `ConfigOption`, `GeneratorState` |
 | 상수 (불변 값) | UPPER_SNAKE_CASE | `MAX_FILE_SIZE`, `DEFAULT_INDENT` |
 | 이벤트 핸들러 | handle + 동사 | `handleOptionChange`, `handleDownload` |
+
+### 명시적이고 직관적인 이름 사용
+
+변수명과 함수명은 축약어를 지양하고, 이름만으로 의도를 파악할 수 있도록 작성한다.
+
+```typescript
+// BAD: 축약어, 모호한 이름
+const t = (locale: Locale, key: string): string => { ... }
+const lp = (locale: Locale, path: string): string => { ... }
+const obj = { name: 'eslint' }
+const val = getConfig()
+const cb = () => {}
+
+// GOOD: 명시적이고 직관적인 이름
+const getTranslation = (locale: Locale, translationKey: string): string => { ... }
+const buildLocalizedPath = (locale: Locale, pagePath: string): string => { ... }
+const fileMetadata = { name: 'eslint' }
+const generatedConfigValue = getConfig()
+const onChangeCallback = () => {}
+```
+
+> **Why:** 1인 개발에서 시간이 지난 후 코드를 다시 볼 때, 이름만 보고 의도를 즉시 파악할 수 있어야 한다. 코드 리뷰나 유지보수 시 맥락 없이도 이해 가능한 코드가 좋은 코드다.
 
 ## 공통 코드 분리 기준
 
@@ -270,17 +321,21 @@ const generateConfig = (options: ConfigOptions): string => {
 
 > **Why:** 화살표 함수는 `this` 바인딩이 렉시컬 스코프를 따르므로, 콜백이나 이벤트 핸들러에서의 `this` 혼란을 방지한다. 프로젝트 전체에서 함수 선언 스타일을 통일하여 일관성을 유지한다.
 
-### JSDoc으로 함수 설명
+### JSDoc으로 함수 설명 (한글 최우선)
 
-모든 함수에는 JSDoc 주석으로 역할을 설명한다. 매개변수와 반환값의 의미가 명확하지 않은 경우 `@param`과 `@returns`도 포함한다.
+모든 함수에는 JSDoc 주석으로 역할을 설명한다. **JSDoc은 한글을 최우선으로 작성한다.** 기술 용어(locale, path, SEO, config 등)는 원문을 유지한다. 매개변수와 반환값의 의미가 명확하지 않은 경우 `@param`과 `@returns`도 포함한다.
 
 ```typescript
-// BAD: 설명 없는 함수
+// BAD: 영어로만 작성
+/**
+ * Merge base ESLint rules with user overrides.
+ * If the same key exists, overrides take precedence.
+ */
 const mergeRules = (base: Rules, overrides: Rules): Rules => {
   return { ...base, ...overrides };
 };
 
-// GOOD: JSDoc으로 함수 역할 설명
+// GOOD: 한글로 작성, 기술 용어는 원문 유지
 /**
  * 기본 ESLint 규칙에 사용자 오버라이드를 병합한다.
  * 동일 키가 있으면 overrides가 우선한다.
@@ -300,6 +355,8 @@ const convertIndent = (content: string, size: number): string => {
   // ...
 };
 ```
+
+> **Why:** 한국어 네이티브 개발자가 주 사용자이므로, JSDoc을 한글로 작성하면 함수의 역할과 의도를 가장 빠르게 파악할 수 있다. 기술 용어는 번역하면 오히려 혼란을 주므로 원문을 유지한다.
 
 ## 참고 자료
 
