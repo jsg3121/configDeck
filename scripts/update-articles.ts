@@ -1,30 +1,25 @@
 /**
  * 아티클 업데이트 메인 스크립트
  *
- * RSS 피드 수집 → 신규 항목 필터링 → AI 요약 생성 → Markdown 파일 저장
+ * RSS 피드 수집 → 신규 항목 필터링 → AI 마크다운 생성 → 파일 저장
  */
 
 import * as fs from 'node:fs'
 import * as path from 'node:path'
 
 import { fetchAllFeeds, filterNewItems, selectBalanced } from './fetch-rss'
-import {
-  generateSlug,
-  generateSummaries,
-  toMarkdownContent,
-  type ArticleSummary,
-} from './generate-summary'
+import { generateArticles, generateSlug, type GeneratedArticle } from './generate-summary'
 
 const ARTICLES_DIR = path.join(process.cwd(), 'src/content/articles')
-const LOCALES = ['ko', 'en'] as const
 
 /**
  * 기존 아티클 ID 목록을 가져온다.
  */
 const getExistingArticleIds = (): Set<string> => {
   const ids = new Set<string>()
+  const locales = ['ko', 'en']
 
-  for (const locale of LOCALES) {
+  for (const locale of locales) {
     const localeDir = path.join(ARTICLES_DIR, locale)
 
     if (!fs.existsSync(localeDir)) {
@@ -46,10 +41,10 @@ const getExistingArticleIds = (): Set<string> => {
 }
 
 /**
- * 아티클을 Markdown 파일로 저장한다.
+ * 아티클을 파일로 저장한다.
  */
-const saveArticle = (article: ArticleSummary, locale: 'ko' | 'en'): void => {
-  const localeDir = path.join(ARTICLES_DIR, locale)
+const saveArticle = (article: GeneratedArticle): void => {
+  const localeDir = path.join(ARTICLES_DIR, article.locale)
 
   if (!fs.existsSync(localeDir)) {
     fs.mkdirSync(localeDir, { recursive: true })
@@ -57,10 +52,9 @@ const saveArticle = (article: ArticleSummary, locale: 'ko' | 'en'): void => {
 
   const slug = generateSlug(article)
   const filePath = path.join(localeDir, `${slug}.md`)
-  const content = toMarkdownContent(article, locale)
 
-  fs.writeFileSync(filePath, content, 'utf-8')
-  console.log(`Saved: ${locale}/${slug}.md`)
+  fs.writeFileSync(filePath, article.markdown, 'utf-8')
+  console.log(`Saved: ${article.locale}/${slug}.md`)
 }
 
 /**
@@ -88,20 +82,18 @@ const main = async (): Promise<void> => {
 
   console.log(`Found ${newItems.length} new articles. Generating summaries...`)
 
-  // 각 도구에서 균등하게 4개 선택 (Rate limit 및 비용 고려)
-  const itemsToProcess = selectBalanced(newItems, 4)
+  // 각 도구에서 균등하게 2개 선택 (언어별 개별 호출로 API 비용 증가 고려)
+  const itemsToProcess = selectBalanced(newItems, 2)
 
-  const summaries = await generateSummaries(itemsToProcess, apiKey, {
-    delayMs: 1000, // 1초 딜레이
+  const articles = await generateArticles(itemsToProcess, apiKey, {
+    delayMs: 1000,
     maxRetries: 3,
   })
 
-  console.log(`Generated ${summaries.length} summaries. Saving...`)
+  console.log(`Generated ${articles.length} articles. Saving...`)
 
-  for (const summary of summaries) {
-    for (const locale of LOCALES) {
-      saveArticle(summary, locale)
-    }
+  for (const article of articles) {
+    saveArticle(article)
   }
 
   console.log('Done!')
