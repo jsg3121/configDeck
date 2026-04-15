@@ -4,11 +4,22 @@ import { getCollection } from 'astro:content'
 
 import Layout from '@/layouts/Layout.astro'
 
-const TOOLS = ['eslint', 'prettier', 'typescript', 'nextjs', 'react', 'astro', 'nodejs'] as const
+const TOOLS = [
+  'eslint',
+  'prettier',
+  'typescript',
+  'nextjs',
+  'react',
+  'astro',
+  'nodejs',
+  'webdev',
+  'tailwindcss',
+  'vite',
+] as const
 type Tool = (typeof TOOLS)[number]
 
 export const getStaticPaths = () => {
-  const tools = ['eslint', 'prettier', 'typescript', 'nextjs', 'react', 'astro', 'nodejs'] as const
+  const tools = TOOLS
   const paths = []
   for (const locale of SUPPORTED_LOCALES) {
     for (const tool of tools) {
@@ -28,9 +39,12 @@ const toolColors: Record<Tool, string> = {
   react: 'bg-cyan-100 text-cyan-800',
   astro: 'bg-orange-100 text-orange-800',
   nodejs: 'bg-green-100 text-green-800',
+  webdev: 'bg-indigo-100 text-indigo-800',
+  tailwindcss: 'bg-sky-100 text-sky-800',
+  vite: 'bg-violet-100 text-violet-800',
 }
 
-const toolToGenerator: Record<Tool, string> = {
+const toolToGenerator: Record<Tool, string | null> = {
   eslint: 'eslint-config',
   prettier: 'prettier-config',
   typescript: 'tsconfig',
@@ -38,6 +52,9 @@ const toolToGenerator: Record<Tool, string> = {
   react: 'react-vite-ts',
   astro: 'astro',
   nodejs: 'nodejs',
+  webdev: null,
+  tailwindcss: null,
+  vite: null,
 }
 
 // 해당 도구의 아티클 가져오기
@@ -146,42 +163,41 @@ const breadcrumbJsonLd = {
       }
     </div>
 
-    <!-- 설정 생성 CTA -->
-    <div
-      class="mt-10 rounded-xl border border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10 p-6"
-    >
-      <div class="flex flex-col items-center gap-4 sm:flex-row">
-        <div class="flex-1">
-          <h2 class="text-lg font-bold text-gray-900">
-            {
-              locale === 'ko'
-                ? `${toolName} 설정 파일이 필요하신가요?`
-                : `Need a ${toolName} config file?`
-            }
-          </h2>
-          <p class="mt-1 text-sm text-gray-600">
-            {
-              locale === 'ko'
-                ? 'ConfigDeck에서 최신 설정을 몇 초 만에 생성하세요.'
-                : 'Generate the latest config in seconds with ConfigDeck.'
-            }
-          </p>
+    <!-- 설정 생성 CTA (generator가 있는 도구만) -->
+    {
+      toolToGenerator[tool] && (
+        <div class="mt-10 rounded-xl border border-primary/20 bg-linear-to-r from-primary/5 to-primary/10 p-6">
+          <div class="flex flex-col items-center gap-4 sm:flex-row">
+            <div class="flex-1">
+              <h2 class="text-lg font-bold text-gray-900">
+                {locale === 'ko'
+                  ? `${toolName} 설정 파일이 필요하신가요?`
+                  : `Need a ${toolName} config file?`}
+              </h2>
+              <p class="mt-1 text-sm text-gray-600">
+                {locale === 'ko'
+                  ? 'ConfigDeck에서 최신 설정을 몇 초 만에 생성하세요.'
+                  : 'Generate the latest config in seconds with ConfigDeck.'}
+              </p>
+            </div>
+            <a
+              href={buildLocalizedPath(locale, `/generator/${toolToGenerator[tool]}`)}
+              class="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 font-semibold text-white hover:bg-primary-hover"
+            >
+              {getTranslation(locale, 'article.generateConfig')}
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 7l5 5m0 0l-5 5m5-5H6"
+                />
+              </svg>
+            </a>
+          </div>
         </div>
-        <a
-          href={buildLocalizedPath(locale, `/generator/${toolToGenerator[tool]}`)}
-          class="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 font-semibold text-white hover:bg-primary-hover"
-        >
-          {getTranslation(locale, 'article.generateConfig')}
-          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-          </svg>
-        </a>
-      </div>
-    </div>
+      )
+    }
 
     <!-- 아티클 목록 -->
     <div class="mt-10">

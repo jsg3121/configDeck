@@ -4,7 +4,17 @@ import { getCollection, render } from 'astro:content'
 
 import Layout from '@/layouts/Layout.astro'
 
-type Tool = 'eslint' | 'prettier' | 'typescript' | 'nextjs' | 'react' | 'astro' | 'nodejs'
+type Tool =
+  | 'eslint'
+  | 'prettier'
+  | 'typescript'
+  | 'nextjs'
+  | 'react'
+  | 'astro'
+  | 'nodejs'
+  | 'webdev'
+  | 'tailwindcss'
+  | 'vite'
 
 export const getStaticPaths = async () => {
   const paths = []
@@ -41,9 +51,12 @@ const toolColors: Record<Tool, { bg: string; text: string; border: string }> = {
   react: { bg: 'bg-cyan-50', text: 'text-cyan-700', border: 'border-cyan-200' },
   astro: { bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-200' },
   nodejs: { bg: 'bg-green-50', text: 'text-green-700', border: 'border-green-200' },
+  webdev: { bg: 'bg-indigo-50', text: 'text-indigo-700', border: 'border-indigo-200' },
+  tailwindcss: { bg: 'bg-sky-50', text: 'text-sky-700', border: 'border-sky-200' },
+  vite: { bg: 'bg-violet-50', text: 'text-violet-700', border: 'border-violet-200' },
 }
 
-const toolToGenerator: Record<Tool, string> = {
+const toolToGenerator: Record<Tool, string | null> = {
   eslint: 'eslint-config',
   prettier: 'prettier-config',
   typescript: 'tsconfig',
@@ -51,6 +64,9 @@ const toolToGenerator: Record<Tool, string> = {
   react: 'react-vite-ts',
   astro: 'astro',
   nodejs: 'nodejs',
+  webdev: null,
+  tailwindcss: null,
+  vite: null,
 }
 
 const formatDate = (date: Date): string => {
@@ -203,42 +219,41 @@ const breadcrumbJsonLd = {
       <Content />
     </div>
 
-    <!-- 설정 생성 CTA -->
-    <div
-      class="mt-12 rounded-xl border border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10 p-8"
-    >
-      <div class="flex flex-col items-center text-center sm:flex-row sm:text-left">
-        <div class="flex-1">
-          <h2 class="text-xl font-bold text-gray-900">
-            {
-              locale === 'ko'
-                ? `${toolName} 설정 파일이 필요하신가요?`
-                : `Need a ${toolName} config file?`
-            }
-          </h2>
-          <p class="mt-2 text-gray-600">
-            {
-              locale === 'ko'
-                ? 'ConfigDeck에서 최신 설정을 몇 초 만에 생성하세요.'
-                : 'Generate the latest config in seconds with ConfigDeck.'
-            }
-          </p>
+    <!-- 설정 생성 CTA (generator가 있는 도구만) -->
+    {
+      toolToGenerator[tool] && (
+        <div class="mt-12 rounded-xl border border-primary/20 bg-linear-to-r from-primary/5 to-primary/10 p-8">
+          <div class="flex flex-col items-center text-center sm:flex-row sm:text-left">
+            <div class="flex-1">
+              <h2 class="text-xl font-bold text-gray-900">
+                {locale === 'ko'
+                  ? `${toolName} 설정 파일이 필요하신가요?`
+                  : `Need a ${toolName} config file?`}
+              </h2>
+              <p class="mt-2 text-gray-600">
+                {locale === 'ko'
+                  ? 'ConfigDeck에서 최신 설정을 몇 초 만에 생성하세요.'
+                  : 'Generate the latest config in seconds with ConfigDeck.'}
+              </p>
+            </div>
+            <a
+              href={buildLocalizedPath(locale, `/generator/${toolToGenerator[tool]}`)}
+              class="mt-4 inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-semibold text-white hover:bg-primary-hover sm:mt-0"
+            >
+              {getTranslation(locale, 'article.generateConfig')}
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 7l5 5m0 0l-5 5m5-5H6"
+                />
+              </svg>
+            </a>
+          </div>
         </div>
-        <a
-          href={buildLocalizedPath(locale, `/generator/${toolToGenerator[tool]}`)}
-          class="mt-4 inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-semibold text-white hover:bg-primary-hover sm:mt-0"
-        >
-          {getTranslation(locale, 'article.generateConfig')}
-          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-          </svg>
-        </a>
-      </div>
-    </div>
+      )
+    }
 
     <!-- 관련 아티클 -->
     {
