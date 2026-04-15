@@ -152,7 +152,10 @@
       "nextjs": "Next.js",
       "react": "React",
       "astro": "Astro",
-      "nodejs": "Node.js"
+      "nodejs": "Node.js",
+      "webdev": "web.dev",
+      "tailwindcss": "Tailwind CSS",
+      "vite": "Vite"
     }
   }
 }

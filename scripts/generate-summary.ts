@@ -1,264 +1,169 @@
 /**
- * Gemini API를 사용한 아티클 요약 생성 스크립트
+ * Claude API를 사용한 아티클 요약 생성 스크립트
  *
  * RSS에서 수집한 아티클의 원문을 분석하여
- * 한국어/영어 요약을 생성한다.
+ * 마크다운 문서를 직접 생성한다.
  */
+
+import Anthropic from '@anthropic-ai/sdk'
 
 import type { RSSItem, Tool } from './fetch-rss'
 import { getToolName } from './fetch-rss'
 
-export interface ArticleContent {
-  /** 짧은 요약 (카드용, 2-3문장) */
-  summary: string
-  /** 상세 설명 (페이지용, 마크다운 형식) */
-  details: string
-}
-
-export interface ArticleSummary {
+export interface GeneratedArticle {
   id: string
   tool: Tool
   title: string
   link: string
   pubDate: Date
-  content: {
-    ko: ArticleContent
-    en: ArticleContent
-  }
+  locale: 'ko' | 'en'
+  markdown: string
 }
 
-interface GeminiResponse {
-  candidates?: Array<{
-    content?: {
-      parts?: Array<{
-        text?: string
-      }>
-    }
-  }>
-  error?: {
-    message: string
-  }
-}
-
-const GEMINI_API_URL =
-  'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent'
-
-/** API 응답 데이터 타입 */
-interface GeneratedContent {
-  ko: ArticleContent
-  en: ArticleContent
-}
+type Locale = 'ko' | 'en'
 
 /**
- * 아티클 분석 프롬프트를 구성한다.
- * 풍부한 콘텐츠 생성을 위해 상세 분석을 요청한다.
+ * 언어별 아티클 생성 프롬프트를 구성한다.
  */
-const buildPrompt = (item: RSSItem): string => {
+const buildPrompt = (item: RSSItem, locale: Locale): string => {
   const toolName = getToolName(item.tool)
+  const isKorean = locale === 'ko'
 
-  return `당신은 개발 도구 전문 기술 에디터입니다. 다음 ${toolName} 업데이트 공지를 분석하고, 개발자에게 유용한 정보를 정리해주세요.
+  const langInstruction = isKorean
+    ? '한국어로 작성하세요.'
+    : 'Write in English.'
+
+  const summaryInstruction = isKorean
+    ? '2-3문장으로 "이 글을 왜 읽어야 하는지" 전달. 마크다운 문법 사용 금지.'
+    : '2-3 sentences explaining why developers should read this. No markdown.'
+
+  return `당신은 개발자 커뮤니티에서 인정받는 시니어 기술 에디터입니다.
+
+## 작업
+${toolName} 관련 아티클을 분석하여 개발자들이 실무에 즉시 활용할 수 있는 마크다운 문서를 작성하세요.
+${langInstruction}
 
 ## 원문 정보
 - 제목: ${item.title}
 - 도구: ${toolName}
-${item.description ? `- 내용: ${item.description}` : ''}
+- 링크: ${item.link}
+${item.description ? `- 원문 발췌: ${item.description}` : ''}
 
-## 작성 가이드라인
+## 출력 형식
+반드시 아래 형식의 마크다운 문서만 출력하세요. 다른 설명이나 텍스트는 포함하지 마세요.
 
-### summary (카드용 요약)
-- 핵심 내용을 2-3문장으로 요약
-- 마크다운 문법 사용하지 않음
+---
+id: "${item.id}"
+tool: "${item.tool}"
+title: "${item.title.replace(/"/g, '\\"')}"
+link: "${item.link}"
+pubDate: ${item.pubDate.toISOString()}
+summary: "여기에 요약 작성"
+---
 
-### details (상세 설명)
-내용에 맞는 구조로 자유롭게 작성하되, 다음 형식 규칙을 따르세요:
+## 첫 번째 섹션 제목
 
-**형식 규칙:**
-- 문단 사이에 빈 줄 넣기
-- 중요 용어, 기능명, 버전은 **볼드** 처리
-- 코드, 명령어, 패키지명, 파일명은 \`백틱\` 사용
-- 3개 이상 나열 시 bullet list(-) 사용
-- 코드 예시가 있으면 코드블록(\`\`\`) 사용 (언어 명시)
-- 내용에 맞는 섹션 제목(##)을 자유롭게 사용
+본문 내용...
 
-**구조 예시 (참고용, 강제 아님):**
-- 릴리스 노트 → 주요 변경사항, 업그레이드 방법 중심
-- 공지/발표 → 배경, 영향, 앞으로의 방향 중심
-- 보안 패치 → 취약점 설명, 영향 범위, 즉시 조치 사항 중심
+## 두 번째 섹션 제목
 
-## 응답 형식
-반드시 아래 JSON 형식으로만 응답해주세요. 다른 텍스트는 포함하지 마세요:
-{
-  "ko": {
-    "summary": "한국어 요약 (2-3문장, 마크다운 없이)",
-    "details": "한국어 상세 설명 (마크다운 형식)"
-  },
-  "en": {
-    "summary": "English summary (2-3 sentences, no markdown)",
-    "details": "English detailed description (markdown format)"
-  }
-}`
+본문 내용...
+
+## 작성 규칙
+
+### summary (frontmatter 내)
+${summaryInstruction}
+
+### 본문
+- 최소 800자 이상의 충실한 콘텐츠
+- 4개 이상의 ## 섹션으로 구성
+- 각 섹션마다 구체적인 설명과 예시 포함
+
+### 마크다운 형식
+- ## 헤딩 앞뒤에 빈 줄 필수
+- 문단 사이에 빈 줄 필수
+- 핵심 키워드, 버전, 기능명은 **볼드** 처리
+- 코드, 명령어, 파일명은 \`백틱\` 사용
+- 3개 이상 항목은 bullet list 사용
+- 코드 예시는 \`\`\`언어명 코드블록 사용
+
+### 필수 포함 내용 (해당 시)
+- 주요 변경사항/기능 상세 설명
+- 실제 사용 예시 코드
+- 업그레이드/마이그레이션 명령어
+- Breaking Changes 및 주의사항
+- 개발자에게 미치는 영향과 권장 조치`
 }
 
 /** API 호출 결과 타입 */
 interface APICallResult {
   success: boolean
-  data: GeneratedContent | null
+  markdown: string | null
   retryable: boolean
 }
 
 /**
- * ArticleContent 유효성 검사
+ * Claude API를 호출하여 마크다운 문서를 생성한다.
  */
-const isValidArticleContent = (obj: unknown): obj is ArticleContent => {
-  if (!obj || typeof obj !== 'object') return false
-  const content = obj as Record<string, unknown>
-  return typeof content.summary === 'string' && typeof content.details === 'string'
-}
-
-/**
- * Gemini API를 호출하여 아티클 콘텐츠를 생성한다.
- */
-const callGeminiAPI = async (prompt: string, apiKey: string): Promise<APICallResult> => {
+const callClaudeAPI = async (
+  client: Anthropic,
+  prompt: string,
+): Promise<APICallResult> => {
   try {
-    const response = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [{ text: prompt }],
-          },
-        ],
-        generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 4096,
+    const message = await client.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 4096,
+      messages: [
+        {
+          role: 'user',
+          content: prompt,
         },
-      }),
+      ],
     })
 
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error(`Gemini API error: ${response.status} - ${errorText}`)
-      const nonRetryable = [429, 403, 401].includes(response.status)
-      return { success: false, data: null, retryable: !nonRetryable }
+    const textBlock = message.content.find((block) => block.type === 'text')
+    if (!textBlock || textBlock.type !== 'text') {
+      console.error('No text in Claude response')
+      return { success: false, markdown: null, retryable: true }
     }
 
-    const data = (await response.json()) as GeminiResponse
+    const markdown = textBlock.text.trim()
 
-    if (data.error) {
-      console.error(`Gemini API error: ${data.error.message}`)
-      return { success: false, data: null, retryable: true }
+    // frontmatter 검증
+    if (!markdown.startsWith('---') || !markdown.includes('summary:')) {
+      console.error('Invalid markdown format (missing frontmatter)')
+      return { success: false, markdown: null, retryable: true }
     }
 
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text
-    if (!text) {
-      console.error('No text in Gemini response')
-      return { success: false, data: null, retryable: true }
-    }
-
-    // JSON 파싱 시도 (코드블록 제거 후 파싱)
-    const cleanedText = text.replace(/```json\s*/g, '').replace(/```\s*/g, '')
-    const jsonMatch = cleanedText.match(/\{[\s\S]*\}/)
-    if (!jsonMatch) {
-      console.error('No JSON found in response:', text)
-      return { success: false, data: null, retryable: true }
-    }
-
-    const parsed = JSON.parse(jsonMatch[0]) as GeneratedContent
-
-    if (!isValidArticleContent(parsed.ko) || !isValidArticleContent(parsed.en)) {
-      console.error('Invalid content format:', JSON.stringify(parsed).slice(0, 200))
-      return { success: false, data: null, retryable: true }
-    }
-
-    return { success: true, data: parsed, retryable: false }
+    return { success: true, markdown, retryable: false }
   } catch (error) {
-    console.error('Error calling Gemini API:', error)
-    return { success: false, data: null, retryable: true }
-  }
-}
+    console.error('Error calling Claude API:', error)
 
-/** 요약 생성 결과 타입 */
-interface SummaryResult {
-  article: ArticleSummary | null
-  retryable: boolean
-}
+    if (error instanceof Anthropic.APIError) {
+      const nonRetryable = [429, 401, 403].includes(error.status)
+      return { success: false, markdown: null, retryable: !nonRetryable }
+    }
 
-/**
- * 단일 아티클의 요약을 생성한다.
- */
-export const generateSummary = async (item: RSSItem, apiKey: string): Promise<SummaryResult> => {
-  const prompt = buildPrompt(item)
-  const result = await callGeminiAPI(prompt, apiKey)
-
-  if (!result.success || !result.data) {
-    return { article: null, retryable: result.retryable }
-  }
-
-  return {
-    article: {
-      id: item.id,
-      tool: item.tool,
-      title: item.title,
-      link: item.link,
-      pubDate: item.pubDate,
-      content: result.data,
-    },
-    retryable: false,
+    return { success: false, markdown: null, retryable: true }
   }
 }
 
 /**
- * 여러 아티클의 요약을 생성한다.
- * Rate limit을 고려하여 순차적으로 처리한다.
- * 429/403 등 재시도 불가능한 에러 시 즉시 중단한다.
+ * 단일 아티클의 마크다운을 생성한다.
  */
-export const generateSummaries = async (
-  items: RSSItem[],
-  apiKey: string,
-  options: { delayMs?: number; maxRetries?: number } = {},
-): Promise<ArticleSummary[]> => {
-  const { delayMs = 1000, maxRetries = 3 } = options
-  const summaries: ArticleSummary[] = []
+const generateArticleMarkdown = async (
+  item: RSSItem,
+  locale: Locale,
+  client: Anthropic,
+): Promise<{ markdown: string | null; retryable: boolean }> => {
+  const prompt = buildPrompt(item, locale)
+  const result = await callClaudeAPI(client, prompt)
 
-  for (const item of items) {
-    let retries = 0
-    let result: SummaryResult | null = null
-
-    while (retries < maxRetries) {
-      result = await generateSummary(item, apiKey)
-
-      if (result.article) {
-        break
-      }
-
-      // 재시도 불가능한 에러(429, 403 등)면 즉시 중단
-      if (!result.retryable) {
-        console.error(`Non-retryable error for: ${item.title}. Stopping.`)
-        return summaries
-      }
-
-      retries++
-      if (retries < maxRetries) {
-        console.log(`Retry ${retries}/${maxRetries} for: ${item.title}`)
-        await sleep(delayMs * retries)
-      }
-    }
-
-    if (result?.article) {
-      summaries.push(result.article)
-      console.log(`Generated summary for: ${item.title}`)
-    } else {
-      console.error(`Failed to generate summary for: ${item.title}`)
-    }
-
-    // Rate limit 방지를 위한 딜레이
-    await sleep(delayMs)
+  if (!result.success || !result.markdown) {
+    return { markdown: null, retryable: result.retryable }
   }
 
-  return summaries
+  return { markdown: result.markdown, retryable: false }
 }
 
 /**
@@ -269,27 +174,70 @@ const sleep = (ms: number): Promise<void> => {
 }
 
 /**
- * 아티클을 Markdown 파일 내용으로 변환한다.
+ * 여러 아티클의 마크다운을 생성한다.
+ * 각 아티클마다 한국어/영어 버전을 개별 호출한다.
  */
-export const toMarkdownContent = (article: ArticleSummary, locale: 'ko' | 'en'): string => {
-  const content = article.content[locale]
-  return `---
-id: "${article.id}"
-tool: "${article.tool}"
-title: "${article.title.replace(/"/g, '\\"')}"
-link: "${article.link}"
-pubDate: ${article.pubDate.toISOString()}
-summary: "${content.summary.replace(/"/g, '\\"')}"
----
+export const generateArticles = async (
+  items: RSSItem[],
+  apiKey: string,
+  options: { delayMs?: number; maxRetries?: number } = {},
+): Promise<GeneratedArticle[]> => {
+  const { delayMs = 1000, maxRetries = 3 } = options
+  const client = new Anthropic({ apiKey })
+  const articles: GeneratedArticle[] = []
+  const locales: Locale[] = ['ko', 'en']
 
-${content.details}
-`
+  for (const item of items) {
+    for (const locale of locales) {
+      let retries = 0
+      let result: { markdown: string | null; retryable: boolean } | null = null
+
+      while (retries < maxRetries) {
+        result = await generateArticleMarkdown(item, locale, client)
+
+        if (result.markdown) {
+          break
+        }
+
+        if (!result.retryable) {
+          // eslint-disable-next-line no-console
+          console.error(`Non-retryable error for: ${item.title} (${locale}). Stopping.`)
+          return articles
+        }
+
+        retries++
+        if (retries < maxRetries) {
+          console.log(`Retry ${retries}/${maxRetries} for: ${item.title} (${locale})`)
+          await sleep(delayMs * retries)
+        }
+      }
+
+      if (result?.markdown) {
+        articles.push({
+          id: item.id,
+          tool: item.tool,
+          title: item.title,
+          link: item.link,
+          pubDate: item.pubDate,
+          locale,
+          markdown: result.markdown,
+        })
+        console.log(`Generated: ${item.title} (${locale})`)
+      } else {
+        console.error(`Failed: ${item.title} (${locale})`)
+      }
+
+      await sleep(delayMs)
+    }
+  }
+
+  return articles
 }
 
 /**
  * 파일명으로 사용할 수 있는 slug를 생성한다.
  */
-export const generateSlug = (article: ArticleSummary): string => {
+export const generateSlug = (article: GeneratedArticle): string => {
   const dateStr = article.pubDate.toISOString().split('T')[0]
   const titleSlug = article.title
     .toLowerCase()

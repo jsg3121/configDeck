@@ -1,7 +1,7 @@
 /**
  * RSS 피드 수집 스크립트
  *
- * 7개 개발 도구의 공식 RSS/Atom 피드를 수집하여
+ * 10개 개발 도구의 공식 RSS/Atom 피드를 수집하여
  * 신규 항목을 추출한다.
  */
 
@@ -14,7 +14,17 @@ export interface RSSItem {
   description?: string
 }
 
-export type Tool = 'eslint' | 'prettier' | 'typescript' | 'nextjs' | 'react' | 'astro' | 'nodejs'
+export type Tool =
+  | 'eslint'
+  | 'prettier'
+  | 'typescript'
+  | 'nextjs'
+  | 'react'
+  | 'astro'
+  | 'nodejs'
+  | 'webdev'
+  | 'tailwindcss'
+  | 'vite'
 
 interface FeedConfig {
   tool: Tool
@@ -64,6 +74,24 @@ export const FEED_CONFIGS: FeedConfig[] = [
     tool: 'nodejs',
     name: 'Node.js',
     feedUrl: 'https://nodejs.org/en/feed/blog.xml',
+    type: 'rss',
+  },
+  {
+    tool: 'webdev',
+    name: 'web.dev',
+    feedUrl: 'https://web.dev/blog/feed.xml',
+    type: 'rss',
+  },
+  {
+    tool: 'tailwindcss',
+    name: 'Tailwind CSS',
+    feedUrl: 'https://tailwindcss.com/feeds/feed.xml',
+    type: 'rss',
+  },
+  {
+    tool: 'vite',
+    name: 'Vite',
+    feedUrl: 'https://vite.dev/blog.rss',
     type: 'rss',
   },
 ]
@@ -235,6 +263,14 @@ export const fetchFeed = async (config: FeedConfig): Promise<RSSItem[]> => {
 }
 
 /**
+ * 2026년 이후 게시글만 필터링한다.
+ */
+const filterByYear = (items: RSSItem[], year: number = 2026): RSSItem[] => {
+  const startDate = new Date(`${year}-01-01T00:00:00Z`)
+  return items.filter((item) => item.pubDate >= startDate)
+}
+
+/**
  * 모든 피드를 병렬로 fetch한다.
  */
 export const fetchAllFeeds = async (): Promise<RSSItem[]> => {
@@ -242,11 +278,46 @@ export const fetchAllFeeds = async (): Promise<RSSItem[]> => {
 
   const allItems = results.flat()
 
-  // 날짜 기준 내림차순 정렬
-  allItems.sort((a, b) => b.pubDate.getTime() - a.pubDate.getTime())
+  // 2026년 이후 게시글만 필터링
+  const recentItems = filterByYear(allItems)
 
-  console.log(`Total: ${allItems.length} items from ${FEED_CONFIGS.length} feeds`)
-  return allItems
+  // 날짜 기준 내림차순 정렬
+  recentItems.sort((a, b) => b.pubDate.getTime() - a.pubDate.getTime())
+
+  console.log(`Total: ${recentItems.length} items (2026+) from ${FEED_CONFIGS.length} feeds`)
+  return recentItems
+}
+
+/**
+ * 각 도구별로 균등하게 아이템을 선택한다.
+ * Round-robin 방식으로 각 도구에서 하나씩 가져온다.
+ */
+export const selectBalanced = (items: RSSItem[], count: number): RSSItem[] => {
+  // 도구별로 그룹화 (날짜순 유지)
+  const byTool = new Map<Tool, RSSItem[]>()
+
+  for (const item of items) {
+    const toolItems = byTool.get(item.tool) || []
+    toolItems.push(item)
+    byTool.set(item.tool, toolItems)
+  }
+
+  const selected: RSSItem[] = []
+  const toolQueues = Array.from(byTool.values())
+
+  // Round-robin으로 각 도구에서 하나씩 선택
+  let toolIndex = 0
+  while (selected.length < count && toolQueues.some((q) => q.length > 0)) {
+    const queue = toolQueues[toolIndex % toolQueues.length]
+
+    if (queue.length > 0) {
+      selected.push(queue.shift()!)
+    }
+
+    toolIndex++
+  }
+
+  return selected
 }
 
 /**
