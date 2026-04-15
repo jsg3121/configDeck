@@ -26,6 +26,7 @@
     ]
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.89.0",
     "@astrojs/check": "^0.9.8",
     "@astrojs/sitemap": "^3.7.2",
     "@astrojs/svelte": "^8.0.4",

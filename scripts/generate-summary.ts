@@ -1,9 +1,11 @@
 /**
- * Gemini API를 사용한 아티클 요약 생성 스크립트
+ * Claude API를 사용한 아티클 요약 생성 스크립트
  *
  * RSS에서 수집한 아티클의 원문을 분석하여
  * 한국어/영어 요약을 생성한다.
  */
+
+import Anthropic from '@anthropic-ai/sdk'
 
 import type { RSSItem, Tool } from './fetch-rss'
 import { getToolName } from './fetch-rss'
@@ -26,22 +28,6 @@ export interface ArticleSummary {
     en: ArticleContent
   }
 }
-
-interface GeminiResponse {
-  candidates?: Array<{
-    content?: {
-      parts?: Array<{
-        text?: string
-      }>
-    }
-  }>
-  error?: {
-    message: string
-  }
-}
-
-const GEMINI_API_URL =
-  'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent'
 
 /** API 응답 데이터 타입 */
 interface GeneratedContent {
@@ -73,7 +59,7 @@ ${item.description ? `- 내용: ${item.description}` : ''}
 내용에 맞는 구조로 자유롭게 작성하되, 다음 형식 규칙을 따르세요:
 
 **형식 규칙:**
-- 문단 사이에 빈 줄 넣기
+- 문단 사이에 빈 줄 **반드시** 넣기
 - 중요 용어, 기능명, 버전은 **볼드** 처리
 - 코드, 명령어, 패키지명, 파일명은 \`백틱\` 사용
 - 3개 이상 나열 시 bullet list(-) 사용
@@ -116,47 +102,31 @@ const isValidArticleContent = (obj: unknown): obj is ArticleContent => {
 }
 
 /**
- * Gemini API를 호출하여 아티클 콘텐츠를 생성한다.
+ * Claude API를 호출하여 아티클 콘텐츠를 생성한다.
  */
-const callGeminiAPI = async (prompt: string, apiKey: string): Promise<APICallResult> => {
+const callClaudeAPI = async (
+  client: Anthropic,
+  prompt: string,
+): Promise<APICallResult> => {
   try {
-    const response = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [{ text: prompt }],
-          },
-        ],
-        generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 4096,
+    const message = await client.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 4096,
+      messages: [
+        {
+          role: 'user',
+          content: prompt,
         },
-      }),
+      ],
     })
 
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error(`Gemini API error: ${response.status} - ${errorText}`)
-      const nonRetryable = [429, 403, 401].includes(response.status)
-      return { success: false, data: null, retryable: !nonRetryable }
-    }
-
-    const data = (await response.json()) as GeminiResponse
-
-    if (data.error) {
-      console.error(`Gemini API error: ${data.error.message}`)
+    const textBlock = message.content.find((block) => block.type === 'text')
+    if (!textBlock || textBlock.type !== 'text') {
+      console.error('No text in Claude response')
       return { success: false, data: null, retryable: true }
     }
 
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text
-    if (!text) {
-      console.error('No text in Gemini response')
-      return { success: false, data: null, retryable: true }
-    }
+    const text = textBlock.text
 
     // JSON 파싱 시도 (코드블록 제거 후 파싱)
     const cleanedText = text.replace(/```json\s*/g, '').replace(/```\s*/g, '')
@@ -175,7 +145,14 @@ const callGeminiAPI = async (prompt: string, apiKey: string): Promise<APICallRes
 
     return { success: true, data: parsed, retryable: false }
   } catch (error) {
-    console.error('Error calling Gemini API:', error)
+    console.error('Error calling Claude API:', error)
+
+    // Rate limit 또는 인증 에러는 재시도 불가
+    if (error instanceof Anthropic.APIError) {
+      const nonRetryable = [429, 401, 403].includes(error.status)
+      return { success: false, data: null, retryable: !nonRetryable }
+    }
+
     return { success: false, data: null, retryable: true }
   }
 }
@@ -189,9 +166,12 @@ interface SummaryResult {
 /**
  * 단일 아티클의 요약을 생성한다.
  */
-export const generateSummary = async (item: RSSItem, apiKey: string): Promise<SummaryResult> => {
+export const generateSummary = async (
+  item: RSSItem,
+  client: Anthropic,
+): Promise<SummaryResult> => {
   const prompt = buildPrompt(item)
-  const result = await callGeminiAPI(prompt, apiKey)
+  const result = await callClaudeAPI(client, prompt)
 
   if (!result.success || !result.data) {
     return { article: null, retryable: result.retryable }
@@ -221,6 +201,7 @@ export const generateSummaries = async (
   options: { delayMs?: number; maxRetries?: number } = {},
 ): Promise<ArticleSummary[]> => {
   const { delayMs = 1000, maxRetries = 3 } = options
+  const client = new Anthropic({ apiKey })
   const summaries: ArticleSummary[] = []
 
   for (const item of items) {
@@ -228,7 +209,7 @@ export const generateSummaries = async (
     let result: SummaryResult | null = null
 
     while (retries < maxRetries) {
-      result = await generateSummary(item, apiKey)
+      result = await generateSummary(item, client)
 
       if (result.article) {
         break
@@ -236,6 +217,7 @@ export const generateSummaries = async (
 
       // 재시도 불가능한 에러(429, 403 등)면 즉시 중단
       if (!result.retryable) {
+        // eslint-disable-next-line no-console
         console.error(`Non-retryable error for: ${item.title}. Stopping.`)
         return summaries
       }

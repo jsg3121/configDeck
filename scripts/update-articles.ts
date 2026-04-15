@@ -7,7 +7,7 @@
 import * as fs from 'node:fs'
 import * as path from 'node:path'
 
-import { fetchAllFeeds, filterNewItems } from './fetch-rss'
+import { fetchAllFeeds, filterNewItems, selectBalanced } from './fetch-rss'
 import {
   generateSlug,
   generateSummaries,
@@ -67,10 +67,10 @@ const saveArticle = (article: ArticleSummary, locale: 'ko' | 'en'): void => {
  * 메인 실행 함수
  */
 const main = async (): Promise<void> => {
-  const apiKey = process.env.GEMINI_API_KEY
+  const apiKey = process.env.ANTHROPIC_API_KEY
 
   if (!apiKey) {
-    console.error('Error: GEMINI_API_KEY environment variable is not set')
+    console.error('Error: ANTHROPIC_API_KEY environment variable is not set')
     process.exit(1)
   }
 
@@ -88,11 +88,11 @@ const main = async (): Promise<void> => {
 
   console.log(`Found ${newItems.length} new articles. Generating summaries...`)
 
-  // 최근 10개만 처리 (Rate limit 및 비용 고려)
-  const itemsToProcess = newItems.slice(0, 10)
+  // 각 도구에서 균등하게 4개 선택 (Rate limit 및 비용 고려)
+  const itemsToProcess = selectBalanced(newItems, 4)
 
   const summaries = await generateSummaries(itemsToProcess, apiKey, {
-    delayMs: 2000, // 2초 딜레이 (Gemini 무료 티어 Rate limit 고려)
+    delayMs: 1000, // 1초 딜레이
     maxRetries: 3,
   })
 

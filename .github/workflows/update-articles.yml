@@ -12,7 +12,7 @@ permissions:
   pull-requests: write
 
 env:
-  GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+  ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
 
 jobs:
   update-articles:
@@ -41,7 +41,7 @@ jobs:
       - name: Run article update script
         run: pnpm tsx scripts/update-articles.ts
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
 
       - name: Check for changes
         id: check-changes
