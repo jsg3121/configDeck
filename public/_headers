@@ -1,0 +1,25 @@
+# 정적 에셋 (해시 파일명) - 1년 캐시
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# 폰트 파일 - 1년 캐시
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# 이미지 - 1주일 캐시
+/*.png
+  Cache-Control: public, max-age=604800
+/*.svg
+  Cache-Control: public, max-age=604800
+/*.ico
+  Cache-Control: public, max-age=604800
+
+# HTML 페이지 - 항상 재검증
+/*
+  Cache-Control: public, max-age=0, must-revalidate
+
+# 보안 헤더
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
