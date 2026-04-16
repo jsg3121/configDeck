@@ -155,7 +155,12 @@
       "nodejs": "Node.js",
       "webdev": "web.dev",
       "tailwindcss": "Tailwind CSS",
-      "vite": "Vite"
+      "vite": "Vite",
+      "smashingmagazine": "Smashing Magazine",
+      "csstricks": "CSS-Tricks",
+      "searchenginejournal": "Search Engine Journal",
+      "googlesearchcentral": "Google Search Central",
+      "javascriptweekly": "JavaScript Weekly"
     }
   }
 }

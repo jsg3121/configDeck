@@ -11,6 +11,93 @@ export const getStaticPaths = () => {
 
 const { locale } = Astro.params as { locale: Locale }
 
+// JSON-LD 구조화 데이터
+const siteUrl = Astro.site?.origin ?? 'https://configdeck.dev'
+
+const softwareAppJsonLd = {
+  '@type': 'SoftwareApplication',
+  name: 'ConfigDeck',
+  applicationCategory: 'DeveloperApplication',
+  operatingSystem: 'Web',
+  url: `${siteUrl}/${locale}/generator`,
+  description:
+    locale === 'ko'
+      ? '개발 설정 파일을 스택 기반으로 조합하고 생성하는 웹 서비스'
+      : 'A web service to generate dev config files based on your stack',
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'USD',
+  },
+  featureList:
+    locale === 'ko'
+      ? [
+          '스택 프리셋으로 한 번에 생성',
+          '개별 파일 커스터마이징',
+          'TypeScript, ESLint, Prettier 지원',
+        ]
+      : [
+          'Generate all files at once with stack presets',
+          'Customize individual files',
+          'TypeScript, ESLint, Prettier support',
+        ],
+}
+
+const howToJsonLd = {
+  '@type': 'HowTo',
+  name: locale === 'ko' ? '설정 파일 생성하기' : 'How to Generate Config Files',
+  description:
+    locale === 'ko'
+      ? 'ConfigDeck으로 프로젝트 설정 파일을 생성하는 방법'
+      : 'How to generate project config files with ConfigDeck',
+  step: [
+    {
+      '@type': 'HowToStep',
+      position: 1,
+      name: locale === 'ko' ? '방법 선택' : 'Choose a method',
+      text:
+        locale === 'ko'
+          ? '스택 프리셋 또는 개별 파일 중 선택하세요'
+          : 'Choose between stack presets or individual files',
+    },
+    {
+      '@type': 'HowToStep',
+      position: 2,
+      name: locale === 'ko' ? '옵션 설정' : 'Configure options',
+      text:
+        locale === 'ko'
+          ? '프로젝트에 맞게 옵션을 조정하세요'
+          : 'Adjust options to fit your project',
+    },
+    {
+      '@type': 'HowToStep',
+      position: 3,
+      name: locale === 'ko' ? '다운로드' : 'Download',
+      text:
+        locale === 'ko'
+          ? '생성된 파일을 다운로드하거나 복사하세요'
+          : 'Download or copy the generated files',
+    },
+  ],
+}
+
+const breadcrumbJsonLd = {
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: locale === 'ko' ? '홈' : 'Home',
+      item: `${siteUrl}/${locale}`,
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: locale === 'ko' ? '생성기' : 'Generator',
+    },
+  ],
+}
+
 const stackPresetCards = [
   {
     name: 'React + Vite + TS',
@@ -132,6 +219,7 @@ const frontendFileCards = [
   locale={locale}
   pagePath="/generator"
   currentPath="/generator"
+  jsonLd={[softwareAppJsonLd, howToJsonLd, breadcrumbJsonLd]}
 >
   <!-- 페이지 타이틀 -->
   <section class="mx-auto max-w-7xl px-6 pt-16 pb-10">

@@ -3,59 +3,19 @@ import { buildLocalizedPath, getTranslation, SUPPORTED_LOCALES, type Locale } fr
 import { getCollection } from 'astro:content'
 
 import Layout from '@/layouts/Layout.astro'
-
-const TOOLS = [
-  'eslint',
-  'prettier',
-  'typescript',
-  'nextjs',
-  'react',
-  'astro',
-  'nodejs',
-  'webdev',
-  'tailwindcss',
-  'vite',
-] as const
-type Tool = (typeof TOOLS)[number]
+import { ARTICLE_TOOLS, TOOL_COLORS, TOOL_TO_GENERATOR, type ArticleTool } from '@/lib/constants'
 
 export const getStaticPaths = () => {
-  const tools = TOOLS
   const paths = []
   for (const locale of SUPPORTED_LOCALES) {
-    for (const tool of tools) {
+    for (const tool of ARTICLE_TOOLS) {
       paths.push({ params: { locale, tool } })
     }
   }
   return paths
 }
 
-const { locale, tool } = Astro.params as { locale: Locale; tool: Tool }
-
-const toolColors: Record<Tool, string> = {
-  eslint: 'bg-purple-100 text-purple-800',
-  prettier: 'bg-pink-100 text-pink-800',
-  typescript: 'bg-blue-100 text-blue-800',
-  nextjs: 'bg-gray-100 text-gray-800',
-  react: 'bg-cyan-100 text-cyan-800',
-  astro: 'bg-orange-100 text-orange-800',
-  nodejs: 'bg-green-100 text-green-800',
-  webdev: 'bg-indigo-100 text-indigo-800',
-  tailwindcss: 'bg-sky-100 text-sky-800',
-  vite: 'bg-violet-100 text-violet-800',
-}
-
-const toolToGenerator: Record<Tool, string | null> = {
-  eslint: 'eslint-config',
-  prettier: 'prettier-config',
-  typescript: 'tsconfig',
-  nextjs: 'nextjs',
-  react: 'react-vite-ts',
-  astro: 'astro',
-  nodejs: 'nodejs',
-  webdev: null,
-  tailwindcss: null,
-  vite: null,
-}
+const { locale, tool } = Astro.params as { locale: Locale; tool: ArticleTool }
 
 // 해당 도구의 아티클 가져오기
 let articles: Awaited<ReturnType<typeof getCollection<'articles'>>> = []
@@ -85,7 +45,7 @@ const pageDescription =
     : `Stay updated with the latest ${toolName} releases, security patches, and feature updates.`
 
 // JSON-LD 구조화 데이터
-const siteUrl = 'https://configdeck.dev'
+const siteUrl = Astro.site?.origin ?? 'https://configdeck.dev'
 const collectionJsonLd = {
   '@type': 'CollectionPage',
   name: pageTitle,
@@ -150,7 +110,7 @@ const breadcrumbJsonLd = {
         {getTranslation(locale, 'article.allTools')}
       </a>
       {
-        TOOLS.map((t) => (
+        ARTICLE_TOOLS.map((t) => (
           <a
             href={buildLocalizedPath(locale, `/article/${t}`)}
             class={`rounded-full px-4 py-2 text-sm font-medium ${
@@ -165,7 +125,7 @@ const breadcrumbJsonLd = {
 
     <!-- 설정 생성 CTA (generator가 있는 도구만) -->
     {
-      toolToGenerator[tool] && (
+      TOOL_TO_GENERATOR[tool] && (
         <div class="mt-10 rounded-xl border border-primary/20 bg-linear-to-r from-primary/5 to-primary/10 p-6">
           <div class="flex flex-col items-center gap-4 sm:flex-row">
             <div class="flex-1">
@@ -181,7 +141,7 @@ const breadcrumbJsonLd = {
               </p>
             </div>
             <a
-              href={buildLocalizedPath(locale, `/generator/${toolToGenerator[tool]}`)}
+              href={buildLocalizedPath(locale, `/generator/${TOOL_TO_GENERATOR[tool]}`)}
               class="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 font-semibold text-white hover:bg-primary-hover"
             >
               {getTranslation(locale, 'article.generateConfig')}
@@ -215,7 +175,7 @@ const breadcrumbJsonLd = {
                 <article class="group rounded-xl border border-border bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
                   <div class="flex items-center justify-between">
                     <span
-                      class={`rounded-full px-3 py-1 text-xs font-medium ${toolColors[article.data.tool]}`}
+                      class={`rounded-full px-3 py-1 text-xs font-medium ${TOOL_COLORS[article.data.tool]}`}
                     >
                       {getTranslation(locale, `article.tools.${article.data.tool}`)}
                     </span>

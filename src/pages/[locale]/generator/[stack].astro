@@ -26,6 +26,45 @@ const pageTitle =
     : `${currentStack.name} Generator — ConfigDeck`
 const pageDescription = locale === 'ko' ? currentStack.descriptionKo : currentStack.descriptionEn
 
+// JSON-LD 구조화 데이터
+const siteUrl = 'https://configdeck.dev'
+
+const itemListJsonLd = {
+  '@type': 'ItemList',
+  name: `${currentStack.name} Config Files`,
+  description: pageDescription,
+  numberOfItems: currentStack.files.length,
+  itemListElement: currentStack.files.map((file, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name: file.fileName,
+    url: `${siteUrl}/${locale}/generator/${file.slug}`,
+  })),
+}
+
+const breadcrumbJsonLd = {
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: locale === 'ko' ? '홈' : 'Home',
+      item: `${siteUrl}/${locale}`,
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: locale === 'ko' ? '생성기' : 'Generator',
+      item: `${siteUrl}/${locale}/generator`,
+    },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      name: currentStack.name,
+    },
+  ],
+}
+
 /** 파일 목록을 직렬화 가능한 형태로 변환한다 */
 const serializableFiles = currentStack.files.map((f) => ({
   fileName: f.fileName,
@@ -40,6 +79,7 @@ const serializableFiles = currentStack.files.map((f) => ({
   locale={locale}
   pagePath={`/generator/${stackSlug}`}
   currentPath={`/generator/${stackSlug}`}
+  jsonLd={[itemListJsonLd, breadcrumbJsonLd]}
 >
   <div class="w-full max-w-7xl mx-auto flex flex-col lg:h-[calc(100vh-65px)]">
     <!-- SEO: Astro 정적 영역 -->
