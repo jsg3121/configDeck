@@ -3,23 +3,7 @@ import { buildLocalizedPath, getTranslation, SUPPORTED_LOCALES, type Locale } fr
 import { getCollection, render } from 'astro:content'
 
 import Layout from '@/layouts/Layout.astro'
-
-type Tool =
-  | 'eslint'
-  | 'prettier'
-  | 'typescript'
-  | 'nextjs'
-  | 'react'
-  | 'astro'
-  | 'nodejs'
-  | 'webdev'
-  | 'tailwindcss'
-  | 'vite'
-  | 'smashingmagazine'
-  | 'csstricks'
-  | 'searchenginejournal'
-  | 'googlesearchcentral'
-  | 'javascriptweekly'
+import { TOOL_COLORS_DETAILED, TOOL_TO_GENERATOR, type ArticleTool } from '@/lib/constants'
 
 export const getStaticPaths = async () => {
   const paths = []
@@ -45,44 +29,8 @@ export const getStaticPaths = async () => {
   return paths
 }
 
-const { locale, tool, slug } = Astro.params as { locale: Locale; tool: Tool; slug: string }
+const { locale, tool, slug } = Astro.params as { locale: Locale; tool: ArticleTool; slug: string }
 const { article, Content } = Astro.props
-
-const toolColors: Record<Tool, { bg: string; text: string; border: string }> = {
-  eslint: { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-200' },
-  prettier: { bg: 'bg-pink-50', text: 'text-pink-700', border: 'border-pink-200' },
-  typescript: { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200' },
-  nextjs: { bg: 'bg-gray-50', text: 'text-gray-700', border: 'border-gray-200' },
-  react: { bg: 'bg-cyan-50', text: 'text-cyan-700', border: 'border-cyan-200' },
-  astro: { bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-200' },
-  nodejs: { bg: 'bg-green-50', text: 'text-green-700', border: 'border-green-200' },
-  webdev: { bg: 'bg-indigo-50', text: 'text-indigo-700', border: 'border-indigo-200' },
-  tailwindcss: { bg: 'bg-sky-50', text: 'text-sky-700', border: 'border-sky-200' },
-  vite: { bg: 'bg-violet-50', text: 'text-violet-700', border: 'border-violet-200' },
-  smashingmagazine: { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-200' },
-  csstricks: { bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200' },
-  searchenginejournal: { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200' },
-  googlesearchcentral: { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200' },
-  javascriptweekly: { bg: 'bg-yellow-50', text: 'text-yellow-700', border: 'border-yellow-200' },
-}
-
-const toolToGenerator: Record<Tool, string | null> = {
-  eslint: 'eslint-config',
-  prettier: 'prettier-config',
-  typescript: 'tsconfig',
-  nextjs: 'nextjs',
-  react: 'react-vite-ts',
-  astro: 'astro',
-  nodejs: 'nodejs',
-  webdev: null,
-  tailwindcss: null,
-  vite: null,
-  smashingmagazine: null,
-  csstricks: null,
-  searchenginejournal: null,
-  googlesearchcentral: null,
-  javascriptweekly: null,
-}
 
 const formatDate = (date: Date): string => {
   return date.toLocaleDateString(locale === 'ko' ? 'ko-KR' : 'en-US', {
@@ -109,7 +57,7 @@ try {
 }
 
 // JSON-LD 구조화 데이터
-const siteUrl = 'https://configdeck.dev'
+const siteUrl = Astro.site?.origin ?? 'https://configdeck.dev'
 
 const articleJsonLd = {
   '@type': 'Article',
@@ -187,7 +135,7 @@ const breadcrumbJsonLd = {
     <header class="mt-8">
       <div class="flex flex-wrap items-center gap-3">
         <span
-          class={`rounded-full px-3 py-1 text-sm font-medium ${toolColors[tool].bg} ${toolColors[tool].text}`}
+          class={`rounded-full px-3 py-1 text-sm font-medium ${TOOL_COLORS_DETAILED[tool].bg} ${TOOL_COLORS_DETAILED[tool].text}`}
         >
           {toolName}
         </span>
@@ -222,8 +170,10 @@ const breadcrumbJsonLd = {
     </header>
 
     <!-- 요약 카드 -->
-    <div class={`mt-8 rounded-xl border p-6 ${toolColors[tool].bg} ${toolColors[tool].border}`}>
-      <h2 class={`text-lg font-semibold ${toolColors[tool].text}`}>
+    <div
+      class={`mt-8 rounded-xl border p-6 ${TOOL_COLORS_DETAILED[tool].bg} ${TOOL_COLORS_DETAILED[tool].border}`}
+    >
+      <h2 class={`text-lg font-semibold ${TOOL_COLORS_DETAILED[tool].text}`}>
         {locale === 'ko' ? '요약' : 'Summary'}
       </h2>
       <p class="mt-2 text-gray-700">{article.data.summary}</p>
@@ -236,7 +186,7 @@ const breadcrumbJsonLd = {
 
     <!-- 설정 생성 CTA (generator가 있는 도구만) -->
     {
-      toolToGenerator[tool] && (
+      TOOL_TO_GENERATOR[tool] && (
         <div class="mt-12 rounded-xl border border-primary/20 bg-linear-to-r from-primary/5 to-primary/10 p-8">
           <div class="flex flex-col items-center text-center sm:flex-row sm:text-left">
             <div class="flex-1">
@@ -252,7 +202,7 @@ const breadcrumbJsonLd = {
               </p>
             </div>
             <a
-              href={buildLocalizedPath(locale, `/generator/${toolToGenerator[tool]}`)}
+              href={buildLocalizedPath(locale, `/generator/${TOOL_TO_GENERATOR[tool]}`)}
               class="mt-4 inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-semibold text-white hover:bg-primary-hover sm:mt-0"
             >
               {getTranslation(locale, 'article.generateConfig')}
