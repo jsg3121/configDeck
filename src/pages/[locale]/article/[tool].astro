@@ -4,11 +4,43 @@ import { getCollection } from 'astro:content'
 
 import Layout from '@/layouts/Layout.astro'
 
-const TOOLS = ['eslint', 'prettier', 'typescript', 'nextjs', 'react', 'astro', 'nodejs'] as const
+const TOOLS = [
+  'eslint',
+  'prettier',
+  'typescript',
+  'nextjs',
+  'react',
+  'astro',
+  'nodejs',
+  'webdev',
+  'tailwindcss',
+  'vite',
+  'smashingmagazine',
+  'csstricks',
+  'searchenginejournal',
+  'googlesearchcentral',
+  'javascriptweekly',
+] as const
 type Tool = (typeof TOOLS)[number]
 
 export const getStaticPaths = () => {
-  const tools = ['eslint', 'prettier', 'typescript', 'nextjs', 'react', 'astro', 'nodejs'] as const
+  const tools = [
+    'eslint',
+    'prettier',
+    'typescript',
+    'nextjs',
+    'react',
+    'astro',
+    'nodejs',
+    'webdev',
+    'tailwindcss',
+    'vite',
+    'smashingmagazine',
+    'csstricks',
+    'searchenginejournal',
+    'googlesearchcentral',
+    'javascriptweekly',
+  ] as const
   const paths = []
   for (const locale of SUPPORTED_LOCALES) {
     for (const tool of tools) {
@@ -28,9 +60,17 @@ const toolColors: Record<Tool, string> = {
   react: 'bg-cyan-100 text-cyan-800',
   astro: 'bg-orange-100 text-orange-800',
   nodejs: 'bg-green-100 text-green-800',
+  webdev: 'bg-indigo-100 text-indigo-800',
+  tailwindcss: 'bg-sky-100 text-sky-800',
+  vite: 'bg-violet-100 text-violet-800',
+  smashingmagazine: 'bg-red-100 text-red-800',
+  csstricks: 'bg-amber-100 text-amber-800',
+  searchenginejournal: 'bg-emerald-100 text-emerald-800',
+  googlesearchcentral: 'bg-blue-100 text-blue-800',
+  javascriptweekly: 'bg-yellow-100 text-yellow-800',
 }
 
-const toolToGenerator: Record<Tool, string> = {
+const toolToGenerator: Record<Tool, string | null> = {
   eslint: 'eslint-config',
   prettier: 'prettier-config',
   typescript: 'tsconfig',
@@ -38,6 +78,14 @@ const toolToGenerator: Record<Tool, string> = {
   react: 'react-vite-ts',
   astro: 'astro',
   nodejs: 'nodejs',
+  webdev: null,
+  tailwindcss: null,
+  vite: null,
+  smashingmagazine: null,
+  csstricks: null,
+  searchenginejournal: null,
+  googlesearchcentral: null,
+  javascriptweekly: null,
 }
 
 // 해당 도구의 아티클만 가져오기

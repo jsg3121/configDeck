@@ -15,6 +15,11 @@ const TOOLS = [
   'webdev',
   'tailwindcss',
   'vite',
+  'smashingmagazine',
+  'csstricks',
+  'searchenginejournal',
+  'googlesearchcentral',
+  'javascriptweekly',
 ] as const
 type Tool = (typeof TOOLS)[number]
 
@@ -30,6 +35,11 @@ export const getStaticPaths = () => {
     'webdev',
     'tailwindcss',
     'vite',
+    'smashingmagazine',
+    'csstricks',
+    'searchenginejournal',
+    'googlesearchcentral',
+    'javascriptweekly',
   ] as const
   const paths = []
   for (const locale of SUPPORTED_LOCALES) {
@@ -53,6 +63,11 @@ const toolColors: Record<Tool, string> = {
   webdev: 'bg-indigo-100 text-indigo-800',
   tailwindcss: 'bg-sky-100 text-sky-800',
   vite: 'bg-violet-100 text-violet-800',
+  smashingmagazine: 'bg-red-100 text-red-800',
+  csstricks: 'bg-amber-100 text-amber-800',
+  searchenginejournal: 'bg-emerald-100 text-emerald-800',
+  googlesearchcentral: 'bg-blue-100 text-blue-800',
+  javascriptweekly: 'bg-yellow-100 text-yellow-800',
 }
 
 const toolToGenerator: Record<Tool, string | null> = {
@@ -66,6 +81,11 @@ const toolToGenerator: Record<Tool, string | null> = {
   webdev: null,
   tailwindcss: null,
   vite: null,
+  smashingmagazine: null,
+  csstricks: null,
+  searchenginejournal: null,
+  googlesearchcentral: null,
+  javascriptweekly: null,
 }
 
 // 해당 도구의 아티클 가져오기

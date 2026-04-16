@@ -15,6 +15,11 @@ type Tool =
   | 'webdev'
   | 'tailwindcss'
   | 'vite'
+  | 'smashingmagazine'
+  | 'csstricks'
+  | 'searchenginejournal'
+  | 'googlesearchcentral'
+  | 'javascriptweekly'
 
 export const getStaticPaths = async () => {
   const paths = []
@@ -54,6 +59,11 @@ const toolColors: Record<Tool, { bg: string; text: string; border: string }> = {
   webdev: { bg: 'bg-indigo-50', text: 'text-indigo-700', border: 'border-indigo-200' },
   tailwindcss: { bg: 'bg-sky-50', text: 'text-sky-700', border: 'border-sky-200' },
   vite: { bg: 'bg-violet-50', text: 'text-violet-700', border: 'border-violet-200' },
+  smashingmagazine: { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-200' },
+  csstricks: { bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200' },
+  searchenginejournal: { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200' },
+  googlesearchcentral: { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200' },
+  javascriptweekly: { bg: 'bg-yellow-50', text: 'text-yellow-700', border: 'border-yellow-200' },
 }
 
 const toolToGenerator: Record<Tool, string | null> = {
@@ -67,6 +77,11 @@ const toolToGenerator: Record<Tool, string | null> = {
   webdev: null,
   tailwindcss: null,
   vite: null,
+  smashingmagazine: null,
+  csstricks: null,
+  searchenginejournal: null,
+  googlesearchcentral: null,
+  javascriptweekly: null,
 }
 
 const formatDate = (date: Date): string => {
