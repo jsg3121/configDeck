@@ -288,11 +288,13 @@
 
   <!-- 우측 패널: 미리보기 -->
   <div
-    class="w-full border-t border-border lg:w-[calc(100%-444px)] lg:h-full lg:border-t-0 lg:border-l {mobileView ===
+    class="w-full border-t border-border lg:w-[calc(100%-444px)] lg:h-full lg:border-t-0 lg:border-l lg:overflow-hidden {mobileView ===
     'options'
       ? 'hidden lg:block'
       : ''}"
   >
-    <CodePreview fileName={generatedOutput.fileName} code={generatedOutput.code} {locale} />
+    <div class="flex h-full flex-col bg-code-bg">
+      <CodePreview fileName={generatedOutput.fileName} code={generatedOutput.code} {locale} />
+    </div>
   </div>
 </div>
