@@ -19,7 +19,18 @@ const TOOLS = [
 type Tool = (typeof TOOLS)[number]
 
 export const getStaticPaths = () => {
-  const tools = TOOLS
+  const tools = [
+    'eslint',
+    'prettier',
+    'typescript',
+    'nextjs',
+    'react',
+    'astro',
+    'nodejs',
+    'webdev',
+    'tailwindcss',
+    'vite',
+  ] as const
   const paths = []
   for (const locale of SUPPORTED_LOCALES) {
     for (const tool of tools) {

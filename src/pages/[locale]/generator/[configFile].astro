@@ -21,6 +21,49 @@ const pageTitle =
   locale === 'ko' ? `${currentFile.titleKo} — ConfigDeck` : `${currentFile.titleEn} — ConfigDeck`
 const pageDescription = locale === 'ko' ? currentFile.descriptionKo : currentFile.descriptionEn
 
+// JSON-LD 구조화 데이터
+const siteUrl = 'https://configdeck.dev'
+
+const softwareSourceCodeJsonLd = {
+  '@type': 'SoftwareSourceCode',
+  name: currentFile.fileName,
+  description: pageDescription,
+  programmingLanguage: {
+    '@type': 'ComputerLanguage',
+    name: currentFile.fileName.endsWith('.json')
+      ? 'JSON'
+      : currentFile.fileName.endsWith('.mjs') || currentFile.fileName.endsWith('.js')
+        ? 'JavaScript'
+        : currentFile.fileName.endsWith('.ts')
+          ? 'TypeScript'
+          : 'Configuration',
+  },
+  codeRepository: `${siteUrl}/${locale}/generator/${fileSlug}`,
+}
+
+const breadcrumbJsonLd = {
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: locale === 'ko' ? '홈' : 'Home',
+      item: `${siteUrl}/${locale}`,
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: locale === 'ko' ? '생성기' : 'Generator',
+      item: `${siteUrl}/${locale}/generator`,
+    },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      name: currentFile.fileName,
+    },
+  ],
+}
+
 /**
  * 관련 파일 데이터를 Svelte에 전달 가능한 직렬화 형태로 변환한다.
  * 좌측 패널 하단 "함께 쓰면 좋아요" 섹션에서 카드로 렌더링한다.
@@ -40,6 +83,7 @@ const relatedFiles = getRelatedFiles(fileSlug).map((file) => ({
   locale={locale}
   pagePath={`/generator/${fileSlug}`}
   currentPath={`/generator/${fileSlug}`}
+  jsonLd={[softwareSourceCodeJsonLd, breadcrumbJsonLd]}
 >
   <div class="w-full max-w-7xl mx-auto flex flex-col lg:min-h-[calc(100vh-65px-157px)]">
     <!-- SEO: Astro 정적 영역 — 좌측 패널 폭에 맞춤 -->
