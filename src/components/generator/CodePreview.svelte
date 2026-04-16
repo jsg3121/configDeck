@@ -30,12 +30,15 @@
 
   /** 코드를 파일로 다운로드한다 */
   const handleDownload = () => {
-    const blob = new Blob([code], { type: 'text/plain' })
+    // application/octet-stream을 사용하여 브라우저가 파일명을 변경하지 않도록 한다
+    const blob = new Blob([code], { type: 'application/octet-stream' })
     const url = URL.createObjectURL(blob)
     const anchor = document.createElement('a')
     anchor.href = url
     anchor.download = fileName
+    document.body.appendChild(anchor)
     anchor.click()
+    document.body.removeChild(anchor)
     URL.revokeObjectURL(url)
     downloadFeedbackVisible = true
     setTimeout(() => {
