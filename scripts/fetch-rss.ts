@@ -25,6 +25,11 @@ export type Tool =
   | 'webdev'
   | 'tailwindcss'
   | 'vite'
+  | 'smashingmagazine'
+  | 'csstricks'
+  | 'searchenginejournal'
+  | 'googlesearchcentral'
+  | 'javascriptweekly'
 
 interface FeedConfig {
   tool: Tool
@@ -92,6 +97,36 @@ export const FEED_CONFIGS: FeedConfig[] = [
     tool: 'vite',
     name: 'Vite',
     feedUrl: 'https://vite.dev/blog.rss',
+    type: 'rss',
+  },
+  {
+    tool: 'smashingmagazine',
+    name: 'Smashing Magazine',
+    feedUrl: 'https://www.smashingmagazine.com/feed/',
+    type: 'rss',
+  },
+  {
+    tool: 'csstricks',
+    name: 'CSS-Tricks',
+    feedUrl: 'https://css-tricks.com/feed/',
+    type: 'rss',
+  },
+  {
+    tool: 'searchenginejournal',
+    name: 'Search Engine Journal',
+    feedUrl: 'https://www.searchenginejournal.com/feed/',
+    type: 'rss',
+  },
+  {
+    tool: 'googlesearchcentral',
+    name: 'Google Search Central',
+    feedUrl: 'https://developers.google.com/search/blog/feed.xml',
+    type: 'atom',
+  },
+  {
+    tool: 'javascriptweekly',
+    name: 'JavaScript Weekly',
+    feedUrl: 'https://javascriptweekly.com/rss/',
     type: 'rss',
   },
 ]
@@ -263,11 +298,18 @@ export const fetchFeed = async (config: FeedConfig): Promise<RSSItem[]> => {
 }
 
 /**
- * 2026년 이후 게시글만 필터링한다.
+ * 전날 게시글만 필터링한다.
+ * 예: 오늘이 4/16이면 4/15 00:00 ~ 4/15 23:59:59 게시글만 반환
  */
-const filterByYear = (items: RSSItem[], year: number = 2026): RSSItem[] => {
-  const startDate = new Date(`${year}-01-01T00:00:00Z`)
-  return items.filter((item) => item.pubDate >= startDate)
+const filterByYesterday = (items: RSSItem[]): RSSItem[] => {
+  const yesterday = new Date()
+  yesterday.setDate(yesterday.getDate() - 1)
+  yesterday.setHours(0, 0, 0, 0)
+
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  return items.filter((item) => item.pubDate >= yesterday && item.pubDate < today)
 }
 
 /**
@@ -278,13 +320,15 @@ export const fetchAllFeeds = async (): Promise<RSSItem[]> => {
 
   const allItems = results.flat()
 
-  // 2026년 이후 게시글만 필터링
-  const recentItems = filterByYear(allItems)
+  // 전날 게시글만 필터링
+  const recentItems = filterByYesterday(allItems)
 
   // 날짜 기준 내림차순 정렬
-  recentItems.sort((a, b) => b.pubDate.getTime() - a.pubDate.getTime())
+  recentItems.sort((a: RSSItem, b: RSSItem) => b.pubDate.getTime() - a.pubDate.getTime())
 
-  console.log(`Total: ${recentItems.length} items (2026+) from ${FEED_CONFIGS.length} feeds`)
+  const yesterday = new Date()
+  yesterday.setDate(yesterday.getDate() - 1)
+  console.log(`Total: ${recentItems.length} items (${yesterday.toISOString().split('T')[0]}) from ${FEED_CONFIGS.length} feeds`)
   return recentItems
 }
 
