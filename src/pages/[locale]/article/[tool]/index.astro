@@ -172,30 +172,27 @@ const breadcrumbJsonLd = {
               const slug = article.id.replace(`${locale}/`, '').replace('.md', '')
               const articleUrl = buildLocalizedPath(locale, `/article/${article.data.tool}/${slug}`)
               return (
-                <article class="group rounded-xl border border-border bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
-                  <div class="flex items-center justify-between">
-                    <span
-                      class={`rounded-full px-3 py-1 text-xs font-medium ${TOOL_COLORS[article.data.tool]}`}
-                    >
-                      {getTranslation(locale, `article.tools.${article.data.tool}`)}
-                    </span>
-                    <time class="text-sm text-gray-400">{formatDate(article.data.pubDate)}</time>
-                  </div>
+                <a
+                  href={articleUrl}
+                  class="group block rounded-xl border border-border bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
+                >
+                  <article>
+                    <div class="flex items-center justify-between">
+                      <span
+                        class={`rounded-full px-3 py-1 text-xs font-medium ${TOOL_COLORS[article.data.tool]}`}
+                      >
+                        {getTranslation(locale, `article.tools.${article.data.tool}`)}
+                      </span>
+                      <time class="text-sm text-gray-400">{formatDate(article.data.pubDate)}</time>
+                    </div>
 
-                  <a href={articleUrl} class="block">
                     <h3 class="mt-4 line-clamp-2 text-lg font-semibold text-gray-900 group-hover:text-primary">
                       {article.data.title}
                     </h3>
-                  </a>
 
-                  <p class="mt-2 line-clamp-3 text-sm text-gray-500">{article.data.summary}</p>
-
-                  <div class="mt-4 flex items-center gap-3">
-                    <a href={articleUrl} class="text-sm font-medium text-primary hover:underline">
-                      {locale === 'ko' ? '자세히 보기' : 'Read More'} &rarr;
-                    </a>
-                  </div>
-                </article>
+                    <p class="mt-2 line-clamp-3 text-sm text-gray-500">{article.data.summary}</p>
+                  </article>
+                </a>
               )
             })}
           </div>

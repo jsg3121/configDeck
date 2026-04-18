@@ -1,8 +1,10 @@
 ---
 /**
- * 루트(/) 접근 시 기본 locale(/en/)로 리다이렉트한다.
- * Cloudflare Pages에서는 _redirects 파일이 서버 레벨에서 처리하므로
- * 이 페이지는 폴백용으로만 사용된다.
+ * 루트(/) 접근 시 사용자 언어에 맞는 locale로 리다이렉트한다.
+ * - 한국어 사용자: /ko/
+ * - 그 외: /en/
+ *
+ * 크롤러/JS 비활성화 시 meta refresh로 /en/으로 폴백한다.
  */
 ---
 
@@ -12,6 +14,14 @@
     <meta http-equiv="refresh" content="0;url=/en/" />
     <link rel="canonical" href="/en/" />
     <title>Redirecting...</title>
+    <script is:inline>
+      ;(function () {
+        var lang = navigator.language || navigator.userLanguage || ''
+        var isKorean = lang.toLowerCase().startsWith('ko')
+        var targetUrl = isKorean ? '/ko/' : '/en/'
+        location.replace(targetUrl)
+      })()
+    </script>
   </head>
   <body>
     <a href="/en/">Redirecting to ConfigDeck...</a>
