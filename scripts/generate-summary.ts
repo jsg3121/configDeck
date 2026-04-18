@@ -42,12 +42,10 @@ const buildPrompt = (item: RSSItem, locale: Locale): string => {
   const cleanedTitle = cleanTitle(item.title)
 
   const langInstruction = isKorean
-    ? '한국어로 작성하세요.'
+    ? `한국어로 작성하세요. frontmatter의 title은 원문("${cleanedTitle}")을 한국어로 자연스럽게 번역하여 작성하세요.`
     : 'Write in English.'
 
-  const titleInstruction = isKorean
-    ? `한국어로 자연스럽게 번역한 제목을 작성하세요. 원문: "${cleanedTitle}"`
-    : `Use the original title: "${cleanedTitle}"`
+  const titleValue = isKorean ? '여기에 번역된 제목 작성' : cleanedTitle.replace(/"/g, '\\"')
 
   const summaryInstruction = isKorean
     ? '2-3문장으로 "이 글을 왜 읽어야 하는지" 전달. 마크다운 문법 사용 금지.'
@@ -71,7 +69,7 @@ ${item.description ? `- 원문 발췌: ${item.description}` : ''}
 ---
 id: "${item.id}"
 tool: "${item.tool}"
-title: "${titleInstruction}"
+title: "${titleValue}"
 link: "${item.link}"
 pubDate: ${item.pubDate.toISOString()}
 summary: "여기에 요약 작성"
