@@ -7,10 +7,11 @@
 import * as fs from 'node:fs'
 import * as path from 'node:path'
 
-import { fetchAllFeeds, filterNewItems, selectBalanced } from './fetch-rss'
+import { fetchAllFeeds, filterNewItems, selectBalanced, type Tool } from './fetch-rss'
 import { generateArticles, generateSlug, type GeneratedArticle } from './generate-summary'
 
 const ARTICLES_DIR = path.join(process.cwd(), 'src/content/articles')
+const DEPRIORITIZE_DAYS = 2
 
 /**
  * 기존 아티클 ID 목록을 가져온다.
@@ -38,6 +39,45 @@ const getExistingArticleIds = (): Set<string> => {
   }
 
   return ids
+}
+
+/**
+ * 최근 N일간 저장된 아티클의 도구 목록을 추출한다.
+ * 파일명 prefix({YYYY-MM-DD}-)와 cutoff 날짜를 문자열로 비교하여 타임존 영향을 제거한다.
+ * frontmatter의 tool 필드를 읽어 도구 집합을 만든다.
+ */
+const getRecentlyUsedTools = (days: number): Set<Tool> => {
+  const tools = new Set<Tool>()
+  const locales = ['ko', 'en']
+
+  const cutoff = new Date()
+  cutoff.setDate(cutoff.getDate() - days)
+  const cutoffStr = `${cutoff.getFullYear()}-${String(cutoff.getMonth() + 1).padStart(2, '0')}-${String(cutoff.getDate()).padStart(2, '0')}`
+
+  for (const locale of locales) {
+    const localeDir = path.join(ARTICLES_DIR, locale)
+
+    if (!fs.existsSync(localeDir)) {
+      continue
+    }
+
+    const files = fs.readdirSync(localeDir).filter((f) => f.endsWith('.md'))
+
+    for (const file of files) {
+      const dateMatch = file.match(/^(\d{4}-\d{2}-\d{2})-/)
+      if (!dateMatch) continue
+
+      if (dateMatch[1] < cutoffStr) continue
+
+      const content = fs.readFileSync(path.join(localeDir, file), 'utf-8')
+      const toolMatch = content.match(/^tool:\s*["']?([^"'\n]+)["']?/m)
+      if (toolMatch) {
+        tools.add(toolMatch[1] as Tool)
+      }
+    }
+  }
+
+  return tools
 }
 
 /**
@@ -82,8 +122,16 @@ const main = async (): Promise<void> => {
 
   console.log(`Found ${newItems.length} new articles. Generating summaries...`)
 
+  // 최근 N일간 사용된 도구는 디우선순위화하여 다양성 확보
+  const recentlyUsedTools = getRecentlyUsedTools(DEPRIORITIZE_DAYS)
+  if (recentlyUsedTools.size > 0) {
+    console.log(
+      `Deprioritizing tools used in the last ${DEPRIORITIZE_DAYS} days: ${Array.from(recentlyUsedTools).join(', ')}`,
+    )
+  }
+
   // 각 도구에서 균등하게 2개 선택 (언어별 개별 호출로 API 비용 증가 고려)
-  const itemsToProcess = selectBalanced(newItems, 2)
+  const itemsToProcess = selectBalanced(newItems, 2, { deprioritize: recentlyUsedTools })
 
   const articles = await generateArticles(itemsToProcess, apiKey, {
     delayMs: 1000,
