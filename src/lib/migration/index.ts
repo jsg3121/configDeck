@@ -1,4 +1,4 @@
-export { migrateEslintConfig, type MigrationResult } from './eslintMigrator'
+export { migrateEslintConfig, type MigrationResult, type MigrationWarning } from './eslintMigrator'
 export { detectConfigFormat, parseEslintLegacyConfig, type ConfigFormat } from './parser'
 export {
   auditEslintConfig,

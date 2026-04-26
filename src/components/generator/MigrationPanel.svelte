@@ -1,8 +1,9 @@
 <script lang="ts">
   /**
-   * 마이그레이션/분석 탭 UI를 렌더링한다.
-   * ESLint 설정 파일을 붙여넣기 또는 파일 업로드로 입력받아
-   * 마이그레이션 또는 분석을 수행한다.
+   * 마이그레이션 탭 UI를 렌더링한다.
+   * 레거시 설정 파일을 붙여넣기 또는 파일 업로드로 입력받아
+   * 형식을 감지하고 변환 결과를 부모에게 전달한다.
+   * 변환 결과에 분석(audit) 결과도 함께 표시한다.
    */
   import {
     auditEslintConfig,
@@ -11,12 +12,10 @@
     parseEslintLegacyConfig,
     type AuditResult,
     type MigrationResult,
+    type MigrationWarning,
   } from '@/lib/migration'
 
-  import AuditFeedback from './AuditFeedback.svelte'
   import MigrationFeedback from './MigrationFeedback.svelte'
-
-  type PanelMode = 'migrate' | 'audit'
 
   interface Props {
     locale: string
@@ -25,12 +24,12 @@
 
   let { locale, onmigrationresult }: Props = $props()
 
-  let mode = $state<PanelMode>('migrate')
   let inputCode = $state('')
   let detectedFormat = $derived(detectConfigFormat(inputCode))
-  let warnings = $state<string[]>([])
+  let warnings = $state<MigrationWarning[]>([])
   let errorMessage = $state<string | null>(null)
   let auditResult = $state<AuditResult | null>(null)
+  let currentOutputCode = $state('')
   let fileInputRef = $state<HTMLInputElement | null>(null)
   let uploadedFileName = $state('')
 
@@ -38,6 +37,7 @@
     if (inputCode.trim().length < 5) {
       onmigrationresult(null)
       warnings = []
+      auditResult = null
       return
     }
 
@@ -46,10 +46,15 @@
       const result = migrateEslintConfig(parsed)
       warnings = result.warnings
       errorMessage = null
+      currentOutputCode = result.outputCode
       onmigrationresult(result)
+
+      // 변환된 코드에 대해 분석 실행
+      auditResult = auditEslintConfig(result.outputCode)
     } catch {
       onmigrationresult(null)
       warnings = []
+      auditResult = null
       errorMessage =
         locale === 'ko'
           ? '변환에 실패했습니다. 지원되는 형식(.eslintrc JSON 또는 CommonJS)인지 확인해주세요.'
@@ -57,36 +62,9 @@
     }
   }
 
-  const runAudit = () => {
-    if (inputCode.trim().length < 5) {
-      auditResult = null
-      return
-    }
-    auditResult = auditEslintConfig(inputCode)
-  }
-
   const handleInputChange = () => {
     uploadedFileName = ''
-    if (mode === 'migrate') {
-      runMigration()
-    } else {
-      runAudit()
-    }
-  }
-
-  const handleModeChange = (newMode: PanelMode) => {
-    mode = newMode
-    if (inputCode.trim().length >= 5) {
-      if (newMode === 'migrate') {
-        auditResult = null
-        runMigration()
-      } else {
-        onmigrationresult(null)
-        warnings = []
-        errorMessage = null
-        runAudit()
-      }
-    }
+    runMigration()
   }
 
   const handleFileUpload = (event: Event) => {
@@ -112,59 +90,116 @@
     uploadedFileName = ''
     warnings = []
     errorMessage = null
+    auditResult = null
     onmigrationresult(null)
     if (fileInputRef) fileInputRef.value = ''
   }
 
-  let migrateTabLabel = $derived(locale === 'ko' ? '마이그레이션' : 'Migrate')
-  let auditTabLabel = $derived(locale === 'ko' ? '분석' : 'Audit')
+  /** 분석 항목 닫기 */
+  const handleDismissAuditItem = (message: string) => {
+    if (!auditResult) return
+    auditResult = {
+      ...auditResult,
+      items: auditResult.items.filter((item) => item.message !== message),
+      summary: {
+        errors: auditResult.items.filter((i) => i.message !== message && i.severity === 'error')
+          .length,
+        warnings: auditResult.items.filter((i) => i.message !== message && i.severity === 'warning')
+          .length,
+        infos: auditResult.items.filter((i) => i.message !== message && i.severity === 'info')
+          .length,
+      },
+    }
+  }
+
+  /**
+   * rules 블록의 시작 `{`부터 매칭되는 닫는 `}` 위치를 찾는다.
+   * 단순 정규식으로는 중첩 객체(예: ["error", { options }])를 처리할 수 없어
+   * 괄호 균형을 직접 카운트한다.
+   */
+  const findRulesBlock = (code: string): { start: number; end: number; indent: string } | null => {
+    const rulesMatch = code.match(/^(\s*)rules:\s*\{/m)
+    if (!rulesMatch || rulesMatch.index === undefined) return null
+
+    const indent = rulesMatch[1]
+    const openBraceIdx = code.indexOf('{', rulesMatch.index)
+    if (openBraceIdx === -1) return null
+
+    let depth = 1
+    let i = openBraceIdx + 1
+    while (i < code.length && depth > 0) {
+      if (code[i] === '{') depth++
+      else if (code[i] === '}') depth--
+      i++
+    }
+    if (depth !== 0) return null
+
+    return { start: openBraceIdx, end: i - 1, indent }
+  }
+
+  /** 권장 규칙 적용 (info 항목) */
+  const handleApplyRule = (ruleName: string, ruleValue: string) => {
+    const currentCode = currentOutputCode
+    const rulesBlock = findRulesBlock(currentCode)
+
+    let newCode: string
+    if (rulesBlock) {
+      // 기존 rules 블록에 규칙 추가
+      // rules 블록의 들여쓰기(indent)를 기준으로 내부 키는 indent + 2칸
+      const baseIndent = rulesBlock.indent
+      const innerIndent = baseIndent + '  '
+      const innerContent = currentCode.slice(rulesBlock.start + 1, rulesBlock.end)
+      const trimmed = innerContent.replace(/^\s*\n|\n\s*$/g, '')
+      const newEntry = `"${ruleName}": "${ruleValue}"`
+
+      let updatedInner: string
+      if (trimmed.length === 0) {
+        updatedInner = `\n${innerIndent}${newEntry}\n${baseIndent}`
+      } else {
+        // 마지막 엔트리에 trailing comma가 없을 수 있으므로 보장
+        const withComma = trimmed.replace(/,?\s*$/, ',')
+        updatedInner = `\n${withComma}\n${innerIndent}${newEntry}\n${baseIndent}`
+      }
+
+      newCode =
+        currentCode.slice(0, rulesBlock.start + 1) +
+        updatedInner +
+        currentCode.slice(rulesBlock.end)
+    } else {
+      // rules 블록이 없으면 export default [ ... ] 의 첫 config 객체에 rules 추가
+      // 가장 단순한 케이스: 새 config 객체를 추가
+      const insertion = `  {\n    rules: {\n      "${ruleName}": "${ruleValue}",\n    },\n  },\n`
+      newCode = currentCode.replace(/export default \[\n?/, (match) => match + insertion)
+    }
+
+    currentOutputCode = newCode
+
+    onmigrationresult({
+      outputCode: newCode,
+      warnings,
+    })
+
+    handleDismissAuditItem(`Consider adding "${ruleName}" rule`)
+  }
+
   let titleLabel = $derived(
-    mode === 'migrate'
-      ? locale === 'ko'
-        ? '기존 .eslintrc 파일을 붙여넣거나 업로드하세요'
-        : 'Paste or upload your legacy .eslintrc file'
-      : locale === 'ko'
-        ? 'ESLint 설정 파일을 붙여넣거나 업로드하세요'
-        : 'Paste or upload your ESLint config file',
+    locale === 'ko'
+      ? '기존 .eslintrc 파일을 붙여넣거나 업로드하세요'
+      : 'Paste or upload your legacy .eslintrc file',
   )
   let uploadLabel = $derived(locale === 'ko' ? '파일 업로드' : 'Upload file')
   let clearLabel = $derived(locale === 'ko' ? '초기화' : 'Clear')
   let formatLabel = $derived(locale === 'ko' ? '감지된 형식' : 'Detected format')
   let supportedLabel = $derived(
-    mode === 'migrate'
-      ? locale === 'ko'
-        ? '지원 형식: .eslintrc (JSON), .eslintrc.js (CommonJS)'
-        : 'Supported: .eslintrc (JSON), .eslintrc.js (CommonJS)'
-      : locale === 'ko'
-        ? '지원 형식: .eslintrc, eslint.config.mjs (flat config 포함)'
-        : 'Supported: .eslintrc, eslint.config.mjs (including flat config)',
+    locale === 'ko'
+      ? '지원 형식: .eslintrc (JSON), .eslintrc.js (CommonJS)'
+      : 'Supported: .eslintrc (JSON), .eslintrc.js (CommonJS)',
   )
   const placeholder =
     '{\n  "extends": ["eslint:recommended"],\n  "rules": {\n    "no-console": "warn"\n  }\n}'
 </script>
 
 <div class="flex flex-col gap-4">
-  <div class="flex gap-1 rounded-lg bg-gray-100 p-1">
-    <button
-      type="button"
-      class="flex-1 rounded-md px-4 py-2 text-sm font-medium {mode === 'migrate'
-        ? 'bg-white text-gray-900 shadow-sm'
-        : 'text-gray-500 hover:text-gray-700'}"
-      onclick={() => handleModeChange('migrate')}
-    >
-      {migrateTabLabel}
-    </button>
-    <button
-      type="button"
-      class="flex-1 rounded-md px-4 py-2 text-sm font-medium {mode === 'audit'
-        ? 'bg-white text-gray-900 shadow-sm'
-        : 'text-gray-500 hover:text-gray-700'}"
-      onclick={() => handleModeChange('audit')}
-    >
-      {auditTabLabel}
-    </button>
-  </div>
-
   <div>
     <div class="flex items-center justify-between">
       <p class="text-sm font-medium text-gray-700">
@@ -251,9 +286,12 @@
     </div>
   {/if}
 
-  {#if mode === 'migrate'}
-    <MigrationFeedback {locale} {errorMessage} {warnings} />
-  {:else}
-    <AuditFeedback {locale} result={auditResult} />
-  {/if}
+  <MigrationFeedback
+    {locale}
+    {errorMessage}
+    {warnings}
+    {auditResult}
+    ondismiss={handleDismissAuditItem}
+    onapplyrule={handleApplyRule}
+  />
 </div>
