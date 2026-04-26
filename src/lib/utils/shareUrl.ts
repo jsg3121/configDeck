@@ -32,10 +32,18 @@ interface EncodeResult {
 
 /**
  * base64url 인코딩 (URL-safe)
- * +, /, = 를 URL-safe 문자로 변환
+ * UTF-8 → 바이트 배열 → base64 → URL-safe 변환
+ *
+ * deprecated된 unescape/escape 대신 TextEncoder를 사용한다.
+ * MDN: Base64 - The "Unicode Problem" 권장 패턴
  */
 const base64UrlEncode = (str: string): string => {
-  const base64 = btoa(unescape(encodeURIComponent(str)))
+  const bytes = new TextEncoder().encode(str)
+  let binary = ''
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i])
+  }
+  const base64 = btoa(binary)
   return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
 }
 
@@ -48,7 +56,12 @@ const base64UrlDecode = (str: string): string => {
   if (pad) {
     base64 += '='.repeat(4 - pad)
   }
-  return decodeURIComponent(escape(atob(base64)))
+  const binary = atob(base64)
+  const bytes = new Uint8Array(binary.length)
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i)
+  }
+  return new TextDecoder().decode(bytes)
 }
 
 /**

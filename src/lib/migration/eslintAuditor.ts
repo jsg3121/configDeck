@@ -125,22 +125,102 @@ const isLegacyConfig = (code: string): boolean => {
   return hasLegacy && !hasFlat
 }
 
-/** 설정에서 규칙 추출 */
-const extractRules = (code: string): Record<string, unknown> => {
-  const rulesMatch = code.match(/["']?rules["']?\s*:\s*\{([^}]+)\}/s)
-  if (!rulesMatch) return {}
+/**
+ * 코드에서 rules 블록의 시작 `{`부터 매칭되는 닫는 `}` 위치를 찾는다.
+ * 중첩 객체(예: `["error", { selector: "..." }]`)를 고려하여 괄호 균형을 카운트한다.
+ */
+const findRulesBlockBounds = (code: string): { start: number; end: number } | null => {
+  const rulesMatch = code.match(/["']?rules["']?\s*:\s*\{/)
+  if (!rulesMatch || rulesMatch.index === undefined) return null
 
-  try {
-    const rulesBlock = `{${rulesMatch[1]}}`
-    const normalized = rulesBlock
-      .replace(/'/g, '"')
-      .replace(/(\w+):/g, '"$1":')
-      .replace(/,\s*}/g, '}')
-      .replace(/,\s*,/g, ',')
-    return JSON.parse(normalized)
-  } catch {
-    return {}
+  const openBraceIdx = code.indexOf('{', rulesMatch.index)
+  if (openBraceIdx === -1) return null
+
+  let depth = 1
+  let i = openBraceIdx + 1
+  let inString: '"' | "'" | null = null
+  while (i < code.length && depth > 0) {
+    const ch = code[i]
+    const prev = code[i - 1]
+    if (inString) {
+      if (ch === inString && prev !== '\\') inString = null
+    } else if (ch === '"' || ch === "'") {
+      inString = ch
+    } else if (ch === '{') {
+      depth++
+    } else if (ch === '}') {
+      depth--
+    }
+    i++
   }
+  if (depth !== 0) return null
+
+  return { start: openBraceIdx, end: i - 1 }
+}
+
+/**
+ * rules 블록 내부에서 최상위 규칙 키를 추출한다.
+ * 값 파싱은 audit 목적상 불필요하므로 키만 수집한다.
+ */
+const extractRules = (code: string): Record<string, unknown> => {
+  const bounds = findRulesBlockBounds(code)
+  if (!bounds) return {}
+
+  const inner = code.slice(bounds.start + 1, bounds.end)
+  const rules: Record<string, unknown> = {}
+
+  // depth 0 위치에서 "key": 또는 'key': 또는 key: 패턴을 찾는다
+  let depth = 0
+  let inString: '"' | "'" | null = null
+  let i = 0
+  while (i < inner.length) {
+    const ch = inner[i]
+    const prev = inner[i - 1]
+    if (inString) {
+      if (ch === inString && prev !== '\\') inString = null
+      i++
+      continue
+    }
+    if (ch === '"' || ch === "'") {
+      // depth 0에서 따옴표로 감싼 키 후보
+      if (depth === 0) {
+        const quote = ch
+        const end = inner.indexOf(quote, i + 1)
+        if (end !== -1) {
+          const key = inner.slice(i + 1, end)
+          // 다음 non-whitespace가 ':' 인지 확인
+          let j = end + 1
+          while (j < inner.length && /\s/.test(inner[j])) j++
+          if (inner[j] === ':') {
+            rules[key] = true
+            i = j + 1
+            continue
+          }
+        }
+      }
+      inString = ch
+      i++
+      continue
+    }
+    if (ch === '{' || ch === '[' || ch === '(') depth++
+    else if (ch === '}' || ch === ']' || ch === ')') depth--
+    else if (depth === 0 && /[A-Za-z@_$]/.test(ch)) {
+      // depth 0에서 따옴표 없는 식별자 키 (예: eqeqeq:)
+      const start = i
+      while (i < inner.length && /[A-Za-z0-9@/_$-]/.test(inner[i])) i++
+      const key = inner.slice(start, i)
+      let j = i
+      while (j < inner.length && /\s/.test(inner[j])) j++
+      if (inner[j] === ':') {
+        rules[key] = true
+        i = j + 1
+        continue
+      }
+    }
+    i++
+  }
+
+  return rules
 }
 
 /** 설정에서 extends 추출 */

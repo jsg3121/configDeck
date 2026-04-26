@@ -44,7 +44,7 @@ describe('generatePrettierConfig', () => {
     it('singleQuote를 true로 설정하면 출력에 포함된다', () => {
       const result = generatePrettierConfig({ singleQuote: true })
 
-      expect(result).toContain("singleQuote: true")
+      expect(result).toContain('singleQuote: true')
     })
 
     it('trailingComma를 none으로 설정하면 출력에 포함된다', () => {

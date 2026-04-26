@@ -328,7 +328,9 @@ export const fetchAllFeeds = async (): Promise<RSSItem[]> => {
 
   const yesterday = new Date()
   yesterday.setDate(yesterday.getDate() - 1)
-  console.log(`Total: ${recentItems.length} items (${yesterday.toISOString().split('T')[0]}) from ${FEED_CONFIGS.length} feeds`)
+  console.log(
+    `Total: ${recentItems.length} items (${yesterday.toISOString().split('T')[0]}) from ${FEED_CONFIGS.length} feeds`,
+  )
   return recentItems
 }
 

@@ -10,7 +10,6 @@
 
   interface Props {
     fileName: string
-    slug: string
     preset: string
     isOpen: boolean
     isEnabled: boolean
@@ -24,7 +23,6 @@
 
   let {
     fileName,
-    slug,
     preset,
     isOpen,
     isEnabled,

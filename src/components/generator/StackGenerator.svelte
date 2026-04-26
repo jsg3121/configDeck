@@ -181,7 +181,6 @@
         {#each files as file (file.fileName)}
           <FileAccordionItem
             fileName={file.fileName}
-            slug={file.slug}
             preset={file.preset}
             isOpen={openAccordion === file.fileName}
             isEnabled={enabledFileMap[file.fileName]}
