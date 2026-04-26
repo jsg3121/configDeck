@@ -11,7 +11,6 @@
   import { getOptionDefinition } from '@/lib/data/options'
   import type { StackFile } from '@/lib/data/stacks'
   import { generateConfigBySlug } from '@/lib/generators'
-  import { getPresetDefaultsBySlug } from '@/lib/schemas'
   import { decodeStackGeneratorUrl, encodeStackGeneratorUrl } from '@/lib/utils/shareUrl'
   import type { NewOptionSection, OptionControl } from '@/types/generator'
 
@@ -24,6 +23,12 @@
   import TagsControl from './controls/TagsControl.svelte'
   import TextControl from './controls/TextControl.svelte'
   import FileTabBar from './FileTabBar.svelte'
+  import {
+    buildFileDefaults,
+    downloadFilesAsZip,
+    getFileGeneratorOptions,
+    initializeFileStates,
+  } from './modules/stackGeneratorLogic'
 
   interface Props {
     locale: string
@@ -57,49 +62,8 @@
   // 초기화 — 각 파일의 프리셋 값으로 optionValues 설정
   // ---------------------------------------------------------------------------
 
-  /** 파일의 빈 값(초기 상태)을 생성한다 */
-  const buildEmptyValues = (slug: string): Record<string, unknown> => {
-    const definition = getOptionDefinition(slug)
-    if (!definition) return {}
-    const empty: Record<string, unknown> = {}
-    for (const section of definition.sections) {
-      for (const control of section.controls) {
-        switch (control.type) {
-          case 'checkbox':
-            empty[control.key] = false
-            break
-          case 'number':
-            empty[control.key] = null
-            break
-          case 'radio':
-          case 'select':
-          case 'text':
-            empty[control.key] = ''
-            break
-          case 'tags':
-            empty[control.key] = []
-            break
-          case 'key-value':
-            empty[control.key] = {}
-            break
-        }
-      }
-    }
-    return empty
-  }
-
-  /** 프리셋 값으로 파일별 상태를 초기화한다 */
   const initFileStates = () => {
-    const values: Record<string, Record<string, unknown>> = {}
-    const touched: Record<string, Set<string>> = {}
-    for (const file of files) {
-      const presetValues = getPresetDefaultsBySlug(file.slug, file.preset) as Record<
-        string,
-        unknown
-      >
-      values[file.slug] = { ...buildEmptyValues(file.slug), ...presetValues }
-      touched[file.slug] = new Set(Object.keys(presetValues))
-    }
+    const { values, touched } = initializeFileStates(files)
     fileOptionValues = values
     fileTouchedKeys = touched
   }
@@ -128,26 +92,12 @@
       .filter((s) => s.controls.length > 0)
   }
 
-  /** 파일의 generatorOptions를 계산한다 (touched 키만) */
-  const getGeneratorOptions = (slug: string): Record<string, unknown> => {
-    const values = fileOptionValues[slug]
-    const touched = fileTouchedKeys[slug]
-    if (!values || !touched) return {}
-    const opts: Record<string, unknown> = {}
-    for (const key of touched) {
-      if (key in values) {
-        opts[key] = values[key]
-      }
-    }
-    return opts
-  }
-
   /** 활성 파일들의 생성 코드 맵 */
   let generatedFiles = $derived.by(() => {
     const result: Record<string, string> = {}
     for (const file of files) {
       if (!enabledFileMap[file.fileName]) continue
-      const opts = getGeneratorOptions(file.slug)
+      const opts = getFileGeneratorOptions(file.slug, fileOptionValues, fileTouchedKeys)
       const output = generateConfigBySlug(file.slug, opts)
       result[file.fileName] = output.code
     }
@@ -212,43 +162,18 @@
   }
 
   /** ZIP 다운로드 */
-  const handleDownloadZip = async () => {
-    const JSZip = (await import('jszip')).default
-    const zip = new JSZip()
-    for (const [fileName, code] of Object.entries(generatedFiles)) {
-      zip.file(fileName, code)
-    }
-    const blob = await zip.generateAsync({ type: 'blob' })
-    const url = URL.createObjectURL(blob)
-    const anchor = document.createElement('a')
-    anchor.href = url
-    anchor.download = 'config-files.zip'
-    anchor.click()
-    URL.revokeObjectURL(url)
-  }
-
-  /** 파일별 기본값 맵 생성 */
-  const buildFileDefaults = (): Record<string, Record<string, unknown>> => {
-    const defaults: Record<string, Record<string, unknown>> = {}
-    for (const file of files) {
-      defaults[file.slug] = getPresetDefaultsBySlug(file.slug, file.preset) as Record<
-        string,
-        unknown
-      >
-    }
-    return defaults
-  }
+  const handleDownloadZip = () => downloadFilesAsZip(generatedFiles)
 
   /** 공유 URL 생성 */
   let shareUrlResult = $derived.by(() => {
     if (typeof window === 'undefined') return { url: '', warning: undefined }
     const baseUrl = window.location.origin + window.location.pathname
-    const fileDefaults = buildFileDefaults()
+    const fileDefaults = buildFileDefaults(files)
 
     const stackFiles = files.map((file) => ({
       slug: file.slug,
       enabled: enabledFileMap[file.fileName] ?? true,
-      options: getGeneratorOptions(file.slug),
+      options: getFileGeneratorOptions(file.slug, fileOptionValues, fileTouchedKeys),
     }))
 
     return encodeStackGeneratorUrl(baseUrl, { stackSlug: '', files: stackFiles }, fileDefaults)

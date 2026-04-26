@@ -4,6 +4,8 @@
    * 부모에서 전달받는 code가 변경되면 자동으로 반영된다.
    */
 
+  import { copyToClipboard, downloadAsFile, shareLink } from './modules/codePreviewLogic'
+
   interface Props {
     fileName: string
     code: string
@@ -33,7 +35,7 @@
 
   /** 코드를 클립보드에 복사하고 피드백을 표시한다 */
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(code)
+    await copyToClipboard(code)
     copyFeedbackVisible = true
     setTimeout(() => {
       copyFeedbackVisible = false
@@ -42,16 +44,7 @@
 
   /** 코드를 파일로 다운로드한다 */
   const handleDownload = () => {
-    // application/octet-stream을 사용하여 브라우저가 파일명을 변경하지 않도록 한다
-    const blob = new Blob([code], { type: 'application/octet-stream' })
-    const url = URL.createObjectURL(blob)
-    const anchor = document.createElement('a')
-    anchor.href = url
-    anchor.download = fileName
-    document.body.appendChild(anchor)
-    anchor.click()
-    document.body.removeChild(anchor)
-    URL.revokeObjectURL(url)
+    downloadAsFile(code, fileName)
     downloadFeedbackVisible = true
     setTimeout(() => {
       downloadFeedbackVisible = false
@@ -62,19 +55,11 @@
   const handleShare = async () => {
     if (!shareUrl) return
 
-    await navigator.clipboard.writeText(shareUrl)
+    await shareLink(shareUrl)
     shareFeedbackVisible = true
     setTimeout(() => {
       shareFeedbackVisible = false
     }, 2000)
-
-    if (navigator.share && 'canShare' in navigator) {
-      try {
-        await navigator.share({ url: shareUrl })
-      } catch {
-        // 사용자 취소 — 무시
-      }
-    }
   }
 
   let copyLabel = $derived(locale === 'ko' ? '복사' : 'Copy')

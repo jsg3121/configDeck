@@ -12,6 +12,13 @@
   import SelectControl from './controls/SelectControl.svelte'
   import TagsControl from './controls/TagsControl.svelte'
   import TextControl from './controls/TextControl.svelte'
+  import {
+    getAdvancedCount,
+    getControlValue as getControlValueFromModule,
+    isAdvancedOption,
+    scrollToOptionAndHighlight,
+    searchOptions,
+  } from './modules/optionFormLogic'
 
   interface Props {
     sections: NewOptionSection[]
@@ -34,38 +41,13 @@
   /** 검색으로 하이라이트할 컨트롤 key */
   let highlightedKey = $state<string | null>(null)
 
-  /** 섹션 내 advanced 옵션 수를 계산한다 */
-  const getAdvancedCount = (section: NewOptionSection): number => {
-    return section.controls.filter((c) => c.tier === 'advanced').length
-  }
-
   /** 전체 섹션에서 advanced 옵션 총 수를 계산한다 */
   let totalAdvancedCount = $derived(
     sections.reduce((sum, section) => sum + getAdvancedCount(section), 0),
   )
 
   /** 검색 결과 — 모든 섹션의 컨트롤 중 검색어와 매칭되는 것 */
-  let searchResults = $derived(
-    searchQuery.trim().length < 2
-      ? []
-      : sections.flatMap((section) =>
-          section.controls
-            .filter((control) => {
-              const query = searchQuery.toLowerCase()
-              return (
-                control.key.toLowerCase().includes(query) ||
-                control.label.toLowerCase().includes(query) ||
-                control.labelEn.toLowerCase().includes(query) ||
-                control.description.toLowerCase().includes(query) ||
-                control.descriptionEn.toLowerCase().includes(query)
-              )
-            })
-            .map((control) => ({
-              control,
-              sectionTitle: locale === 'ko' ? section.title : section.titleEn,
-            })),
-        ),
-  )
+  let searchResults = $derived(searchOptions(sections, searchQuery, locale))
 
   /** locale에 따라 섹션 타이틀을 반환한다 */
   const getSectionTitle = (section: NewOptionSection): string => {
@@ -77,10 +59,9 @@
     return locale === 'ko' ? section.description : section.descriptionEn
   }
 
-  /** 컨트롤의 현재 값을 values에서 조회한다. 없으면 default를 사용한다 */
+  /** 컨트롤의 현재 값을 조회한다 */
   const getControlValue = (control: OptionControl): unknown => {
-    if (control.key in values) return values[control.key]
-    return control.default
+    return getControlValueFromModule(values, control)
   }
 
   /** 검색 결과에서 옵션 선택 시 해당 위치로 스크롤하고 하이라이트한다 */
@@ -88,23 +69,12 @@
     showSearch = false
     searchQuery = ''
 
-    // advanced 옵션이면 먼저 펼친다
-    const isAdvanced =
-      sections.flatMap((s) => s.controls).find((c) => c.key === key)?.tier === 'advanced'
-    if (isAdvanced && !showAdvanced) {
+    if (isAdvancedOption(sections, key) && !showAdvanced) {
       showAdvanced = true
     }
 
-    // DOM에 렌더링된 후 스크롤
-    requestAnimationFrame(() => {
-      const element = document.getElementById(`control-${key}`)
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'center' })
-        highlightedKey = key
-        setTimeout(() => {
-          highlightedKey = null
-        }, 2000)
-      }
+    scrollToOptionAndHighlight(key, (k) => {
+      highlightedKey = k
     })
   }
 

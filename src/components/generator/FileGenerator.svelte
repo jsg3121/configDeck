@@ -9,12 +9,18 @@
   import { getOptionDefinition } from '@/lib/data/options'
   import { generateConfigBySlug } from '@/lib/generators'
   import type { MigrationResult } from '@/lib/migration'
-  import { getPresetDefaultsBySlug } from '@/lib/schemas'
-  import { decodeFileGeneratorUrl, encodeFileGeneratorUrl } from '@/lib/utils/shareUrl'
+  import { buildEmptyValues } from '@/lib/modules/optionBuilder'
+  import { decodeFileGeneratorUrl } from '@/lib/utils/shareUrl'
   import type { NewOptionSection } from '@/types/generator'
 
   import CodePreview from './CodePreview.svelte'
   import MigrationPanel from './MigrationPanel.svelte'
+  import {
+    applyPreset,
+    buildShareUrl,
+    syncUrlWithOptions,
+    updateOption,
+  } from './modules/fileGeneratorLogic'
   import OptionForm from './OptionForm.svelte'
   import PresetSelector from './PresetSelector.svelte'
 
@@ -40,37 +46,6 @@
   // 상태 관리
   // ---------------------------------------------------------------------------
 
-  /** 신규 옵션 구조에서 모든 control의 빈 값(초기 상태)으로 구성된 맵을 반환한다 */
-  const buildEmptyValues = (): Record<string, unknown> => {
-    const definition = getOptionDefinition(fileSlug)
-    if (!definition) return {}
-    const empty: Record<string, unknown> = {}
-    for (const section of definition.sections) {
-      for (const control of section.controls) {
-        switch (control.type) {
-          case 'checkbox':
-            empty[control.key] = false
-            break
-          case 'number':
-            empty[control.key] = null
-            break
-          case 'radio':
-          case 'select':
-          case 'text':
-            empty[control.key] = ''
-            break
-          case 'tags':
-            empty[control.key] = []
-            break
-          case 'key-value':
-            empty[control.key] = {}
-            break
-        }
-      }
-    }
-    return empty
-  }
-
   /** 현재 선택된 프리셋 — null이면 선택 없음(초기/클리어 상태) */
   let selectedPreset = $state<string | null>(null)
   /** 현재 활성 탭 */
@@ -83,7 +58,7 @@
   let generatorOptions = $state<Record<string, unknown>>({})
 
   /** OptionForm에 전달할 값 맵 — 초기 진입 시 빈 상태 */
-  let optionValues = $state<Record<string, unknown>>(buildEmptyValues())
+  let optionValues = $state<Record<string, unknown>>(buildEmptyValues(fileSlug))
 
   /** OptionForm에 전달할 섹션 목록 */
   let formSections = $derived<NewOptionSection[]>(getOptionDefinition(fileSlug)?.sections ?? [])
@@ -116,28 +91,18 @@
   /** 프리셋 변경 시 프리셋이 명시한 옵션만 적용한다. 나머지는 빈 상태 유지 */
   const handlePresetChange = (presetName: string) => {
     selectedPreset = presetName
-    const defaults = getPresetDefaultsBySlug(fileSlug, presetName) as Record<string, unknown>
-    optionValues = { ...buildEmptyValues(), ...defaults }
-    touchedKeys = new Set(Object.keys(defaults))
-    syncGeneratorOptions()
-  }
-
-  /** touchedKeys 기반으로 generatorOptions를 갱신한다. 터치된 키의 값만 포함된다 */
-  const syncGeneratorOptions = () => {
-    const opts: Record<string, unknown> = {}
-    for (const key of touchedKeys) {
-      if (key in optionValues) {
-        opts[key] = optionValues[key]
-      }
-    }
-    generatorOptions = opts
+    const result = applyPreset(fileSlug, presetName)
+    optionValues = result.optionValues
+    touchedKeys = result.touchedKeys
+    generatorOptions = result.generatorOptions
   }
 
   /** OptionForm의 옵션 변경 핸들러 */
   const handleOptionChange = (key: string, value: unknown) => {
-    optionValues = { ...optionValues, [key]: value }
-    touchedKeys = new Set([...touchedKeys, key])
-    syncGeneratorOptions()
+    const result = updateOption(optionValues, touchedKeys, key, value)
+    optionValues = result.optionValues
+    touchedKeys = result.touchedKeys
+    generatorOptions = result.generatorOptions
   }
 
   /** 모든 옵션을 초기 상태로 되돌린다 */
@@ -145,32 +110,14 @@
     selectedPreset = null
     touchedKeys = new Set()
     generatorOptions = {}
-    optionValues = buildEmptyValues()
-    updateUrlWithoutReload()
-  }
-
-  /** 현재 옵션 상태를 URL에 반영한다 (히스토리 교체) */
-  const updateUrlWithoutReload = () => {
-    const baseUrl = window.location.pathname
-    const defaults = buildEmptyValues()
-    const result = encodeFileGeneratorUrl(
-      baseUrl,
-      { slug: fileSlug, preset: selectedPreset ?? undefined, options: generatorOptions },
-      defaults,
-    )
-    window.history.replaceState(null, '', result.url)
+    optionValues = buildEmptyValues(fileSlug)
+    syncUrlWithOptions(fileSlug, null, {}, buildEmptyValues(fileSlug))
   }
 
   /** 공유 URL 생성 */
   let shareUrlResult = $derived.by(() => {
-    if (typeof window === 'undefined') return { url: '', warning: undefined }
-    const baseUrl = window.location.origin + window.location.pathname
-    const defaults = buildEmptyValues()
-    return encodeFileGeneratorUrl(
-      baseUrl,
-      { slug: fileSlug, preset: selectedPreset ?? undefined, options: generatorOptions },
-      defaults,
-    )
+    const defaults = buildEmptyValues(fileSlug)
+    return buildShareUrl(fileSlug, selectedPreset, generatorOptions, defaults)
   })
 
   /** URL 파라미터에서 옵션 복원 */
@@ -183,9 +130,12 @@
     }
 
     if (Object.keys(decoded.options).length > 0) {
-      optionValues = { ...optionValues, ...decoded.options }
-      touchedKeys = new Set([...touchedKeys, ...Object.keys(decoded.options)])
-      syncGeneratorOptions()
+      for (const [key, value] of Object.entries(decoded.options)) {
+        const result = updateOption(optionValues, touchedKeys, key, value)
+        optionValues = result.optionValues
+        touchedKeys = result.touchedKeys
+        generatorOptions = result.generatorOptions
+      }
     }
   })
 
