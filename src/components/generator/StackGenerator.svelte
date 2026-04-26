@@ -5,11 +5,14 @@
    * 우측: 파일 탭 + 코드 미리보기
    * ADR-0009: B안(아코디언 인라인 옵션) 기반
    */
+  import { onMount } from 'svelte'
+
   import { getFileIcon } from '@/lib/data/icons'
   import { getOptionDefinition } from '@/lib/data/options'
   import type { StackFile } from '@/lib/data/stacks'
   import { generateConfigBySlug } from '@/lib/generators'
   import { getPresetDefaultsBySlug } from '@/lib/schemas'
+  import { decodeStackGeneratorUrl, encodeStackGeneratorUrl } from '@/lib/utils/shareUrl'
   import type { NewOptionSection, OptionControl } from '@/types/generator'
 
   import CodePreview from './CodePreview.svelte'
@@ -224,6 +227,61 @@
     URL.revokeObjectURL(url)
   }
 
+  /** 파일별 기본값 맵 생성 */
+  const buildFileDefaults = (): Record<string, Record<string, unknown>> => {
+    const defaults: Record<string, Record<string, unknown>> = {}
+    for (const file of files) {
+      defaults[file.slug] = getPresetDefaultsBySlug(file.slug, file.preset) as Record<
+        string,
+        unknown
+      >
+    }
+    return defaults
+  }
+
+  /** 공유 URL 생성 */
+  let shareUrlResult = $derived.by(() => {
+    if (typeof window === 'undefined') return { url: '', warning: undefined }
+    const baseUrl = window.location.origin + window.location.pathname
+    const fileDefaults = buildFileDefaults()
+
+    const stackFiles = files.map((file) => ({
+      slug: file.slug,
+      enabled: enabledFileMap[file.fileName] ?? true,
+      options: getGeneratorOptions(file.slug),
+    }))
+
+    return encodeStackGeneratorUrl(baseUrl, { stackSlug: '', files: stackFiles }, fileDefaults)
+  })
+
+  /** URL 파라미터에서 옵션 복원 */
+  onMount(() => {
+    const params = new URLSearchParams(window.location.search)
+    const decoded = decodeStackGeneratorUrl(params)
+
+    if (decoded.disabled.length > 0) {
+      const newEnabledMap = { ...enabledFileMap }
+      for (const slug of decoded.disabled) {
+        const file = files.find((f) => f.slug === slug)
+        if (file) {
+          newEnabledMap[file.fileName] = false
+        }
+      }
+      enabledFileMap = newEnabledMap
+    }
+
+    if (Object.keys(decoded.fileOptions).length > 0) {
+      const newValues = { ...fileOptionValues }
+      const newTouched = { ...fileTouchedKeys }
+      for (const [slug, opts] of Object.entries(decoded.fileOptions)) {
+        newValues[slug] = { ...newValues[slug], ...opts }
+        newTouched[slug] = new Set([...(newTouched[slug] ?? []), ...Object.keys(opts)])
+      }
+      fileOptionValues = newValues
+      fileTouchedKeys = newTouched
+    }
+  })
+
   let includedFilesLabel = $derived(locale === 'ko' ? '포함 파일' : 'Included Files')
 </script>
 
@@ -378,6 +436,8 @@
         {locale}
         showZipDownload={true}
         ondownloadzip={handleDownloadZip}
+        shareUrl={shareUrlResult.url}
+        shareWarning={shareUrlResult.warning}
       />
     </div>
   </div>

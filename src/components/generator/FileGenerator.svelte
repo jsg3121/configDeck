@@ -4,10 +4,13 @@
    * 프리셋 기본값을 기준으로 생성기 옵션을 관리하고,
    * 섹션 UI 변경 시 스키마 옵션을 동기화하여 실시간 코드를 생성한다.
    */
+  import { onMount } from 'svelte'
+
   import { getOptionDefinition } from '@/lib/data/options'
   import { generateConfigBySlug } from '@/lib/generators'
   import type { MigrationResult } from '@/lib/migration'
   import { getPresetDefaultsBySlug } from '@/lib/schemas'
+  import { decodeFileGeneratorUrl, encodeFileGeneratorUrl } from '@/lib/utils/shareUrl'
   import type { NewOptionSection } from '@/types/generator'
 
   import CodePreview from './CodePreview.svelte'
@@ -143,7 +146,48 @@
     touchedKeys = new Set()
     generatorOptions = {}
     optionValues = buildEmptyValues()
+    updateUrlWithoutReload()
   }
+
+  /** 현재 옵션 상태를 URL에 반영한다 (히스토리 교체) */
+  const updateUrlWithoutReload = () => {
+    const baseUrl = window.location.pathname
+    const defaults = buildEmptyValues()
+    const result = encodeFileGeneratorUrl(
+      baseUrl,
+      { slug: fileSlug, preset: selectedPreset ?? undefined, options: generatorOptions },
+      defaults,
+    )
+    window.history.replaceState(null, '', result.url)
+  }
+
+  /** 공유 URL 생성 */
+  let shareUrlResult = $derived.by(() => {
+    if (typeof window === 'undefined') return { url: '', warning: undefined }
+    const baseUrl = window.location.origin + window.location.pathname
+    const defaults = buildEmptyValues()
+    return encodeFileGeneratorUrl(
+      baseUrl,
+      { slug: fileSlug, preset: selectedPreset ?? undefined, options: generatorOptions },
+      defaults,
+    )
+  })
+
+  /** URL 파라미터에서 옵션 복원 */
+  onMount(() => {
+    const params = new URLSearchParams(window.location.search)
+    const decoded = decodeFileGeneratorUrl(params)
+
+    if (decoded.preset && presets.includes(decoded.preset)) {
+      handlePresetChange(decoded.preset)
+    }
+
+    if (Object.keys(decoded.options).length > 0) {
+      optionValues = { ...optionValues, ...decoded.options }
+      touchedKeys = new Set([...touchedKeys, ...Object.keys(decoded.options)])
+      syncGeneratorOptions()
+    }
+  })
 
   let generateLabel = $derived(locale === 'ko' ? '생성' : 'Generate')
   let migrateLabel = $derived(locale === 'ko' ? '마이그레이션' : 'Migrate')
@@ -294,7 +338,13 @@
       : ''}"
   >
     <div class="flex h-full flex-col bg-code-bg">
-      <CodePreview fileName={generatedOutput.fileName} code={generatedOutput.code} {locale} />
+      <CodePreview
+        fileName={generatedOutput.fileName}
+        code={generatedOutput.code}
+        {locale}
+        shareUrl={shareUrlResult.url}
+        shareWarning={shareUrlResult.warning}
+      />
     </div>
   </div>
 </div>
