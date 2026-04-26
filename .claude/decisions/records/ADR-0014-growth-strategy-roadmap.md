@@ -5,6 +5,15 @@
 - 최종 수정: 2026-04-26
 - 의사결정자: jsg3121
 
+## 갱신 메모 (2026-04-26)
+
+1.2.0 사이클 진행 중 ADR-0005의 Shareable URL 기능이 P0로 격상되어 먼저 구현 완료되었다. 이로 인해 본 ADR의 "후속 조치 §1. SPEC 작성 필요"의 번호 예약이 다음과 같이 재매핑되었다.
+
+- **Shareable URL** — 기존 예약 없음 → **SPEC-0003** (1.2.0 구현 완료, 회고형 SPEC 작성)
+- **Import & Audit** — 기존 SPEC-0003 → **SPEC-0004** (Phase A: ESLint Legacy 마이그레이션 1.2.0 완료, Phase B/C 진행 예정)
+- **CLI (`npx configdeck`)** — 기존 SPEC-0004 → **SPEC-0005** (미착수)
+- **Tailwind/Husky/GitHub Actions 생성기** — 기존 SPEC-0005 → **SPEC-0006** (미착수)
+
 ## 맥락 (Context)
 
 ConfigDeck의 시장 진입 및 성장 전략을 수립하기 위해 두 가지 독립적인 분석을 수행했다:
@@ -112,10 +121,11 @@ ConfigDeck의 시장 진입 및 성장 전략을 수립하기 위해 두 가지 
 
 ### 후속 조치
 
-1. **SPEC 작성 필요**:
-   - SPEC-0003: Import & Audit 기능
-   - SPEC-0004: CLI (`npx configdeck`)
-   - SPEC-0005: Tailwind/Husky/GitHub Actions 생성기
+1. **SPEC 작성 필요** (2026-04-26 재매핑, 상단 갱신 메모 참조):
+   - SPEC-0003: Shareable URL (1.2.0 완료, 회고형 작성됨)
+   - SPEC-0004: Import & Audit 기능 (Phase A 완료, Phase B/C 진행)
+   - SPEC-0005: CLI (`npx configdeck`)
+   - SPEC-0006: Tailwind/Husky/GitHub Actions 생성기
 
 2. **기획서 업데이트**:
    - `configDeckIA.md`의 기능 우선순위(P0/P1/P2) 섹션 수정
