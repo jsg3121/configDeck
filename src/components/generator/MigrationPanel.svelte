@@ -11,6 +11,8 @@
     type MigrationResult,
   } from '@/lib/migration'
 
+  import MigrationFeedback from './MigrationFeedback.svelte'
+
   interface Props {
     locale: string
     onmigrationresult: (result: MigrationResult | null) => void
@@ -18,20 +20,13 @@
 
   let { locale, onmigrationresult }: Props = $props()
 
-  /** 사용자 입력 코드 */
   let inputCode = $state('')
-  /** 감지된 형식 */
   let detectedFormat = $derived(detectConfigFormat(inputCode))
-  /** 변환 경고 목록 */
   let warnings = $state<string[]>([])
-  /** 에러 메시지 */
   let errorMessage = $state<string | null>(null)
-  /** 파일 업로드 input ref */
   let fileInputRef = $state<HTMLInputElement | null>(null)
-  /** 업로드된 파일명 */
   let uploadedFileName = $state('')
 
-  /** 마이그레이션을 실행한다 */
   const runMigration = () => {
     if (inputCode.trim().length < 5) {
       onmigrationresult(null)
@@ -45,7 +40,7 @@
       warnings = result.warnings
       errorMessage = null
       onmigrationresult(result)
-    } catch (err) {
+    } catch {
       onmigrationresult(null)
       warnings = []
       errorMessage =
@@ -55,13 +50,11 @@
     }
   }
 
-  /** textarea 입력 변경 핸들러 */
   const handleInputChange = () => {
     uploadedFileName = ''
     runMigration()
   }
 
-  /** 파일 업로드 핸들러 */
   const handleFileUpload = (event: Event) => {
     const target = event.target as HTMLInputElement
     const file = target.files?.[0]
@@ -76,12 +69,10 @@
     reader.readAsText(file)
   }
 
-  /** 업로드 버튼 클릭 시 hidden input을 트리거한다 */
   const triggerFileUpload = () => {
     fileInputRef?.click()
   }
 
-  /** 입력을 초기화한다 */
   const handleClear = () => {
     inputCode = ''
     uploadedFileName = ''
@@ -99,7 +90,6 @@
   let uploadLabel = $derived(locale === 'ko' ? '파일 업로드' : 'Upload file')
   let clearLabel = $derived(locale === 'ko' ? '초기화' : 'Clear')
   let formatLabel = $derived(locale === 'ko' ? '감지된 형식' : 'Detected format')
-  let warningLabel = $derived(locale === 'ko' ? '수동 확인 필요' : 'Manual review needed')
   let supportedLabel = $derived(
     locale === 'ko'
       ? '지원 형식: .eslintrc (JSON), .eslintrc.js (CommonJS)'
@@ -196,35 +186,5 @@
     </div>
   {/if}
 
-  {#if errorMessage}
-    <div class="rounded-md border border-red-200 bg-red-50 p-3">
-      <div class="flex items-start gap-2">
-        <svg
-          class="mt-0.5 h-4 w-4 shrink-0 text-red-500"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-        <p class="text-xs text-red-700">{errorMessage}</p>
-      </div>
-    </div>
-  {/if}
-
-  {#if warnings.length > 0}
-    <div class="rounded-md border border-amber-200 bg-amber-50 p-3">
-      <h4 class="text-xs font-semibold text-amber-800">{warningLabel}</h4>
-      <ul class="mt-1.5 flex flex-col gap-1">
-        {#each warnings as warning (warning)}
-          <li class="text-xs text-amber-700">{warning}</li>
-        {/each}
-      </ul>
-    </div>
-  {/if}
+  <MigrationFeedback {locale} {errorMessage} {warnings} />
 </div>
