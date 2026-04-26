@@ -1,7 +1,7 @@
 # ConfigDeck 서비스 기획서
 
-> **최종 수정**: 2026-04-14
-> **관련 ADR**: ADR-0006 (생성기 중심 IA 재설계), ADR-0007 (페이지 구조 재설계), ADR-0010 (아티클 콘텐츠 전략), ADR-0011 (AI 요약 자동화)
+> **최종 수정**: 2026-04-24
+> **관련 ADR**: ADR-0006 (생성기 중심 IA 재설계), ADR-0007 (페이지 구조 재설계), ADR-0010 (아티클 콘텐츠 전략), ADR-0011 (AI 요약 자동화), ADR-0014 (서비스 성장 전략 및 통합 로드맵)
 
 ---
 
@@ -84,12 +84,16 @@
 
 ## 7. 기능 우선순위
 
-| 단계 | 내용 |
-|------|------|
-| **P0 (MVP)** | 홈, 생성기 허브, 파일별 생성기 4종, 스택별 프리셋 3~5개, ESLint 마이그레이션, 2분할 레이아웃, 복사/다운로드/ZIP, 영어/한국어 |
-| **P1** | 추가 파일(vite, next, vitest), 마이그레이션 확장(Prettier, tsconfig, Vite), 문서/가이드, 일본어/포르투갈어 |
-| **P1.5** | AI 도구 설정 파일 (.cursorrules, copilot-instructions.md, CLAUDE.md 등) |
-| **P2** | 백엔드/모바일 확장, 공유 링크, 사용자/팀 preset |
+> **변경 이력**: ADR-0014에 의해 로드맵 재정의 (2026-04-24)
+
+| 단계 | 내용 | 상태 |
+|------|------|------|
+| **P0 (MVP)** | 홈, 생성기 허브, 파일별 생성기 9종, 스택별 프리셋 4개, ESLint 마이그레이션, 2분할 레이아웃, 복사/다운로드/ZIP, 영어/한국어, SEO 메타(JSON-LD/OG/hreflang), 아티클 페이지 | ✅ 완료 |
+| **P0 (잔여)** | Shareable URL (옵션 상태를 URL로 인코딩하여 공유) | 미착수 |
+| **P0.5 (60일)** | Import & Audit (기존 설정 파일 분석/진단), Tailwind config, Husky+lint-staged+commitlint, GitHub Actions 워크플로우, 옵션별 툴팁 | 미착수 |
+| **P1 (90일)** | AI 도구 설정 파일 (.cursorrules, copilot-instructions.md, CLAUDE.md), CLI (`npx configdeck init`), Popular choices 인디케이터 | 미착수 |
+| **P1 (장기)** | 일본어 지원 (네이티브 검수 후) | 미착수 |
+| **P2** | VS Code Extension, Product Hunt/HN 런칭, 사용자/팀 프리셋 저장 | 미착수 |
 
 ---
 
