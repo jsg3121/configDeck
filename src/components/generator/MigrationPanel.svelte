@@ -1,17 +1,22 @@
 <script lang="ts">
   /**
-   * 마이그레이션 탭 UI를 렌더링한다.
-   * 레거시 설정 파일을 붙여넣기 또는 파일 업로드로 입력받아
-   * 형식을 감지하고 변환 결과를 부모에게 전달한다.
+   * 마이그레이션/분석 탭 UI를 렌더링한다.
+   * ESLint 설정 파일을 붙여넣기 또는 파일 업로드로 입력받아
+   * 마이그레이션 또는 분석을 수행한다.
    */
   import {
+    auditEslintConfig,
     detectConfigFormat,
     migrateEslintConfig,
     parseEslintLegacyConfig,
+    type AuditResult,
     type MigrationResult,
   } from '@/lib/migration'
 
+  import AuditFeedback from './AuditFeedback.svelte'
   import MigrationFeedback from './MigrationFeedback.svelte'
+
+  type PanelMode = 'migrate' | 'audit'
 
   interface Props {
     locale: string
@@ -20,10 +25,12 @@
 
   let { locale, onmigrationresult }: Props = $props()
 
+  let mode = $state<PanelMode>('migrate')
   let inputCode = $state('')
   let detectedFormat = $derived(detectConfigFormat(inputCode))
   let warnings = $state<string[]>([])
   let errorMessage = $state<string | null>(null)
+  let auditResult = $state<AuditResult | null>(null)
   let fileInputRef = $state<HTMLInputElement | null>(null)
   let uploadedFileName = $state('')
 
@@ -50,9 +57,36 @@
     }
   }
 
+  const runAudit = () => {
+    if (inputCode.trim().length < 5) {
+      auditResult = null
+      return
+    }
+    auditResult = auditEslintConfig(inputCode)
+  }
+
   const handleInputChange = () => {
     uploadedFileName = ''
-    runMigration()
+    if (mode === 'migrate') {
+      runMigration()
+    } else {
+      runAudit()
+    }
+  }
+
+  const handleModeChange = (newMode: PanelMode) => {
+    mode = newMode
+    if (inputCode.trim().length >= 5) {
+      if (newMode === 'migrate') {
+        auditResult = null
+        runMigration()
+      } else {
+        onmigrationresult(null)
+        warnings = []
+        errorMessage = null
+        runAudit()
+      }
+    }
   }
 
   const handleFileUpload = (event: Event) => {
@@ -82,24 +116,55 @@
     if (fileInputRef) fileInputRef.value = ''
   }
 
+  let migrateTabLabel = $derived(locale === 'ko' ? '마이그레이션' : 'Migrate')
+  let auditTabLabel = $derived(locale === 'ko' ? '분석' : 'Audit')
   let titleLabel = $derived(
-    locale === 'ko'
-      ? '기존 .eslintrc 파일을 붙여넣거나 업로드하세요'
-      : 'Paste or upload your legacy .eslintrc file',
+    mode === 'migrate'
+      ? locale === 'ko'
+        ? '기존 .eslintrc 파일을 붙여넣거나 업로드하세요'
+        : 'Paste or upload your legacy .eslintrc file'
+      : locale === 'ko'
+        ? 'ESLint 설정 파일을 붙여넣거나 업로드하세요'
+        : 'Paste or upload your ESLint config file',
   )
   let uploadLabel = $derived(locale === 'ko' ? '파일 업로드' : 'Upload file')
   let clearLabel = $derived(locale === 'ko' ? '초기화' : 'Clear')
   let formatLabel = $derived(locale === 'ko' ? '감지된 형식' : 'Detected format')
   let supportedLabel = $derived(
-    locale === 'ko'
-      ? '지원 형식: .eslintrc (JSON), .eslintrc.js (CommonJS)'
-      : 'Supported: .eslintrc (JSON), .eslintrc.js (CommonJS)',
+    mode === 'migrate'
+      ? locale === 'ko'
+        ? '지원 형식: .eslintrc (JSON), .eslintrc.js (CommonJS)'
+        : 'Supported: .eslintrc (JSON), .eslintrc.js (CommonJS)'
+      : locale === 'ko'
+        ? '지원 형식: .eslintrc, eslint.config.mjs (flat config 포함)'
+        : 'Supported: .eslintrc, eslint.config.mjs (including flat config)',
   )
   const placeholder =
     '{\n  "extends": ["eslint:recommended"],\n  "rules": {\n    "no-console": "warn"\n  }\n}'
 </script>
 
 <div class="flex flex-col gap-4">
+  <div class="flex gap-1 rounded-lg bg-gray-100 p-1">
+    <button
+      type="button"
+      class="flex-1 rounded-md px-4 py-2 text-sm font-medium {mode === 'migrate'
+        ? 'bg-white text-gray-900 shadow-sm'
+        : 'text-gray-500 hover:text-gray-700'}"
+      onclick={() => handleModeChange('migrate')}
+    >
+      {migrateTabLabel}
+    </button>
+    <button
+      type="button"
+      class="flex-1 rounded-md px-4 py-2 text-sm font-medium {mode === 'audit'
+        ? 'bg-white text-gray-900 shadow-sm'
+        : 'text-gray-500 hover:text-gray-700'}"
+      onclick={() => handleModeChange('audit')}
+    >
+      {auditTabLabel}
+    </button>
+  </div>
+
   <div>
     <div class="flex items-center justify-between">
       <p class="text-sm font-medium text-gray-700">
@@ -186,5 +251,9 @@
     </div>
   {/if}
 
-  <MigrationFeedback {locale} {errorMessage} {warnings} />
+  {#if mode === 'migrate'}
+    <MigrationFeedback {locale} {errorMessage} {warnings} />
+  {:else}
+    <AuditFeedback {locale} result={auditResult} />
+  {/if}
 </div>
