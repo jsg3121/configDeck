@@ -58,14 +58,23 @@
     }, 3000)
   }
 
-  /** 공유 링크를 클립보드에 복사한다 */
+  /** 공유 링크를 클립보드에 복사하고, Web Share API 지원 시 네이티브 공유 시트도 연다 */
   const handleShare = async () => {
     if (!shareUrl) return
+
     await navigator.clipboard.writeText(shareUrl)
     shareFeedbackVisible = true
     setTimeout(() => {
       shareFeedbackVisible = false
     }, 2000)
+
+    if (navigator.share && 'canShare' in navigator) {
+      try {
+        await navigator.share({ url: shareUrl })
+      } catch {
+        // 사용자 취소 — 무시
+      }
+    }
   }
 
   let copyLabel = $derived(locale === 'ko' ? '복사' : 'Copy')
