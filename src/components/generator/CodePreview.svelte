@@ -61,16 +61,6 @@
   /** 공유 링크를 클립보드에 복사한다 */
   const handleShare = async () => {
     if (!shareUrl) return
-
-    if (navigator.share && 'canShare' in navigator) {
-      try {
-        await navigator.share({ url: shareUrl })
-        return
-      } catch {
-        // 사용자 취소 또는 미지원 — 클립보드 복사로 폴백
-      }
-    }
-
     await navigator.clipboard.writeText(shareUrl)
     shareFeedbackVisible = true
     setTimeout(() => {
