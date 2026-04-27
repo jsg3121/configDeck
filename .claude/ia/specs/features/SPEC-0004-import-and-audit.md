@@ -7,6 +7,7 @@ created: 2026-04-26
 updated: 2026-04-28
 related_adrs:
   - ADR-0014  # 성장 전략 로드맵 (Import & Audit P0.5 신설)
+  - ADR-0016  # E2E 테스트 검증 전략 (7단계 작업에서 도출)
 related_specs:
   - SPEC-0001  # 파일 옵션 생성기 기능 보강
 ---
@@ -288,6 +289,7 @@ Audit 모드에서는 형식 배지 옆에 "Audit only" 배지를 노출하고, 
 ## 9. 참고 자료 (References)
 
 - [ADR-0014: 성장 전략 로드맵](../../../decisions/records/ADR-0014-growth-strategy-roadmap.md) — Import & Audit 신설 근거
+- [ADR-0016: E2E 테스트 검증 전략](../../../decisions/records/ADR-0016-e2e-validation-strategy.md) — 7단계 작업에서 도출한 디버깅·검증 운영 원칙
 - [STR-0002: ConfigDeck 전략 보고서](../../../research/reports/STR-0002-configdeck-strategy-2026-04.md) — ESLint v9 전환 수요
 - [MI-0002: 경쟁사 분석](../../../research/reports/MI-0002-competitor-analysis-2026-04.md) — 직접 경쟁자 부재
 - [BA-0002: 경쟁력 분석](../../../research/reports/BA-0002-configdeck-competitiveness-2026-04.md) — Import & Audit 차별화 가치
