@@ -6,6 +6,10 @@ import { expect, test } from '@playwright/test'
 test.describe('생성기 인덱스 페이지', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/ko/generator')
+    // Svelte 아일랜드 hydration 안정화 — mobile-chrome 등 부하가 큰 환경에서
+    // beforeEach 직후 인터랙션을 보내면 onclick 핸들러가 아직 바인딩되지 않은
+    // 경우가 있어 flaky 실패가 발생한다.
+    await page.waitForLoadState('networkidle')
   })
 
   test('생성기 페이지가 정상적으로 로드된다', async ({ page }) => {
@@ -38,6 +42,8 @@ test.describe('생성기 인덱스 페이지', () => {
 test.describe('ESLint 생성기 페이지', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/ko/generator/eslint-config')
+    // Svelte 아일랜드 hydration 안정화. e2e-execution.md §4-1 참조.
+    await page.waitForLoadState('networkidle')
   })
 
   test('ESLint 생성기 페이지가 로드된다', async ({ page }) => {
@@ -57,7 +63,7 @@ test.describe('ESLint 생성기 페이지', () => {
     }
 
     // 코드 미리보기 확인
-    const codePreview = page.locator('pre code')
+    const codePreview = page.getByRole('region', { name: '생성된 코드' }).locator('pre code')
     await expect(codePreview).toBeVisible()
   })
 
@@ -111,7 +117,7 @@ test.describe('ESLint 생성기 페이지', () => {
     }
 
     // 초기 코드 확인
-    const codePreview = page.locator('pre code')
+    const codePreview = page.getByRole('region', { name: '생성된 코드' }).locator('pre code')
     const initialCode = await codePreview.textContent()
 
     // 모바일에서는 옵션 탭으로 전환
@@ -158,6 +164,8 @@ test.describe('ESLint 생성기 페이지', () => {
 test.describe('Prettier 생성기 페이지', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/ko/generator/prettier-config')
+    // Svelte 아일랜드 hydration 안정화. e2e-execution.md §4-1 참조.
+    await page.waitForLoadState('networkidle')
   })
 
   test('Prettier 생성기 페이지가 로드된다', async ({ page }) => {
@@ -172,7 +180,7 @@ test.describe('Prettier 생성기 페이지', () => {
     }
 
     // 코드 미리보기 확인
-    const codePreview = page.locator('pre code')
+    const codePreview = page.getByRole('region', { name: '생성된 코드' }).locator('pre code')
     await expect(codePreview).toBeVisible()
   })
 
@@ -186,14 +194,17 @@ test.describe('Prettier 생성기 페이지', () => {
 })
 
 test.describe('tsconfig 생성기 페이지', () => {
-  test('TypeScript 생성기 페이지가 로드된다', async ({ page }) => {
+  test.beforeEach(async ({ page }) => {
     await page.goto('/ko/generator/tsconfig')
+    // Svelte 아일랜드 hydration 안정화. e2e-execution.md §4-1 참조.
+    await page.waitForLoadState('networkidle')
+  })
+
+  test('TypeScript 생성기 페이지가 로드된다', async ({ page }) => {
     await expect(page).toHaveTitle(/TypeScript|tsconfig/)
   })
 
   test('tsconfig.json 파일명이 표시된다', async ({ page }) => {
-    await page.goto('/ko/generator/tsconfig')
-
     // 모바일에서는 미리보기 탭 클릭 필요
     const previewTab = page.locator('button').filter({ hasText: '미리보기' }).first()
     if (await previewTab.isVisible()) {
@@ -201,7 +212,7 @@ test.describe('tsconfig 생성기 페이지', () => {
     }
 
     // 코드 미리보기 확인
-    const codePreview = page.locator('pre code')
+    const codePreview = page.getByRole('region', { name: '생성된 코드' }).locator('pre code')
     await expect(codePreview).toBeVisible()
   })
 })

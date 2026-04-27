@@ -59,7 +59,7 @@
     activeTab === 'migrate' && migrationResult
       ? {
           fileName: baseOutput.fileName || 'eslint.config.mjs',
-          code: migrationResult.outputCode,
+          code: migrationResult.output,
           language: baseOutput.language || 'javascript',
         }
       : generateConfigBySlug(fileSlug, generatorOptions),

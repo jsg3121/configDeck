@@ -40,3 +40,4 @@
 | [0013](records/ADR-0013-article-ai-tool-evaluation.md)    | 아티클 AI 요약 도구 평가 및 전환 검토             | 제안됨 | 2026-04-15 |
 | [0014](records/ADR-0014-growth-strategy-roadmap.md)       | 서비스 성장 전략 및 통합 로드맵                   | 승인됨 | 2026-04-24 |
 | [0015](records/ADR-0015-article-source-diversity.md)      | 아티클 소스 다양성 확보 전략 (디우선순위)         | 승인됨 | 2026-04-26 |
+| [0016](records/ADR-0016-e2e-validation-strategy.md)       | E2E 테스트 검증 전략 (디버깅 선별 + 머지 전 전체) | 승인됨 | 2026-04-28 |

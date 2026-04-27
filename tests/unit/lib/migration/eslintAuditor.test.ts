@@ -164,3 +164,65 @@ describe('auditEslintConfig - 다국어 메시지', () => {
     }
   })
 })
+
+/**
+ * Audit-only 흐름 (SPEC-0004 §3.2.4)
+ *
+ * MigrationPanel은 입력에 대해 auditEslintConfig를 먼저 호출해 isLegacyConfig를
+ * 판정하고, false이면 입력을 그대로 미리보기로 노출하면서 audit 결과만 표시한다.
+ * 본 그룹은 그 분기 진입 조건과 진단 정확성을 회귀 방지 차원에서 고정한다.
+ */
+describe('auditEslintConfig - audit-only 흐름 (Flat config 입력)', () => {
+  it('마이그레이션된 flat config 입력은 isLegacyConfig=false를 반환한다', () => {
+    const code = `import js from '@eslint/js'
+
+export default [
+  js.configs.recommended,
+  {
+    rules: {
+      "no-console": "warn",
+    },
+  },
+]`
+    const result = auditEslintConfig(code)
+    expect(result.isLegacyConfig).toBe(false)
+    // legacy 안내 항목은 노출되지 않아야 한다
+    expect(result.items.some((i) => i.message.includes('Legacy'))).toBe(false)
+  })
+
+  it('flat config에서도 deprecated 규칙(indent)을 진단한다', () => {
+    const code = `export default [
+  {
+    rules: {
+      indent: ["error", 2],
+    },
+  },
+]`
+    const result = auditEslintConfig(code)
+    expect(result.isLegacyConfig).toBe(false)
+    expect(
+      result.items.some((i) => i.severity === 'warning' && i.message.includes('"indent"')),
+    ).toBe(true)
+  })
+
+  it('flat config에서 권장 규칙이 빠져 있으면 info로 제안한다', () => {
+    const code = `import js from '@eslint/js'
+
+export default [
+  js.configs.recommended,
+  {
+    rules: {},
+  },
+]`
+    const result = auditEslintConfig(code)
+    expect(result.isLegacyConfig).toBe(false)
+    const infos = result.items.filter((i) => i.severity === 'info')
+    expect(infos.some((i) => i.message.includes('"no-console"'))).toBe(true)
+  })
+
+  it('legacy로 판정되는 입력은 audit-only 흐름을 트리거하지 않는다 (분기 회귀 방지)', () => {
+    const code = `{ "extends": ["eslint:recommended"], "rules": {} }`
+    const result = auditEslintConfig(code)
+    expect(result.isLegacyConfig).toBe(true)
+  })
+})
