@@ -3,13 +3,19 @@
    * 마이그레이션 탭 UI를 렌더링한다.
    * 레거시 설정 파일을 붙여넣기 또는 파일 업로드로 입력받아
    * 형식을 감지하고 변환 결과를 부모에게 전달한다.
+   * 변환 결과에 분석(audit) 결과도 함께 표시한다.
    */
   import {
+    auditEslintConfig,
     detectConfigFormat,
     migrateEslintConfig,
     parseEslintLegacyConfig,
+    type AuditResult,
     type MigrationResult,
+    type MigrationWarning,
   } from '@/lib/migration'
+
+  import MigrationFeedback from './MigrationFeedback.svelte'
 
   interface Props {
     locale: string
@@ -18,24 +24,20 @@
 
   let { locale, onmigrationresult }: Props = $props()
 
-  /** 사용자 입력 코드 */
   let inputCode = $state('')
-  /** 감지된 형식 */
   let detectedFormat = $derived(detectConfigFormat(inputCode))
-  /** 변환 경고 목록 */
-  let warnings = $state<string[]>([])
-  /** 에러 메시지 */
+  let warnings = $state<MigrationWarning[]>([])
   let errorMessage = $state<string | null>(null)
-  /** 파일 업로드 input ref */
+  let auditResult = $state<AuditResult | null>(null)
+  let currentOutputCode = $state('')
   let fileInputRef = $state<HTMLInputElement | null>(null)
-  /** 업로드된 파일명 */
   let uploadedFileName = $state('')
 
-  /** 마이그레이션을 실행한다 */
   const runMigration = () => {
     if (inputCode.trim().length < 5) {
       onmigrationresult(null)
       warnings = []
+      auditResult = null
       return
     }
 
@@ -44,10 +46,15 @@
       const result = migrateEslintConfig(parsed)
       warnings = result.warnings
       errorMessage = null
+      currentOutputCode = result.outputCode
       onmigrationresult(result)
-    } catch (err) {
+
+      // 변환된 코드에 대해 분석 실행
+      auditResult = auditEslintConfig(result.outputCode)
+    } catch {
       onmigrationresult(null)
       warnings = []
+      auditResult = null
       errorMessage =
         locale === 'ko'
           ? '변환에 실패했습니다. 지원되는 형식(.eslintrc JSON 또는 CommonJS)인지 확인해주세요.'
@@ -55,13 +62,11 @@
     }
   }
 
-  /** textarea 입력 변경 핸들러 */
   const handleInputChange = () => {
     uploadedFileName = ''
     runMigration()
   }
 
-  /** 파일 업로드 핸들러 */
   const handleFileUpload = (event: Event) => {
     const target = event.target as HTMLInputElement
     const file = target.files?.[0]
@@ -76,19 +81,165 @@
     reader.readAsText(file)
   }
 
-  /** 업로드 버튼 클릭 시 hidden input을 트리거한다 */
   const triggerFileUpload = () => {
     fileInputRef?.click()
   }
 
-  /** 입력을 초기화한다 */
   const handleClear = () => {
     inputCode = ''
     uploadedFileName = ''
     warnings = []
     errorMessage = null
+    auditResult = null
     onmigrationresult(null)
     if (fileInputRef) fileInputRef.value = ''
+  }
+
+  /** 분석 항목 닫기 */
+  const handleDismissAuditItem = (message: string) => {
+    if (!auditResult) return
+    auditResult = {
+      ...auditResult,
+      items: auditResult.items.filter((item) => item.message !== message),
+      summary: {
+        errors: auditResult.items.filter((i) => i.message !== message && i.severity === 'error')
+          .length,
+        warnings: auditResult.items.filter((i) => i.message !== message && i.severity === 'warning')
+          .length,
+        infos: auditResult.items.filter((i) => i.message !== message && i.severity === 'info')
+          .length,
+      },
+    }
+  }
+
+  /**
+   * 문자열 끝에 trailing comma를 보장한다.
+   * 마지막 줄이 한 줄 주석(`// ...`)인 경우 주석 앞 의미 있는 위치를 찾아 쉼표를 삽입해야
+   * 주석 뒤에 쉼표가 붙는 문법 오류(예: `// comment,`)를 피할 수 있다.
+   */
+  const ensureTrailingComma = (input: string): string => {
+    const lines = input.split('\n')
+    // 끝에서부터 의미 있는 라인을 찾는다 (공백/주석만 있는 라인은 건너뜀)
+    for (let i = lines.length - 1; i >= 0; i--) {
+      const line = lines[i]
+      const trimmedLine = line.trim()
+      if (trimmedLine.length === 0) continue
+
+      // 한 줄 주석으로만 이루어진 라인은 건너뛴다
+      if (trimmedLine.startsWith('//')) continue
+
+      // 코드 + 한 줄 주석 (예: `"a": "b" // comment`) — 주석 앞 부분에 쉼표 삽입
+      const commentIdx = findInlineCommentStart(line)
+      if (commentIdx !== -1) {
+        const before = line.slice(0, commentIdx).replace(/,?\s*$/, '')
+        const after = line.slice(commentIdx)
+        // 주석 앞 코드와 주석 사이에 한 칸 공백을 두고 쉼표 부착
+        lines[i] = `${before}, ${after.trimStart()}`.trimEnd()
+        return lines.join('\n')
+      }
+
+      // 일반 코드 라인 — 끝에 쉼표 보장
+      lines[i] = line.replace(/,?\s*$/, ',')
+      return lines.join('\n')
+    }
+
+    // 의미 있는 라인을 못 찾으면 원본 유지
+    return input
+  }
+
+  /**
+   * 한 줄에서 인라인 한 줄 주석(`//`) 시작 인덱스를 찾는다.
+   * 문자열 리터럴 내부의 `//`는 무시한다.
+   */
+  const findInlineCommentStart = (line: string): number => {
+    let inString: '"' | "'" | '`' | null = null
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i]
+      const prev = line[i - 1]
+      if (inString) {
+        if (ch === inString && prev !== '\\') inString = null
+        continue
+      }
+      if (ch === '"' || ch === "'" || ch === '`') {
+        inString = ch
+        continue
+      }
+      if (ch === '/' && line[i + 1] === '/') return i
+    }
+    return -1
+  }
+
+  /**
+   * rules 블록의 시작 `{`부터 매칭되는 닫는 `}` 위치를 찾는다.
+   * 단순 정규식으로는 중첩 객체(예: ["error", { options }])를 처리할 수 없어
+   * 괄호 균형을 직접 카운트한다.
+   */
+  const findRulesBlock = (code: string): { start: number; end: number; indent: string } | null => {
+    const rulesMatch = code.match(/^(\s*)rules:\s*\{/m)
+    if (!rulesMatch || rulesMatch.index === undefined) return null
+
+    const indent = rulesMatch[1]
+    const openBraceIdx = code.indexOf('{', rulesMatch.index)
+    if (openBraceIdx === -1) return null
+
+    let depth = 1
+    let i = openBraceIdx + 1
+    while (i < code.length && depth > 0) {
+      if (code[i] === '{') depth++
+      else if (code[i] === '}') depth--
+      i++
+    }
+    if (depth !== 0) return null
+
+    return { start: openBraceIdx, end: i - 1, indent }
+  }
+
+  /** 권장 규칙 적용 (info 항목) */
+  const handleApplyRule = (ruleName: string, ruleValue: string) => {
+    const currentCode = currentOutputCode
+    const rulesBlock = findRulesBlock(currentCode)
+
+    let newCode: string
+    if (rulesBlock) {
+      // 기존 rules 블록에 규칙 추가
+      // rules 블록의 들여쓰기(indent)를 기준으로 내부 키는 indent + 2칸
+      const baseIndent = rulesBlock.indent
+      const innerIndent = baseIndent + '  '
+      const innerContent = currentCode.slice(rulesBlock.start + 1, rulesBlock.end)
+      const trimmed = innerContent.replace(/^\s*\n|\n\s*$/g, '')
+      const newEntry = `"${ruleName}": "${ruleValue}"`
+
+      let updatedInner: string
+      if (trimmed.length === 0) {
+        updatedInner = `\n${innerIndent}${newEntry}\n${baseIndent}`
+      } else {
+        // 마지막 엔트리에 trailing comma 보장.
+        // 단순 `replace(/,?\s*$/, ',')`는 마지막 줄이 한 줄 주석(// ...)인 경우
+        // 주석 뒤에 쉼표가 붙어 문법 오류가 발생한다.
+        // 마지막 non-주석/non-공백 위치를 찾아 그 뒤에 쉼표를 삽입한다.
+        const withComma = ensureTrailingComma(trimmed)
+        updatedInner = `\n${withComma}\n${innerIndent}${newEntry}\n${baseIndent}`
+      }
+
+      newCode =
+        currentCode.slice(0, rulesBlock.start + 1) +
+        updatedInner +
+        currentCode.slice(rulesBlock.end)
+    } else {
+      // rules 블록이 없으면 export default [ ... ] 의 첫 config 객체에 rules 추가
+      // 가장 단순한 케이스: 새 config 객체를 추가
+      const insertion = `  {\n    rules: {\n      "${ruleName}": "${ruleValue}",\n    },\n  },\n`
+      newCode = currentCode.replace(/export default \[\n?/, (match) => match + insertion)
+    }
+
+    currentOutputCode = newCode
+
+    onmigrationresult({
+      outputCode: newCode,
+      warnings,
+    })
+
+    handleDismissAuditItem(`Consider adding "${ruleName}" rule`)
   }
 
   let titleLabel = $derived(
@@ -99,7 +250,6 @@
   let uploadLabel = $derived(locale === 'ko' ? '파일 업로드' : 'Upload file')
   let clearLabel = $derived(locale === 'ko' ? '초기화' : 'Clear')
   let formatLabel = $derived(locale === 'ko' ? '감지된 형식' : 'Detected format')
-  let warningLabel = $derived(locale === 'ko' ? '수동 확인 필요' : 'Manual review needed')
   let supportedLabel = $derived(
     locale === 'ko'
       ? '지원 형식: .eslintrc (JSON), .eslintrc.js (CommonJS)'
@@ -196,35 +346,12 @@
     </div>
   {/if}
 
-  {#if errorMessage}
-    <div class="rounded-md border border-red-200 bg-red-50 p-3">
-      <div class="flex items-start gap-2">
-        <svg
-          class="mt-0.5 h-4 w-4 shrink-0 text-red-500"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-        <p class="text-xs text-red-700">{errorMessage}</p>
-      </div>
-    </div>
-  {/if}
-
-  {#if warnings.length > 0}
-    <div class="rounded-md border border-amber-200 bg-amber-50 p-3">
-      <h4 class="text-xs font-semibold text-amber-800">{warningLabel}</h4>
-      <ul class="mt-1.5 flex flex-col gap-1">
-        {#each warnings as warning (warning)}
-          <li class="text-xs text-amber-700">{warning}</li>
-        {/each}
-      </ul>
-    </div>
-  {/if}
+  <MigrationFeedback
+    {locale}
+    {errorMessage}
+    {warnings}
+    {auditResult}
+    ondismiss={handleDismissAuditItem}
+    onapplyrule={handleApplyRule}
+  />
 </div>

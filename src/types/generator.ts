@@ -117,7 +117,7 @@ export type OptionControlType = OptionControl['type']
 // ---------------------------------------------------------------------------
 
 /** 신규 옵션 섹션 — 한 섹션 안에 여러 타입의 컨트롤이 공존 가능 */
-export interface NewOptionSection {
+export interface OptionSection {
   /** 섹션 한글 제목 */
   title: string
   /** 섹션 영문 제목 */
@@ -139,7 +139,7 @@ export interface FileOptionDefinition {
   /** 파일의 slug (files.ts의 slug와 일치해야 한다) */
   slug: string
   /** 옵션 섹션 목록 */
-  sections: NewOptionSection[]
+  sections: OptionSection[]
 }
 
 // ---------------------------------------------------------------------------

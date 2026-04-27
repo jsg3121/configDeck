@@ -119,10 +119,7 @@ interface APICallResult {
 /**
  * Claude API를 호출하여 마크다운 문서를 생성한다.
  */
-const callClaudeAPI = async (
-  client: Anthropic,
-  prompt: string,
-): Promise<APICallResult> => {
+const callClaudeAPI = async (client: Anthropic, prompt: string): Promise<APICallResult> => {
   try {
     const message = await client.messages.create({
       model: 'claude-sonnet-4-20250514',

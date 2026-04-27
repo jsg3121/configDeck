@@ -15,13 +15,13 @@ ConfigDeck reduces the time spent on project initial setup. Instead of copy-past
 
 ### Features
 
-| Feature | Description |
-|---------|-------------|
-| **File Generator** | Select options with real-time preview, copy or download |
-| **Stack Presets** | Generate multiple configs at once for React+Vite, Next.js, Astro, etc. |
-| **Migration** | Convert legacy formats (`.eslintrc` → `eslint.config.mjs`) |
-| **ZIP Download** | Bundle multiple config files into a single download |
-| **i18n** | English and Korean support |
+| Feature            | Description                                                            |
+| ------------------ | ---------------------------------------------------------------------- |
+| **File Generator** | Select options with real-time preview, copy or download                |
+| **Stack Presets**  | Generate multiple configs at once for React+Vite, Next.js, Astro, etc. |
+| **Migration**      | Convert legacy formats (`.eslintrc` → `eslint.config.mjs`)             |
+| **ZIP Download**   | Bundle multiple config files into a single download                    |
+| **i18n**           | English and Korean support                                             |
 
 ### Supported Config Files
 
@@ -37,14 +37,14 @@ ConfigDeck reduces the time spent on project initial setup. Instead of copy-past
 
 ## Tech Stack
 
-| Layer | Technology | Why |
-|-------|------------|-----|
-| Meta Framework | Astro 6 | SSG-first, 0KB JS for content pages |
-| Interactive UI | Svelte 5 (Runes) | Compiler-based, minimal runtime, two-way binding |
-| Styling | Tailwind CSS 4 | Utility-first, CSS-based theme config |
-| Language | TypeScript | Strict mode, no `any` |
-| Testing | Vitest + Playwright | Unit + E2E coverage |
-| Deployment | Cloudflare Pages | Static output, global CDN |
+| Layer          | Technology          | Why                                              |
+| -------------- | ------------------- | ------------------------------------------------ |
+| Meta Framework | Astro 6             | SSG-first, 0KB JS for content pages              |
+| Interactive UI | Svelte 5 (Runes)    | Compiler-based, minimal runtime, two-way binding |
+| Styling        | Tailwind CSS 4      | Utility-first, CSS-based theme config            |
+| Language       | TypeScript          | Strict mode, no `any`                            |
+| Testing        | Vitest + Playwright | Unit + E2E coverage                              |
+| Deployment     | Cloudflare Pages    | Static output, global CDN                        |
 
 ## Getting Started
 
@@ -111,20 +111,20 @@ The `.claude/` directory contains **74 harness documents** that guide AI behavio
 
 Every technical decision is documented with context and rationale:
 
-| ADR | Decision |
-|-----|----------|
-| 0002 | Framework: Astro + Svelte (SSG-first, minimal runtime) |
-| 0003 | Package Manager: pnpm (strict deps, disk efficient) |
-| 0004 | Deployment: Cloudflare Pages (static, global CDN) |
-| 0005 | Share Links: URL-based option encoding |
-| 0006 | Generator-centric IA redesign |
-| 0007 | Page structure redesign |
+| ADR  | Decision                                                            |
+| ---- | ------------------------------------------------------------------- |
+| 0002 | Framework: Astro + Svelte (SSG-first, minimal runtime)              |
+| 0003 | Package Manager: pnpm (strict deps, disk efficient)                 |
+| 0004 | Deployment: Cloudflare Pages (static, global CDN)                   |
+| 0005 | Share Links: URL-based option encoding                              |
+| 0006 | Generator-centric IA redesign                                       |
+| 0007 | Page structure redesign                                             |
 | 0008 | Option schema redesign (input types / option definitions separated) |
-| 0009 | Stack generator UX pattern (accordion inline options) |
-| 0010 | Article content strategy |
-| 0011 | AI summarization automation (Gemini API) |
-| 0012 | PR validation steps made optional |
-| 0013 | AI tool evaluation for article summarization |
+| 0009 | Stack generator UX pattern (accordion inline options)               |
+| 0010 | Article content strategy                                            |
+| 0011 | AI summarization automation (Gemini API)                            |
+| 0012 | PR validation steps made optional                                   |
+| 0013 | AI tool evaluation for article summarization                        |
 
 The AI references relevant ADRs before starting new work to maintain consistency.
 
@@ -132,30 +132,32 @@ The AI references relevant ADRs before starting new work to maintain consistency
 
 12 agents handle different domains:
 
-| Category | Agent | Role |
-|----------|-------|------|
-| Planning | `product-planner` | Feature SPEC creation and management |
-| Development | `config-maker` | Config file schema, options, generation logic |
-| | `ui-publisher` | Astro/Svelte component implementation |
-| | `ux-designer` | User flow, layout, interaction design |
-| | `seo-specialist` | Semantic HTML, meta tags, JSON-LD, i18n SEO |
-| QA | `qa-agent` | QA orchestrator |
-| | `unit-tester` | Vitest unit tests |
-| | `e2e-tester` | Playwright E2E tests |
-| | `static-analyzer` | ESLint/TypeScript static analysis |
-| Business | `market-intelligence` | Market research, competitor analysis |
-| | `business-analyst` | Competitive positioning |
-| | `strategy-planner` | Strategy development |
+| Category    | Agent                 | Role                                          |
+| ----------- | --------------------- | --------------------------------------------- |
+| Planning    | `product-planner`     | Feature SPEC creation and management          |
+| Development | `config-maker`        | Config file schema, options, generation logic |
+|             | `ui-publisher`        | Astro/Svelte component implementation         |
+|             | `ux-designer`         | User flow, layout, interaction design         |
+|             | `seo-specialist`      | Semantic HTML, meta tags, JSON-LD, i18n SEO   |
+| QA          | `qa-agent`            | QA orchestrator                               |
+|             | `unit-tester`         | Vitest unit tests                             |
+|             | `e2e-tester`          | Playwright E2E tests                          |
+|             | `static-analyzer`     | ESLint/TypeScript static analysis             |
+| Business    | `market-intelligence` | Market research, competitor analysis          |
+|             | `business-analyst`    | Competitive positioning                       |
+|             | `strategy-planner`    | Strategy development                          |
 
 ### Agent Collaboration Patterns
 
 **Pipeline (Sequential)**
+
 ```
 product-planner → ux-designer → ui-publisher → qa-agent
 (planning)        (design)       (implement)    (verify)
 ```
 
 **Fan-out/Fan-in (Parallel Research)**
+
 ```
 config-maker (ESLint)  ─┐
 config-maker (Prettier) ─┼→ Merge
@@ -163,6 +165,7 @@ config-maker (TSConfig) ─┘
 ```
 
 **QA Orchestration**
+
 ```
               qa-agent
                  │
@@ -180,17 +183,17 @@ config-maker (TSConfig) ─┘
 
 9 skills automate repetitive tasks via slash commands:
 
-| Skill | Purpose |
-|-------|---------|
-| `/research` | External research for tech comparisons, library selection |
-| `/create-pr` | PR creation with template-based body, auto label mapping |
-| `/component-builder` | Astro/Svelte component scaffolding |
-| `/lint-check` | Prettier/ESLint full check |
-| `/code-review` | Pre-PR code review |
-| `/a11y-check` | Accessibility (WCAG) audit |
-| `/seo-audit` | SEO audit (meta tags, JSON-LD, hreflang) |
-| `/test-writer` | Vitest unit test generation |
-| `/e2e-test` | Playwright E2E test generation |
+| Skill                | Purpose                                                   |
+| -------------------- | --------------------------------------------------------- |
+| `/research`          | External research for tech comparisons, library selection |
+| `/create-pr`         | PR creation with template-based body, auto label mapping  |
+| `/component-builder` | Astro/Svelte component scaffolding                        |
+| `/lint-check`        | Prettier/ESLint full check                                |
+| `/code-review`       | Pre-PR code review                                        |
+| `/a11y-check`        | Accessibility (WCAG) audit                                |
+| `/seo-audit`         | SEO audit (meta tags, JSON-LD, hreflang)                  |
+| `/test-writer`       | Vitest unit test generation                               |
+| `/e2e-test`          | Playwright E2E test generation                            |
 
 ### Convention Guides
 
@@ -207,9 +210,11 @@ Harness documents explain **why**, not just **what**:
 
 ```markdown
 # Bad
+
 - Component filenames use PascalCase
 
 # Good
+
 - Component filenames use PascalCase
   → To instantly distinguish Astro/Svelte components from utility files by filename alone
 ```

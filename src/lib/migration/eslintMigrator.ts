@@ -3,12 +3,18 @@
  */
 import type { LegacyEslintConfig } from './parser'
 
+/** 다국어 경고 메시지 */
+export interface MigrationWarning {
+  message: string
+  messageKo: string
+}
+
 /** 마이그레이션 결과 */
 export interface MigrationResult {
   /** 변환된 flat config 코드 */
   outputCode: string
   /** 자동 변환이 불완전한 항목에 대한 경고 */
-  warnings: string[]
+  warnings: MigrationWarning[]
 }
 
 /** extends 값을 flat config import/spread로 매핑한다 */
@@ -62,7 +68,7 @@ export const migrateEslintConfig = (legacyConfig: LegacyEslintConfig): Migration
   const importLines = new Set<string>()
   const configSpreads: string[] = []
   const configBlockEntries: string[] = []
-  const warnings: string[] = []
+  const warnings: MigrationWarning[] = []
 
   // extends → import + spread
   if (legacyConfig.extends) {
@@ -72,7 +78,10 @@ export const migrateEslintConfig = (legacyConfig: LegacyEslintConfig): Migration
         importLines.add(mapping.importLine)
         configSpreads.push(`  ${mapping.spread},`)
       } else {
-        warnings.push(`"${extendName}" — 자동 매핑할 수 없습니다. 수동으로 변환이 필요합니다.`)
+        warnings.push({
+          message: `"${extendName}" — Cannot be auto-mapped. Manual conversion required.`,
+          messageKo: `"${extendName}" — 자동 매핑할 수 없습니다. 수동으로 변환이 필요합니다.`,
+        })
       }
     }
   }
@@ -81,9 +90,10 @@ export const migrateEslintConfig = (legacyConfig: LegacyEslintConfig): Migration
   if (legacyConfig.plugins) {
     for (const pluginName of legacyConfig.plugins) {
       if (!legacyConfig.extends?.some((e) => e.includes(pluginName))) {
-        warnings.push(
-          `plugin "${pluginName}" — flat config에서는 직접 import하여 plugins 객체에 추가하세요.`,
-        )
+        warnings.push({
+          message: `plugin "${pluginName}" — In flat config, import directly and add to the plugins object.`,
+          messageKo: `plugin "${pluginName}" — flat config에서는 직접 import하여 plugins 객체에 추가하세요.`,
+        })
       }
     }
   }
@@ -99,14 +109,15 @@ export const migrateEslintConfig = (legacyConfig: LegacyEslintConfig): Migration
 
   // parser → 경고
   if (legacyConfig.parser) {
-    warnings.push(
-      `parser "${legacyConfig.parser}" — flat config의 languageOptions.parser로 직접 설정하세요.`,
-    )
+    warnings.push({
+      message: `parser "${legacyConfig.parser}" — Set directly in languageOptions.parser for flat config.`,
+      messageKo: `parser "${legacyConfig.parser}" — flat config의 languageOptions.parser로 직접 설정하세요.`,
+    })
   }
 
   // rules → 그대로 유지
   if (legacyConfig.rules && Object.keys(legacyConfig.rules).length > 0) {
-    const rulesStr = JSON.stringify(legacyConfig.rules, null, 6)
+    const rulesStr = JSON.stringify(legacyConfig.rules, null, 2)
       .split('\n')
       .map((line, i) => (i === 0 ? `    rules: ${line}` : `    ${line}`))
       .join('\n')

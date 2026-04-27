@@ -23,12 +23,8 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
-# test results
+# test results (재현 가능한 실행 산출물 — 트래킹하지 않음)
 tests/results/
 coverage/
 playwright-report/
 test-results/
-
-# QA reports (generated)
-.claude/qa/reports/*.md
-!.claude/qa/reports/.gitkeep

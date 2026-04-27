@@ -328,15 +328,26 @@ export const fetchAllFeeds = async (): Promise<RSSItem[]> => {
 
   const yesterday = new Date()
   yesterday.setDate(yesterday.getDate() - 1)
-  console.log(`Total: ${recentItems.length} items (${yesterday.toISOString().split('T')[0]}) from ${FEED_CONFIGS.length} feeds`)
+  console.log(
+    `Total: ${recentItems.length} items (${yesterday.toISOString().split('T')[0]}) from ${FEED_CONFIGS.length} feeds`,
+  )
   return recentItems
 }
 
 /**
  * 각 도구별로 균등하게 아이템을 선택한다.
  * Round-robin 방식으로 각 도구에서 하나씩 가져온다.
+ *
+ * deprioritize: 최근 사용된 도구 집합. 해당 도구의 큐는 뒤로 밀려 다른 도구가 우선 선택된다.
+ *               단일 도구만 발행된 경우에는 디우선순위가 적용되지 않고 그 도구가 선택된다.
  */
-export const selectBalanced = (items: RSSItem[], count: number): RSSItem[] => {
+export const selectBalanced = (
+  items: RSSItem[],
+  count: number,
+  options: { deprioritize?: Set<Tool> } = {},
+): RSSItem[] => {
+  const { deprioritize } = options
+
   // 도구별로 그룹화 (날짜순 유지)
   const byTool = new Map<Tool, RSSItem[]>()
 
@@ -346,8 +357,19 @@ export const selectBalanced = (items: RSSItem[], count: number): RSSItem[] => {
     byTool.set(item.tool, toolItems)
   }
 
+  // 디우선순위 도구는 큐 배열 뒤로 이동 (단일 도구만 있을 땐 그대로 유지)
+  const allTools = Array.from(byTool.keys())
+  const sortedTools =
+    deprioritize && allTools.length > 1
+      ? [
+          ...allTools.filter((tool) => !deprioritize.has(tool)),
+          ...allTools.filter((tool) => deprioritize.has(tool)),
+        ]
+      : allTools
+
+  const toolQueues = sortedTools.map((tool) => byTool.get(tool) ?? [])
+
   const selected: RSSItem[] = []
-  const toolQueues = Array.from(byTool.values())
 
   // Round-robin으로 각 도구에서 하나씩 선택
   let toolIndex = 0

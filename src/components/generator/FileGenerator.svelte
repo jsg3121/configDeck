@@ -4,16 +4,27 @@
    * 프리셋 기본값을 기준으로 생성기 옵션을 관리하고,
    * 섹션 UI 변경 시 스키마 옵션을 동기화하여 실시간 코드를 생성한다.
    */
+  import { onMount } from 'svelte'
+
   import { getOptionDefinition } from '@/lib/data/options'
   import { generateConfigBySlug } from '@/lib/generators'
   import type { MigrationResult } from '@/lib/migration'
-  import { getPresetDefaultsBySlug } from '@/lib/schemas'
-  import type { NewOptionSection } from '@/types/generator'
+  import { buildEmptyValues } from '@/lib/modules/optionBuilder'
+  import { decodeFileGeneratorUrl } from '@/lib/utils/shareUrl'
+  import type { OptionSection } from '@/types/generator'
 
   import CodePreview from './CodePreview.svelte'
+  import GeneratorTabs from './GeneratorTabs.svelte'
   import MigrationPanel from './MigrationPanel.svelte'
+  import {
+    applyPreset,
+    buildShareUrl,
+    syncUrlWithOptions,
+    updateOption,
+  } from './modules/fileGeneratorLogic'
   import OptionForm from './OptionForm.svelte'
   import PresetSelector from './PresetSelector.svelte'
+  import RelatedFilesSection from './RelatedFilesSection.svelte'
 
   interface RelatedFile {
     slug: string
@@ -33,68 +44,17 @@
 
   const { fileSlug, locale, presets, supportsMigration, relatedFiles = [] }: Props = $props()
 
-  // ---------------------------------------------------------------------------
-  // 상태 관리
-  // ---------------------------------------------------------------------------
-
-  /** 신규 옵션 구조에서 모든 control의 빈 값(초기 상태)으로 구성된 맵을 반환한다 */
-  const buildEmptyValues = (): Record<string, unknown> => {
-    const definition = getOptionDefinition(fileSlug)
-    if (!definition) return {}
-    const empty: Record<string, unknown> = {}
-    for (const section of definition.sections) {
-      for (const control of section.controls) {
-        switch (control.type) {
-          case 'checkbox':
-            empty[control.key] = false
-            break
-          case 'number':
-            empty[control.key] = null
-            break
-          case 'radio':
-          case 'select':
-          case 'text':
-            empty[control.key] = ''
-            break
-          case 'tags':
-            empty[control.key] = []
-            break
-          case 'key-value':
-            empty[control.key] = {}
-            break
-        }
-      }
-    }
-    return empty
-  }
-
-  /** 현재 선택된 프리셋 — null이면 선택 없음(초기/클리어 상태) */
   let selectedPreset = $state<string | null>(null)
-  /** 현재 활성 탭 */
   let activeTab = $state<'generate' | 'migrate'>('generate')
-
-  /** 사용자가 직접 변경한 옵션 키 Set. 이 키의 옵션만 generatorOptions에 포함되어 미리보기에 출력된다 */
   let touchedKeys = $state(new Set<string>())
-
-  /** 생성기에 전달할 스키마 옵션 — touchedKeys에 포함된 옵션만 들어간다 */
   let generatorOptions = $state<Record<string, unknown>>({})
-
-  /** OptionForm에 전달할 값 맵 — 초기 진입 시 빈 상태 */
-  let optionValues = $state<Record<string, unknown>>(buildEmptyValues())
-
-  /** OptionForm에 전달할 섹션 목록 */
-  let formSections = $derived<NewOptionSection[]>(getOptionDefinition(fileSlug)?.sections ?? [])
-
-  /** 모바일 뷰 전환 탭 (옵션 / 미리보기) */
+  let optionValues = $state<Record<string, unknown>>(buildEmptyValues(fileSlug))
+  let formSections = $derived<OptionSection[]>(getOptionDefinition(fileSlug)?.sections ?? [])
   let mobileView = $state<'options' | 'preview'>('options')
-
-  /** 마이그레이션 결과 */
   let migrationResult = $state<MigrationResult | null>(null)
 
-  /** 생성 탭의 기본 출력 (파일명/언어 참조용) */
   const baseOutput = generateConfigBySlug(fileSlug, {})
 
-  /** 미리보기에 표시할 코드 — 마이그레이션 탭이면 변환 결과, 아니면 생성 결과 */
   let generatedOutput = $derived(
     activeTab === 'migrate' && migrationResult
       ? {
@@ -105,57 +65,60 @@
       : generateConfigBySlug(fileSlug, generatorOptions),
   )
 
-  /** 마이그레이션 결과 수신 핸들러 */
   const handleMigrationResult = (result: MigrationResult | null) => {
     migrationResult = result
   }
 
-  /** 프리셋 변경 시 프리셋이 명시한 옵션만 적용한다. 나머지는 빈 상태 유지 */
   const handlePresetChange = (presetName: string) => {
     selectedPreset = presetName
-    const defaults = getPresetDefaultsBySlug(fileSlug, presetName) as Record<string, unknown>
-    optionValues = { ...buildEmptyValues(), ...defaults }
-    touchedKeys = new Set(Object.keys(defaults))
-    syncGeneratorOptions()
+    const result = applyPreset(fileSlug, presetName)
+    optionValues = result.optionValues
+    touchedKeys = result.touchedKeys
+    generatorOptions = result.generatorOptions
   }
 
-  /** touchedKeys 기반으로 generatorOptions를 갱신한다. 터치된 키의 값만 포함된다 */
-  const syncGeneratorOptions = () => {
-    const opts: Record<string, unknown> = {}
-    for (const key of touchedKeys) {
-      if (key in optionValues) {
-        opts[key] = optionValues[key]
-      }
-    }
-    generatorOptions = opts
-  }
-
-  /** OptionForm의 옵션 변경 핸들러 */
   const handleOptionChange = (key: string, value: unknown) => {
-    optionValues = { ...optionValues, [key]: value }
-    touchedKeys = new Set([...touchedKeys, key])
-    syncGeneratorOptions()
+    const result = updateOption(optionValues, touchedKeys, key, value)
+    optionValues = result.optionValues
+    touchedKeys = result.touchedKeys
+    generatorOptions = result.generatorOptions
   }
 
-  /** 모든 옵션을 초기 상태로 되돌린다 */
   const handleClear = () => {
     selectedPreset = null
     touchedKeys = new Set()
     generatorOptions = {}
-    optionValues = buildEmptyValues()
+    optionValues = buildEmptyValues(fileSlug)
+    syncUrlWithOptions(fileSlug, null, {}, buildEmptyValues(fileSlug))
   }
 
-  let generateLabel = $derived(locale === 'ko' ? '생성' : 'Generate')
-  let migrateLabel = $derived(locale === 'ko' ? '마이그레이션' : 'Migrate')
+  let shareUrlResult = $derived.by(() => {
+    const defaults = buildEmptyValues(fileSlug)
+    return buildShareUrl(fileSlug, selectedPreset, generatorOptions, defaults)
+  })
+
+  onMount(() => {
+    const params = new URLSearchParams(window.location.search)
+    const decoded = decodeFileGeneratorUrl(params)
+
+    if (decoded.preset && presets.includes(decoded.preset)) {
+      handlePresetChange(decoded.preset)
+    }
+
+    if (Object.keys(decoded.options).length > 0) {
+      for (const [key, value] of Object.entries(decoded.options)) {
+        const result = updateOption(optionValues, touchedKeys, key, value)
+        optionValues = result.optionValues
+        touchedKeys = result.touchedKeys
+        generatorOptions = result.generatorOptions
+      }
+    }
+  })
+
   let presetLabel = $derived(locale === 'ko' ? '프리셋' : 'Preset')
-  let relatedFilesLabel = $derived(locale === 'ko' ? '함께 쓰면 좋아요' : 'Goes well with')
   let clearLabel = $derived(locale === 'ko' ? '초기화' : 'Clear')
   let optionsLabel = $derived(locale === 'ko' ? '옵션' : 'Options')
   let previewLabel = $derived(locale === 'ko' ? '미리보기' : 'Preview')
-
-  /** 현재 로케일에 맞는 관련 파일 설명을 반환 */
-  const getRelatedDescription = (file: RelatedFile): string =>
-    locale === 'ko' ? file.descriptionKo : file.descriptionEn
 </script>
 
 <div class="mx-auto flex h-full w-full flex-col lg:flex-row">
@@ -187,26 +150,7 @@
   >
     <div class="mx-auto max-w-full px-6 py-8">
       {#if supportsMigration}
-        <div class="mb-6 flex gap-1 rounded-lg bg-gray-100 p-1">
-          <button
-            type="button"
-            class="flex-1 rounded-md px-4 py-2 text-sm font-medium {activeTab === 'generate'
-              ? 'bg-white text-gray-900 shadow-sm'
-              : 'text-gray-500 hover:text-gray-700'}"
-            onclick={() => (activeTab = 'generate')}
-          >
-            {generateLabel}
-          </button>
-          <button
-            type="button"
-            class="flex-1 rounded-md px-4 py-2 text-sm font-medium {activeTab === 'migrate'
-              ? 'bg-white text-gray-900 shadow-sm'
-              : 'text-gray-500 hover:text-gray-700'}"
-            onclick={() => (activeTab = 'migrate')}
-          >
-            {migrateLabel}
-          </button>
-        </div>
+        <GeneratorTabs {activeTab} {locale} ontabchange={(tab) => (activeTab = tab)} />
       {/if}
 
       {#if activeTab === 'generate'}
@@ -236,49 +180,7 @@
         />
 
         {#if relatedFiles.length > 0}
-          <aside class="mt-10 border-t border-border pt-8">
-            <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-600">
-              {relatedFilesLabel}
-            </h3>
-            <ul class="mt-4 flex flex-col gap-3">
-              {#each relatedFiles as related (related.slug)}
-                <li>
-                  <a
-                    href={related.href}
-                    class="group flex items-start gap-3 rounded-lg border border-border bg-surface p-4 transition-[transform,box-shadow,border-color] duration-200 hover:border-primary hover:shadow-md motion-safe:hover:-translate-y-0.5"
-                  >
-                    <div
-                      class="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-gray-100 transition-colors group-hover:bg-primary/10"
-                    >
-                      <svg
-                        class="h-4 w-4 text-gray-500 transition-colors group-hover:text-primary"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        stroke-width="2"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          d="M13 9l3 3m0 0l-3 3m3-3H8m13 0a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                    </div>
-                    <div class="min-w-0 flex-1">
-                      <p
-                        class="font-mono text-sm font-semibold text-gray-900 group-hover:text-primary"
-                      >
-                        {related.fileName}
-                      </p>
-                      <p class="mt-1 text-xs leading-relaxed text-gray-500">
-                        {getRelatedDescription(related)}
-                      </p>
-                    </div>
-                  </a>
-                </li>
-              {/each}
-            </ul>
-          </aside>
+          <RelatedFilesSection files={relatedFiles} {locale} />
         {/if}
       {:else}
         <MigrationPanel {locale} onmigrationresult={handleMigrationResult} />
@@ -294,7 +196,13 @@
       : ''}"
   >
     <div class="flex h-full flex-col bg-code-bg">
-      <CodePreview fileName={generatedOutput.fileName} code={generatedOutput.code} {locale} />
+      <CodePreview
+        fileName={generatedOutput.fileName}
+        code={generatedOutput.code}
+        {locale}
+        shareUrl={shareUrlResult.url}
+        shareWarning={shareUrlResult.warning}
+      />
     </div>
   </div>
 </div>

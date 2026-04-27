@@ -16,9 +16,9 @@
     <title>Redirecting...</title>
     <script is:inline>
       ;(function () {
-        var lang = navigator.language || navigator.userLanguage || ''
-        var isKorean = lang.toLowerCase().startsWith('ko')
-        var targetUrl = isKorean ? '/ko/' : '/en/'
+        const lang = navigator.language || navigator.userLanguage || ''
+        const isKorean = lang.toLowerCase().startsWith('ko')
+        const targetUrl = isKorean ? '/ko/' : '/en/'
         location.replace(targetUrl)
       })()
     </script>

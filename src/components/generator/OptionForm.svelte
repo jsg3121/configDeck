@@ -3,18 +3,20 @@
    * 옵션 섹션 목록을 받아 각 컨트롤 타입에 맞는 서브컴포넌트를 렌더링하는 디스패처.
    * tier 기반 core/advanced 분리, "전체 옵션 보기" 토글, 옵션 검색(Ctrl+K)을 지원한다.
    */
-  import type { NewOptionSection, OptionControl } from '@/types/generator'
+  import type { OptionControl, OptionSection } from '@/types/generator'
 
-  import CheckboxControl from './controls/CheckboxControl.svelte'
-  import KeyValueControl from './controls/KeyValueControl.svelte'
-  import NumberControl from './controls/NumberControl.svelte'
-  import RadioControl from './controls/RadioControl.svelte'
-  import SelectControl from './controls/SelectControl.svelte'
-  import TagsControl from './controls/TagsControl.svelte'
-  import TextControl from './controls/TextControl.svelte'
+  import {
+    getAdvancedCount,
+    getControlValue as getControlValueFromModule,
+    isAdvancedOption,
+    scrollToOptionAndHighlight,
+    searchOptions,
+  } from './modules/optionFormLogic'
+  import OptionControlRenderer from './OptionControlRenderer.svelte'
+  import OptionSearchModal from './OptionSearchModal.svelte'
 
   interface Props {
-    sections: NewOptionSection[]
+    sections: OptionSection[]
     values: Record<string, unknown>
     locale: string
     onchange: (key: string, value: unknown) => void
@@ -22,103 +24,42 @@
 
   let { sections, values, locale, onchange }: Props = $props()
 
-  /** "전체 옵션 보기" 토글 상태 */
   let showAdvanced = $state(false)
-
-  /** 검색 모달 표시 여부 */
   let showSearch = $state(false)
-
-  /** 검색 쿼리 */
   let searchQuery = $state('')
-
-  /** 검색으로 하이라이트할 컨트롤 key */
   let highlightedKey = $state<string | null>(null)
 
-  /** 섹션 내 advanced 옵션 수를 계산한다 */
-  const getAdvancedCount = (section: NewOptionSection): number => {
-    return section.controls.filter((c) => c.tier === 'advanced').length
-  }
-
-  /** 전체 섹션에서 advanced 옵션 총 수를 계산한다 */
   let totalAdvancedCount = $derived(
     sections.reduce((sum, section) => sum + getAdvancedCount(section), 0),
   )
 
-  /** 검색 결과 — 모든 섹션의 컨트롤 중 검색어와 매칭되는 것 */
-  let searchResults = $derived(
-    searchQuery.trim().length < 2
-      ? []
-      : sections.flatMap((section) =>
-          section.controls
-            .filter((control) => {
-              const query = searchQuery.toLowerCase()
-              return (
-                control.key.toLowerCase().includes(query) ||
-                control.label.toLowerCase().includes(query) ||
-                control.labelEn.toLowerCase().includes(query) ||
-                control.description.toLowerCase().includes(query) ||
-                control.descriptionEn.toLowerCase().includes(query)
-              )
-            })
-            .map((control) => ({
-              control,
-              sectionTitle: locale === 'ko' ? section.title : section.titleEn,
-            })),
-        ),
-  )
+  let searchResults = $derived(searchOptions(sections, searchQuery, locale))
 
-  /** locale에 따라 섹션 타이틀을 반환한다 */
-  const getSectionTitle = (section: NewOptionSection): string => {
+  const getSectionTitle = (section: OptionSection): string => {
     return locale === 'ko' ? section.title : section.titleEn
   }
 
-  /** locale에 따라 섹션 설명을 반환한다 */
-  const getSectionDescription = (section: NewOptionSection): string | undefined => {
+  const getSectionDescription = (section: OptionSection): string | undefined => {
     return locale === 'ko' ? section.description : section.descriptionEn
   }
 
-  /** 컨트롤의 현재 값을 values에서 조회한다. 없으면 default를 사용한다 */
   const getControlValue = (control: OptionControl): unknown => {
-    if (control.key in values) return values[control.key]
-    return control.default
+    return getControlValueFromModule(values, control)
   }
 
-  /** 검색 결과에서 옵션 선택 시 해당 위치로 스크롤하고 하이라이트한다 */
   const handleSearchSelect = (key: string) => {
     showSearch = false
     searchQuery = ''
 
-    // advanced 옵션이면 먼저 펼친다
-    const isAdvanced =
-      sections.flatMap((s) => s.controls).find((c) => c.key === key)?.tier === 'advanced'
-    if (isAdvanced && !showAdvanced) {
+    if (isAdvancedOption(sections, key) && !showAdvanced) {
       showAdvanced = true
     }
 
-    // DOM에 렌더링된 후 스크롤
-    requestAnimationFrame(() => {
-      const element = document.getElementById(`control-${key}`)
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'center' })
-        highlightedKey = key
-        setTimeout(() => {
-          highlightedKey = null
-        }, 2000)
-      }
+    scrollToOptionAndHighlight(key, (k) => {
+      highlightedKey = k
     })
   }
 
-  /** 검색 입력 필드 ref */
-  let searchInputRef = $state<HTMLInputElement | null>(null)
-
-  /** 검색 모달이 열리면 입력 필드에 포커스한다 */
-  $effect(() => {
-    if (showSearch && searchInputRef) {
-      searchInputRef.focus()
-    }
-  })
-
-  /** Ctrl+K / Cmd+K 단축키로 검색 모달을 토글한다 */
   const handleKeydown = (event: KeyboardEvent) => {
     if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
       event.preventDefault()
@@ -134,94 +75,15 @@
 
 <svelte:window onkeydown={handleKeydown} />
 
-<!-- 검색 모달 -->
 {#if showSearch}
-  <div class="fixed inset-0 z-50 flex items-start justify-center pt-[20vh]">
-    <!-- 백드롭 -->
-    <button
-      type="button"
-      class="fixed inset-0 bg-black/30 backdrop-blur-sm"
-      onclick={() => {
-        showSearch = false
-        searchQuery = ''
-      }}
-      aria-label={locale === 'ko' ? '검색 닫기' : 'Close search'}
-    ></button>
-
-    <!-- 검색 패널 -->
-    <div
-      class="relative z-10 w-full max-w-md rounded-xl border border-border bg-surface shadow-2xl"
-    >
-      <div class="flex items-center gap-3 border-b border-border px-4 py-3">
-        <svg
-          class="h-4 w-4 text-gray-400"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-          />
-        </svg>
-        <input
-          type="text"
-          bind:this={searchInputRef}
-          bind:value={searchQuery}
-          placeholder={locale === 'ko'
-            ? '옵션 이름이나 설명으로 검색...'
-            : 'Search options by name or description...'}
-          class="flex-1 border-0 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none"
-        />
-        <button
-          type="button"
-          class="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/50"
-          onclick={() => {
-            showSearch = false
-            searchQuery = ''
-          }}
-          aria-label={locale === 'ko' ? '검색 닫기' : 'Close search'}
-        >
-          <svg
-            class="h-4 w-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-
-      {#if searchResults.length > 0}
-        <ul class="max-h-60 overflow-y-auto py-2">
-          {#each searchResults as result (result.control.key)}
-            <li>
-              <button
-                type="button"
-                class="flex w-full flex-col gap-0.5 px-4 py-2 text-left hover:bg-primary/5"
-                onclick={() => handleSearchSelect(result.control.key)}
-              >
-                <span class="text-sm text-gray-800">
-                  {locale === 'ko' ? result.control.label : result.control.labelEn}
-                </span>
-                <span class="text-xs text-gray-400">
-                  {result.sectionTitle} · {result.control.key}
-                </span>
-              </button>
-            </li>
-          {/each}
-        </ul>
-      {:else if searchQuery.trim().length >= 2}
-        <p class="px-4 py-6 text-center text-sm text-gray-400">
-          {locale === 'ko' ? '결과 없음' : 'No results'}
-        </p>
-      {/if}
-    </div>
-  </div>
+  <OptionSearchModal
+    {locale}
+    {searchQuery}
+    {searchResults}
+    onclose={() => (showSearch = false)}
+    onquerychange={(q) => (searchQuery = q)}
+    onselect={handleSearchSelect}
+  />
 {/if}
 
 <!-- 검색 버튼 (상단) -->
@@ -247,12 +109,10 @@
 {#each sections as section (section.titleEn)}
   {@const coreControls = section.controls.filter((c) => c.tier === 'core')}
   {@const advancedControls = section.controls.filter((c) => c.tier === 'advanced')}
-
   {@const hasCore = coreControls.length > 0}
   {@const hasAdvanced = advancedControls.length > 0}
   {@const isAdvancedOnlySection = !hasCore && hasAdvanced}
 
-  <!-- advanced-only 섹션은 토글이 닫힌 상태에서 전체 숨김 -->
   {#if !isAdvancedOnlySection || showAdvanced}
     <div class="border-b border-border py-6">
       <div class="mb-4 flex items-center gap-2">
@@ -268,140 +128,38 @@
         </p>
       {/if}
 
-      <!-- Core 옵션 (항상 표시) -->
+      <!-- Core 옵션 -->
       <div class="flex flex-col gap-4">
         {#each coreControls as control (control.key)}
-          <div
-            id="control-{control.key}"
-            class="transition-colors duration-500 {highlightedKey === control.key
-              ? 'rounded-md bg-primary/5 p-2 ring-1 ring-primary/20'
-              : ''}"
-          >
-            {#if control.type === 'radio'}
-              <RadioControl
-                {control}
-                value={getControlValue(control) as string}
-                {locale}
-                {onchange}
-              />
-            {:else if control.type === 'checkbox'}
-              <CheckboxControl
-                {control}
-                value={getControlValue(control) as boolean}
-                {locale}
-                {onchange}
-              />
-            {:else if control.type === 'select'}
-              <SelectControl
-                {control}
-                value={getControlValue(control) as string}
-                {locale}
-                {onchange}
-              />
-            {:else if control.type === 'number'}
-              <NumberControl
-                {control}
-                value={getControlValue(control) as number | null}
-                {locale}
-                {onchange}
-              />
-            {:else if control.type === 'text'}
-              <TextControl
-                {control}
-                value={getControlValue(control) as string}
-                {locale}
-                {onchange}
-              />
-            {:else if control.type === 'tags'}
-              <TagsControl
-                {control}
-                value={getControlValue(control) as string[]}
-                {locale}
-                {onchange}
-              />
-            {:else if control.type === 'key-value'}
-              <KeyValueControl
-                {control}
-                value={getControlValue(control) as Record<string, string>}
-                {locale}
-                {onchange}
-              />
-            {/if}
-          </div>
+          <OptionControlRenderer
+            {control}
+            value={getControlValue(control)}
+            {locale}
+            highlighted={highlightedKey === control.key}
+            {onchange}
+          />
         {/each}
       </div>
 
-      <!-- Advanced 옵션 (토글로 펼침) -->
-      {#if advancedControls.length > 0}
-        {#if showAdvanced}
-          <div class="mt-4 flex flex-col gap-4 border-t border-dashed border-border pt-4">
-            {#each advancedControls as control (control.key)}
-              <div
-                id="control-{control.key}"
-                class="transition-colors duration-500 {highlightedKey === control.key
-                  ? 'rounded-md bg-primary/5 p-2 ring-1 ring-primary/20'
-                  : ''}"
-              >
-                {#if control.type === 'radio'}
-                  <RadioControl
-                    {control}
-                    value={getControlValue(control) as string}
-                    {locale}
-                    {onchange}
-                  />
-                {:else if control.type === 'checkbox'}
-                  <CheckboxControl
-                    {control}
-                    value={getControlValue(control) as boolean}
-                    {locale}
-                    {onchange}
-                  />
-                {:else if control.type === 'select'}
-                  <SelectControl
-                    {control}
-                    value={getControlValue(control) as string}
-                    {locale}
-                    {onchange}
-                  />
-                {:else if control.type === 'number'}
-                  <NumberControl
-                    {control}
-                    value={getControlValue(control) as number | null}
-                    {locale}
-                    {onchange}
-                  />
-                {:else if control.type === 'text'}
-                  <TextControl
-                    {control}
-                    value={getControlValue(control) as string}
-                    {locale}
-                    {onchange}
-                  />
-                {:else if control.type === 'tags'}
-                  <TagsControl
-                    {control}
-                    value={getControlValue(control) as string[]}
-                    {locale}
-                    {onchange}
-                  />
-                {:else if control.type === 'key-value'}
-                  <KeyValueControl
-                    {control}
-                    value={getControlValue(control) as Record<string, string>}
-                    {locale}
-                    {onchange}
-                  />
-                {/if}
-              </div>
-            {/each}
-          </div>
-        {/if}
+      <!-- Advanced 옵션 -->
+      {#if advancedControls.length > 0 && showAdvanced}
+        <div class="mt-4 flex flex-col gap-4 border-t border-dashed border-border pt-4">
+          {#each advancedControls as control (control.key)}
+            <OptionControlRenderer
+              {control}
+              value={getControlValue(control)}
+              {locale}
+              highlighted={highlightedKey === control.key}
+              {onchange}
+            />
+          {/each}
+        </div>
       {/if}
     </div>
   {/if}
 {/each}
 
-<!-- "전체 옵션 보기" 토글 버튼 (advanced 옵션이 있을 때만 표시) -->
+<!-- "전체 옵션 보기" 토글 버튼 -->
 {#if totalAdvancedCount > 0}
   <div class="flex items-center justify-between py-4">
     <button

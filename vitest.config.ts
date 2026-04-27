@@ -11,16 +11,16 @@ export default defineConfig({
       reporter: ['text', 'html', 'json'],
       include: ['src/lib/**/*.ts'],
       exclude: ['src/lib/**/*.d.ts', 'src/lib/**/index.ts'],
-      reportsDirectory: './coverage'
+      reportsDirectory: './coverage',
     },
     reporters: ['default', 'json'],
     outputFile: {
-      json: './tests/results/unit-results.json'
-    }
+      json: './tests/results/unit-results.json',
+    },
   },
   resolve: {
     alias: {
-      '@': '/src'
-    }
-  }
+      '@': '/src',
+    },
+  },
 })

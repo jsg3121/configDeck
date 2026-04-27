@@ -87,7 +87,9 @@ test.describe('ESLint 생성기 페이지', () => {
 
     const copyButton = page.locator('button').filter({ hasText: '복사' }).first()
     await copyButton.click()
-    await expect(page.locator('button').filter({ hasText: '복사됨!' })).toBeVisible({ timeout: 3000 })
+    await expect(page.locator('button').filter({ hasText: '복사됨!' })).toBeVisible({
+      timeout: 3000,
+    })
   })
 
   test('다운로드 버튼이 존재한다', async ({ page }) => {
@@ -137,7 +139,10 @@ test.describe('ESLint 생성기 페이지', () => {
 
   test('초기화 버튼이 동작한다', async ({ page }) => {
     // 프리셋 선택
-    const presetButton = page.locator('button').filter({ hasText: /Recommended|Strict/i }).first()
+    const presetButton = page
+      .locator('button')
+      .filter({ hasText: /Recommended|Strict/i })
+      .first()
     if (await presetButton.isVisible()) {
       await presetButton.click()
     }
@@ -172,7 +177,10 @@ test.describe('Prettier 생성기 페이지', () => {
   })
 
   test('프리셋 선택이 가능하다', async ({ page }) => {
-    const presetButton = page.locator('button').filter({ hasText: /Standard|Minimal/i }).first()
+    const presetButton = page
+      .locator('button')
+      .filter({ hasText: /Standard|Minimal/i })
+      .first()
     await expect(presetButton).toBeVisible()
   })
 })

@@ -188,7 +188,55 @@ const onChangeCallback = () => {}
 
 > **Why:** 1인 개발에서 시간이 지난 후 코드를 다시 볼 때, 이름만 보고 의도를 즉시 파악할 수 있어야 한다. 코드 리뷰나 유지보수 시 맥락 없이도 이해 가능한 코드가 좋은 코드다.
 
-## 공통 코드 분리 기준
+## 코드 분리 기준
+
+### 비즈니스 로직 분리
+
+Svelte 컴포넌트에서 비즈니스 로직은 별도 모듈로 분리한다. 컴포넌트는 UI 렌더링과 이벤트 바인딩에 집중하고, 로직은 테스트와 재사용이 용이한 순수 함수로 관리한다.
+
+**분리 위치:**
+- **단일 컴포넌트 전용** → 같은 위치에 `modules/` 폴더
+- **2곳 이상 사용** → `src/lib/`로 이동
+
+```
+src/components/generator/
+├── StackGenerator.svelte
+├── CodePreview.svelte
+├── modules/                      # 이 폴더 내 컴포넌트 전용 모듈
+│   ├── stackLogic.ts             # StackGenerator 전용 로직
+│   └── previewFormatter.ts       # CodePreview 전용 로직
+└── ...
+
+src/lib/
+├── utils/                        # 범용 유틸리티 (순수 함수)
+│   ├── formatCode.ts             # 코드 포맷팅
+│   ├── parseJson.ts              # JSON 파싱
+│   └── shareUrl.ts               # URL 인코딩/디코딩
+└── modules/                      # 도메인 로직 (비즈니스 규칙)
+    ├── configGenerator.ts        # 설정 파일 생성 로직
+    └── optionResolver.ts         # 옵션 의존성 해결 로직
+```
+
+### utils vs modules 구분
+
+| 폴더 | 역할 | 특징 | 예시 |
+|------|------|------|------|
+| `utils/` | 범용 유틸리티 | 도메인 무관, 어디서든 사용 가능 | `formatCode`, `debounce`, `deepClone` |
+| `modules/` | 도메인 로직 | ConfigDeck 비즈니스 규칙 포함 | `generateEslintConfig`, `resolveOptionDeps` |
+
+```typescript
+// utils/ — 범용, 도메인 무관
+const formatCode = (code: string, indent: number): string => { ... }
+const debounce = <T>(fn: T, delay: number): T => { ... }
+
+// modules/ — 도메인 로직, ConfigDeck 규칙 포함
+const generateEslintConfig = (options: EslintOptions): string => { ... }
+const resolveOptionDependencies = (selected: string[]): string[] => { ... }
+```
+
+> **Why:** utils와 modules를 분리하면 "이 함수가 프로젝트 특화인지, 범용인지"를 파일 위치만으로 즉시 파악할 수 있다. 범용 유틸은 다른 프로젝트에도 복사해서 쓸 수 있고, 도메인 로직은 ConfigDeck 맥락을 알아야 이해할 수 있음을 명시한다.
+
+### 공통 분리 시점
 
 **두 곳 이상의 서로 다른 영역이나 기능에서 사용되면 공통으로 분리한다.**
 
@@ -196,10 +244,10 @@ const onChangeCallback = () => {}
 # BAD: 한 곳에서만 쓰는 함수를 공통으로 분리
 src/lib/utils/formatEslintPreview.ts  ← ESLint 생성기에서만 사용
 
-# GOOD: 한 곳에서만 쓰는 로직은 해당 컴포넌트/모듈 내에 유지
-src/components/generator/eslint/formatPreview.ts
+# GOOD: 한 곳에서만 쓰는 로직은 해당 컴포넌트 modules/에 유지
+src/components/generator/modules/formatEslintPreview.ts
 
-# GOOD: 두 곳 이상에서 쓰이면 공통으로 분리
+# GOOD: 두 곳 이상에서 쓰이면 src/lib/로 분리
 src/lib/utils/formatCode.ts  ← ESLint, Prettier, TSConfig 미리보기에서 공통 사용
 ```
 
@@ -323,28 +371,30 @@ const generateConfig = (options: ConfigOptions): string => {
 
 ### JSDoc으로 함수 설명 (한글 최우선)
 
-모든 함수에는 JSDoc 주석으로 역할을 설명한다. **JSDoc은 한글을 최우선으로 작성한다.** 기술 용어(locale, path, SEO, config 등)는 원문을 유지한다. 매개변수와 반환값의 의미가 명확하지 않은 경우 `@param`과 `@returns`도 포함한다.
+모든 함수에는 JSDoc 주석으로 역할을 설명한다. **JSDoc은 한글을 최우선으로 작성한다.** 기술 용어(locale, path, SEO, config 등)는 원문을 유지한다. **모든 함수에 `@param`과 `@returns`를 필수로 작성한다.**
 
 ```typescript
-// BAD: 영어로만 작성
+// BAD: 영어로만 작성, @param/@returns 누락
 /**
  * Merge base ESLint rules with user overrides.
- * If the same key exists, overrides take precedence.
  */
 const mergeRules = (base: Rules, overrides: Rules): Rules => {
   return { ...base, ...overrides };
 };
 
-// GOOD: 한글로 작성, 기술 용어는 원문 유지
+// GOOD: 한글로 작성, @param/@returns 포함
 /**
  * 기본 ESLint 규칙에 사용자 오버라이드를 병합한다.
  * 동일 키가 있으면 overrides가 우선한다.
+ * @param base - 기본 규칙 객체
+ * @param overrides - 사용자 오버라이드 규칙 객체
+ * @returns 병합된 규칙 객체
  */
 const mergeRules = (base: Rules, overrides: Rules): Rules => {
   return { ...base, ...overrides };
 };
 
-// GOOD: 매개변수 의미가 불명확한 경우 @param 추가
+// GOOD: 모든 매개변수와 반환값 설명
 /**
  * 설정 파일의 들여쓰기를 변환한다.
  * @param content - 원본 설정 파일 문자열
@@ -356,7 +406,7 @@ const convertIndent = (content: string, size: number): string => {
 };
 ```
 
-> **Why:** 한국어 네이티브 개발자가 주 사용자이므로, JSDoc을 한글로 작성하면 함수의 역할과 의도를 가장 빠르게 파악할 수 있다. 기술 용어는 번역하면 오히려 혼란을 주므로 원문을 유지한다.
+> **Why:** 한국어 네이티브 개발자가 주 사용자이므로, JSDoc을 한글로 작성하면 함수의 역할과 의도를 가장 빠르게 파악할 수 있다. 기술 용어는 번역하면 오히려 혼란을 주므로 원문을 유지한다. `@param`과 `@returns`를 항상 작성하면 IDE 자동완성과 타입 힌트에서 함수 사용법을 즉시 파악할 수 있다.
 
 ## 참고 자료
 
