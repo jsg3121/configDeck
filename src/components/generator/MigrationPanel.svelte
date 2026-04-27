@@ -113,6 +113,63 @@
   }
 
   /**
+   * 문자열 끝에 trailing comma를 보장한다.
+   * 마지막 줄이 한 줄 주석(`// ...`)인 경우 주석 앞 의미 있는 위치를 찾아 쉼표를 삽입해야
+   * 주석 뒤에 쉼표가 붙는 문법 오류(예: `// comment,`)를 피할 수 있다.
+   */
+  const ensureTrailingComma = (input: string): string => {
+    const lines = input.split('\n')
+    // 끝에서부터 의미 있는 라인을 찾는다 (공백/주석만 있는 라인은 건너뜀)
+    for (let i = lines.length - 1; i >= 0; i--) {
+      const line = lines[i]
+      const trimmedLine = line.trim()
+      if (trimmedLine.length === 0) continue
+
+      // 한 줄 주석으로만 이루어진 라인은 건너뛴다
+      if (trimmedLine.startsWith('//')) continue
+
+      // 코드 + 한 줄 주석 (예: `"a": "b" // comment`) — 주석 앞 부분에 쉼표 삽입
+      const commentIdx = findInlineCommentStart(line)
+      if (commentIdx !== -1) {
+        const before = line.slice(0, commentIdx).replace(/,?\s*$/, '')
+        const after = line.slice(commentIdx)
+        // 주석 앞 코드와 주석 사이에 한 칸 공백을 두고 쉼표 부착
+        lines[i] = `${before}, ${after.trimStart()}`.trimEnd()
+        return lines.join('\n')
+      }
+
+      // 일반 코드 라인 — 끝에 쉼표 보장
+      lines[i] = line.replace(/,?\s*$/, ',')
+      return lines.join('\n')
+    }
+
+    // 의미 있는 라인을 못 찾으면 원본 유지
+    return input
+  }
+
+  /**
+   * 한 줄에서 인라인 한 줄 주석(`//`) 시작 인덱스를 찾는다.
+   * 문자열 리터럴 내부의 `//`는 무시한다.
+   */
+  const findInlineCommentStart = (line: string): number => {
+    let inString: '"' | "'" | '`' | null = null
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i]
+      const prev = line[i - 1]
+      if (inString) {
+        if (ch === inString && prev !== '\\') inString = null
+        continue
+      }
+      if (ch === '"' || ch === "'" || ch === '`') {
+        inString = ch
+        continue
+      }
+      if (ch === '/' && line[i + 1] === '/') return i
+    }
+    return -1
+  }
+
+  /**
    * rules 블록의 시작 `{`부터 매칭되는 닫는 `}` 위치를 찾는다.
    * 단순 정규식으로는 중첩 객체(예: ["error", { options }])를 처리할 수 없어
    * 괄호 균형을 직접 카운트한다.
@@ -156,8 +213,11 @@
       if (trimmed.length === 0) {
         updatedInner = `\n${innerIndent}${newEntry}\n${baseIndent}`
       } else {
-        // 마지막 엔트리에 trailing comma가 없을 수 있으므로 보장
-        const withComma = trimmed.replace(/,?\s*$/, ',')
+        // 마지막 엔트리에 trailing comma 보장.
+        // 단순 `replace(/,?\s*$/, ',')`는 마지막 줄이 한 줄 주석(// ...)인 경우
+        // 주석 뒤에 쉼표가 붙어 문법 오류가 발생한다.
+        // 마지막 non-주석/non-공백 위치를 찾아 그 뒤에 쉼표를 삽입한다.
+        const withComma = ensureTrailingComma(trimmed)
         updatedInner = `\n${withComma}\n${innerIndent}${newEntry}\n${baseIndent}`
       }
 

@@ -109,6 +109,54 @@ const RECOMMENDED_RULES: Record<string, { value: string; reason: string; reasonK
   },
 }
 
+/**
+ * 코드에서 주석을 제거한다.
+ * 문자열 리터럴 내부의 `//`, `/*`은 보존한다.
+ * audit/parsing 단계에서 주석 처리된 규칙을 활성 규칙으로 오인하는 것을 방지한다.
+ */
+const stripComments = (code: string): string => {
+  let result = ''
+  let i = 0
+  let inString: '"' | "'" | '`' | null = null
+  while (i < code.length) {
+    const ch = code[i]
+    const next = code[i + 1]
+    const prev = code[i - 1]
+
+    if (inString) {
+      result += ch
+      if (ch === inString && prev !== '\\') inString = null
+      i++
+      continue
+    }
+
+    if (ch === '"' || ch === "'" || ch === '`') {
+      inString = ch
+      result += ch
+      i++
+      continue
+    }
+
+    // 한 줄 주석
+    if (ch === '/' && next === '/') {
+      while (i < code.length && code[i] !== '\n') i++
+      continue
+    }
+
+    // 블록 주석
+    if (ch === '/' && next === '*') {
+      i += 2
+      while (i < code.length - 1 && !(code[i] === '*' && code[i + 1] === '/')) i++
+      i += 2
+      continue
+    }
+
+    result += ch
+    i++
+  }
+  return result
+}
+
 /** legacy config 패턴 감지 */
 const isLegacyConfig = (code: string): boolean => {
   const legacyPatterns = [
@@ -223,14 +271,45 @@ const extractRules = (code: string): Record<string, unknown> => {
   return rules
 }
 
-/** 설정에서 extends 추출 */
+/**
+ * 설정에서 extends 추출.
+ * 단순 정규식은 배열 내부 문자열에 `]`가 포함된 경우 조기 종료될 수 있어,
+ * 문자열 리터럴을 인식하며 균형 카운트로 배열을 추출한다.
+ */
 const extractExtends = (code: string): string[] => {
-  const extendsMatch = code.match(/["']?extends["']?\s*:\s*\[([^\]]+)\]/s)
-  if (extendsMatch) {
-    return extendsMatch[1]
-      .split(',')
-      .map((s) => s.trim().replace(/['"]/g, ''))
-      .filter(Boolean)
+  const arrayMatch = code.match(/["']?extends["']?\s*:\s*\[/)
+  if (arrayMatch && arrayMatch.index !== undefined) {
+    const openIdx = code.indexOf('[', arrayMatch.index)
+    if (openIdx !== -1) {
+      let depth = 1
+      let i = openIdx + 1
+      let inString: '"' | "'" | null = null
+      while (i < code.length && depth > 0) {
+        const ch = code[i]
+        const prev = code[i - 1]
+        if (inString) {
+          if (ch === inString && prev !== '\\') inString = null
+        } else if (ch === '"' || ch === "'") {
+          inString = ch
+        } else if (ch === '[') {
+          depth++
+        } else if (ch === ']') {
+          depth--
+        }
+        i++
+      }
+      if (depth === 0) {
+        const inner = code.slice(openIdx + 1, i - 1)
+        // 문자열 리터럴만 추출 (따옴표로 감싼 항목)
+        const items: string[] = []
+        const stringPattern = /["']((?:\\.|[^"'\\])*)["']/g
+        let m: RegExpExecArray | null
+        while ((m = stringPattern.exec(inner)) !== null) {
+          if (m[1]) items.push(m[1])
+        }
+        return items
+      }
+    }
   }
 
   const singleExtends = code.match(/["']?extends["']?\s*:\s*["']([^"']+)["']/)
@@ -244,7 +323,9 @@ const extractExtends = (code: string): string[] => {
 /** ESLint 설정 분석 */
 export const auditEslintConfig = (code: string): AuditResult => {
   const items: AuditItem[] = []
-  const isLegacy = isLegacyConfig(code)
+  // 주석 처리된 규칙을 활성 규칙으로 오인하지 않도록 사전 제거
+  const cleanCode = stripComments(code)
+  const isLegacy = isLegacyConfig(cleanCode)
 
   if (isLegacy) {
     items.push({
@@ -256,8 +337,8 @@ export const auditEslintConfig = (code: string): AuditResult => {
     })
   }
 
-  const rules = extractRules(code)
-  const extends_ = extractExtends(code)
+  const rules = extractRules(cleanCode)
+  const extends_ = extractExtends(cleanCode)
 
   for (const ruleName of Object.keys(rules)) {
     if (DEPRECATED_RULES.has(ruleName)) {

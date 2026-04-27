@@ -95,6 +95,7 @@ const isEqual = (a: unknown, b: unknown): boolean => {
   }
 
   if (typeof a === 'object' && typeof b === 'object') {
+    if (Array.isArray(a) !== Array.isArray(b)) return false
     const aObj = a as Record<string, unknown>
     const bObj = b as Record<string, unknown>
     const aKeys = Object.keys(aObj)
@@ -197,7 +198,10 @@ export const decodeFileGeneratorUrl = (
   let options: Record<string, unknown> = {}
   if (encoded) {
     try {
-      options = JSON.parse(base64UrlDecode(encoded))
+      const parsed = JSON.parse(base64UrlDecode(encoded))
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+        options = parsed as Record<string, unknown>
+      }
     } catch {
       console.warn('Failed to decode share URL options')
     }
@@ -219,9 +223,18 @@ export const decodeStackGeneratorUrl = (
 
   if (encoded) {
     try {
-      const payload = JSON.parse(base64UrlDecode(encoded))
-      disabled = payload.disabled ?? []
-      fileOptions = payload.files ?? {}
+      const parsed = JSON.parse(base64UrlDecode(encoded))
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+        const payload = parsed as {
+          disabled?: string[]
+          files?: Record<string, Record<string, unknown>>
+        }
+        disabled = Array.isArray(payload.disabled) ? payload.disabled : []
+        fileOptions =
+          payload.files && typeof payload.files === 'object' && !Array.isArray(payload.files)
+            ? payload.files
+            : {}
+      }
     } catch {
       console.warn('Failed to decode share URL options')
     }
