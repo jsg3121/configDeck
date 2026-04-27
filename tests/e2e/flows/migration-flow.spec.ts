@@ -8,7 +8,7 @@
  *   S3) 잘못된 입력 → 에러 안내문 표시
  *   S4) Audit 모드에서 권장 규칙 [적용] → 미리보기 갱신 + 진단 항목 자동 갱신
  */
-import { expect, test } from '@playwright/test'
+import { expect, test, type Page } from '@playwright/test'
 
 const LEGACY_INPUT = `{
   "extends": ["eslint:recommended"],
@@ -34,7 +34,7 @@ const BROKEN_INPUT = `{
 }`
 
 /** 마이그레이션 탭으로 진입하여 입력 텍스트 영역을 노출한다 */
-const enterMigrationTab = async (page: import('@playwright/test').Page) => {
+const enterMigrationTab = async (page: Page) => {
   await page.goto('/ko/generator/eslint-config')
   // Svelte 아일랜드 hydration이 끝나 onclick 핸들러가 바인딩될 때까지 대기
   await page.waitForLoadState('networkidle')
@@ -46,7 +46,7 @@ const enterMigrationTab = async (page: import('@playwright/test').Page) => {
 }
 
 /** 미리보기 영역(코드 표시)이 보이도록 한다 (모바일 대응) */
-const ensurePreviewVisible = async (page: import('@playwright/test').Page) => {
+const ensurePreviewVisible = async (page: Page) => {
   const previewTab = page.locator('button').filter({ hasText: '미리보기' }).first()
   if (await previewTab.isVisible().catch(() => false)) {
     await previewTab.click()
