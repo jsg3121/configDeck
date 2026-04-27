@@ -2,26 +2,9 @@
  * ESLint 설정 파일을 분석하여 문제점과 개선점을 진단한다.
  * flat config와 legacy config 모두 지원한다.
  */
+import type { AuditItem, AuditResult, AuditSeverity } from './types'
 
-export type AuditSeverity = 'error' | 'warning' | 'info'
-
-export interface AuditItem {
-  severity: AuditSeverity
-  message: string
-  messageKo: string
-  suggestion?: string
-  suggestionKo?: string
-}
-
-export interface AuditResult {
-  items: AuditItem[]
-  summary: {
-    errors: number
-    warnings: number
-    infos: number
-  }
-  isLegacyConfig: boolean
-}
+export type { AuditItem, AuditResult, AuditSeverity }
 
 /** deprecated된 ESLint 규칙 목록 (ESLint 9 기준) */
 const DEPRECATED_RULES = new Set([

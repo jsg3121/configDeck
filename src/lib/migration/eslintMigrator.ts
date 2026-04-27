@@ -2,20 +2,9 @@
  * 레거시 ESLint 설정(.eslintrc)을 flat config(eslint.config.mjs)로 변환한다.
  */
 import type { LegacyEslintConfig } from './parser'
+import type { MigrationResult, MigrationWarning } from './types'
 
-/** 다국어 경고 메시지 */
-export interface MigrationWarning {
-  message: string
-  messageKo: string
-}
-
-/** 마이그레이션 결과 */
-export interface MigrationResult {
-  /** 변환된 flat config 코드 */
-  outputCode: string
-  /** 자동 변환이 불완전한 항목에 대한 경고 */
-  warnings: MigrationWarning[]
-}
+export type { MigrationResult, MigrationWarning }
 
 /** extends 값을 flat config import/spread로 매핑한다 */
 const EXTENDS_MAP: Record<string, { importLine: string; spread: string }> = {
@@ -64,7 +53,7 @@ const buildGlobalsBlock = (
 }
 
 /** 레거시 ESLint 설정을 flat config로 변환한다 */
-export const migrateEslintConfig = (legacyConfig: LegacyEslintConfig): MigrationResult => {
+export const migrateEslintConfig = (legacyConfig: LegacyEslintConfig): MigrationResult<never> => {
   const importLines = new Set<string>()
   const configSpreads: string[] = []
   const configBlockEntries: string[] = []
@@ -140,7 +129,7 @@ export const migrateEslintConfig = (legacyConfig: LegacyEslintConfig): Migration
   lines.push(']')
 
   return {
-    outputCode: lines.join('\n'),
+    output: lines.join('\n'),
     warnings,
   }
 }
