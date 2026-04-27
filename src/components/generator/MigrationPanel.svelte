@@ -113,6 +113,7 @@
     warnings = []
     errorMessage = null
     auditResult = null
+    panelMode = 'migrate'
     onmigrationresult(null)
     if (fileInputRef) fileInputRef.value = ''
   }
@@ -266,16 +267,22 @@
 
   let titleLabel = $derived(
     locale === 'ko'
-      ? '기존 .eslintrc 파일을 붙여넣거나 업로드하세요'
-      : 'Paste or upload your legacy .eslintrc file',
+      ? 'ESLint 설정 파일을 붙여넣거나 업로드하세요'
+      : 'Paste or upload your ESLint config file',
   )
   let uploadLabel = $derived(locale === 'ko' ? '파일 업로드' : 'Upload file')
   let clearLabel = $derived(locale === 'ko' ? '초기화' : 'Clear')
   let formatLabel = $derived(locale === 'ko' ? '감지된 형식' : 'Detected format')
   let supportedLabel = $derived(
     locale === 'ko'
-      ? '지원 형식: .eslintrc (JSON), .eslintrc.js (CommonJS)'
-      : 'Supported: .eslintrc (JSON), .eslintrc.js (CommonJS)',
+      ? '지원 형식: .eslintrc (JSON / CommonJS), eslint.config.mjs (Flat — 진단만)'
+      : 'Supported: .eslintrc (JSON / CommonJS), eslint.config.mjs (Flat — audit only)',
+  )
+  let auditModeBadge = $derived(locale === 'ko' ? '진단 모드' : 'Audit only')
+  let auditModeNotice = $derived(
+    locale === 'ko'
+      ? 'Flat config가 감지되었습니다. 변환 없이 진단 결과만 표시합니다.'
+      : 'Flat config detected. Showing audit results only (no migration).',
   )
   const placeholder =
     '{\n  "extends": ["eslint:recommended"],\n  "rules": {\n    "no-console": "warn"\n  }\n}'
@@ -365,7 +372,18 @@
       <span class="rounded bg-gray-100 px-2 py-0.5 font-mono">
         {detectedFormat === 'unknown' ? '?' : detectedFormat}
       </span>
+      {#if panelMode === 'audit'}
+        <span class="rounded bg-blue-50 px-2 py-0.5 font-medium text-blue-700">
+          {auditModeBadge}
+        </span>
+      {/if}
     </div>
+
+    {#if panelMode === 'audit'}
+      <div class="rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-700">
+        {auditModeNotice}
+      </div>
+    {/if}
   {/if}
 
   <MigrationFeedback
