@@ -46,11 +46,11 @@
       const result = migrateEslintConfig(parsed)
       warnings = result.warnings
       errorMessage = null
-      currentOutputCode = result.outputCode
+      currentOutputCode = result.output
       onmigrationresult(result)
 
       // 변환된 코드에 대해 분석 실행
-      auditResult = auditEslintConfig(result.outputCode)
+      auditResult = auditEslintConfig(result.output)
     } catch {
       onmigrationresult(null)
       warnings = []
@@ -235,7 +235,7 @@
     currentOutputCode = newCode
 
     onmigrationresult({
-      outputCode: newCode,
+      output: newCode,
       warnings,
     })
 
