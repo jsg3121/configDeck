@@ -16,7 +16,8 @@ qa/
 ├── templates/            # 리포트 템플릿
 │   └── report.md         # QA 리포트 템플릿
 ├── guides/               # QA 가이드라인
-│   └── quality-gates.md  # 품질 게이트 기준
+│   ├── quality-gates.md  # 품질 게이트 기준
+│   └── e2e-execution.md  # E2E 테스트 실행 운영 가이드 (디버깅·재검증)
 └── reports/              # 생성된 QA 리포트 (gitignore)
 ```
 
