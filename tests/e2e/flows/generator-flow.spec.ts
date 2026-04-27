@@ -17,6 +17,8 @@ test.describe('설정 파일 생성 플로우', () => {
     const eslintLink = page.locator('a[href*="/generator/eslint-config"]').first()
     await eslintLink.click()
     await expect(page).toHaveURL(/eslint-config/)
+    // Svelte 아일랜드 hydration 안정화. e2e-execution.md §4-1 참조.
+    await page.waitForLoadState('networkidle')
 
     // 4. 모바일에서는 미리보기 탭 클릭 필요
     const previewTab = page.locator('button').filter({ hasText: '미리보기' }).first()
@@ -37,6 +39,8 @@ test.describe('설정 파일 생성 플로우', () => {
 
   test('프리셋 선택 및 옵션 변경 플로우', async ({ page }) => {
     await page.goto('/ko/generator/eslint-config')
+    // Svelte 아일랜드 hydration 안정화. e2e-execution.md §4-1 참조.
+    await page.waitForLoadState('networkidle')
 
     // 모바일에서는 미리보기 탭 클릭
     const previewTab = page.locator('button').filter({ hasText: '미리보기' }).first()
