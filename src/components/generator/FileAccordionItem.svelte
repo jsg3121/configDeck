@@ -4,7 +4,7 @@
    * 체크박스, 파일명, 프리셋, core 옵션 폼을 렌더링한다.
    */
   import { getFileIcon } from '@/lib/data/icons'
-  import type { NewOptionSection, OptionControl } from '@/types/generator'
+  import type { OptionControl, OptionSection } from '@/types/generator'
 
   import OptionControlRenderer from './OptionControlRenderer.svelte'
 
@@ -13,7 +13,7 @@
     preset: string
     isOpen: boolean
     isEnabled: boolean
-    coreSections: NewOptionSection[]
+    coreSections: OptionSection[]
     locale: string
     getControlValue: (control: OptionControl) => unknown
     ontoggle: () => void

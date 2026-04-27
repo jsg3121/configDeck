@@ -1,13 +1,14 @@
 ---
 id: SPEC-0001
 title: 파일 옵션 생성기 기능 보강 — 입력 타입 확장 및 옵션 범위 확대
-status: 승인됨
+status: 완료
 owner: jsg3121
 created: 2026-04-09
-updated: 2026-04-09
+updated: 2026-04-27
 related_adrs:
   - ADR-0008
-related_specs: []
+related_specs:
+  - SPEC-0004  # M11.1을 SPEC-0004 Phase A(Import & Audit)로 분리
 ---
 
 # SPEC-0001: 파일 옵션 생성기 기능 보강 — 입력 타입 확장 및 옵션 범위 확대
@@ -446,15 +447,19 @@ src/components/generator/controls/
 
 #### M11. .eslintrc → Flat Config 마이그레이션 기능 + Legacy 정리
 
-- [ ] **Phase 11.1** — .eslintrc 파일 업로드 → Flat Config 변환 기능 구현
-- [ ] **Phase 11.2** — Legacy 제거 대상 목록 작성 — **Checkpoint**: 제거 목록 사용자 승인
-  - `OptionField`, 기존 `OptionSection`, `OptionInputType` ([src/types/generator.ts](../../../../src/types/generator.ts))
-  - `FileGenerator.svelte`의 legacy 어댑터 함수
-  - [src/lib/data/files.ts](../../../../src/lib/data/files.ts)의 legacy 필드 (sections, sampleCode)
-  - `src/lib/schemas/` 잔여 파일
-- [ ] **Phase 11.3** — 제거 실행 (빌드/타입 통과 확인하며 순차 제거)
-- [ ] **Phase 11.4** — 최종 검증 (전체 9개 파일 생성기 수동 테스트)
-- [ ] **✅ M11 완료 Checkpoint**: SPEC-0001 상태를 `완료`로 업데이트, Changelog 마무리
+- [x] **Phase 11.1** — .eslintrc 파일 업로드 → Flat Config 변환 기능 구현 → **SPEC-0004(Import & Audit) Phase A로 분리·완료** (1.2.0 사이클)
+- [x] **Phase 11.2** — Legacy 제거 대상 목록 실측·승인 (2026-04-27)
+  - 실측 결과 SPEC 작성 시점에 명시한 `OptionField`/`OptionInputType`/legacy `OptionSection`/`FileGenerator.svelte` 어댑터/`schemas/` 잔여 분기는 M2~M10 마이그레이션 진행 중 이미 모두 제거됨
+  - 실제 잔존 정리 대상으로 사용자 승인된 항목:
+    1. [src/lib/data/files.ts](../../../../src/lib/data/files.ts)의 `sampleCode` 필드 9개 (dead data)
+    2. [src/components/generator/CodePreviewPanel.astro](../../../../src/components/generator/CodePreviewPanel.astro) 고아 컴포넌트 (어디서도 import되지 않음)
+    3. `NewOptionSection` → `OptionSection` rename (이름의 "New" 접두어가 더 이상 신규 아님)
+- [x] **Phase 11.3** — 제거 실행 (빌드/타입 통과 확인하며 순차 제거)
+  - 변경: `CodePreviewPanel.astro` 삭제, `files.ts` -90 lines, 타입 + 5개 import 사이트에서 `NewOptionSection → OptionSection` rename
+  - 검증: `astro check` 0 errors, `pnpm build` 131 pages, `vitest run` 101/101 통과
+- [x] **Phase 11.4** — 최종 검증 (자동 검증으로 충족)
+  - SPEC 작성 시점에는 "9개 파일 생성기 수동 테스트"를 명시했으나, 본 마일스톤의 변경은 dead code 제거 + 타입 rename으로 한정되어 UI 동작 변경이 없다. 타입체크 0 error + 빌드 131 페이지 통과 + 단위 테스트 101/101 통과로 회귀 부재를 자동 검증으로 확인했다 (사용자 승인: 2026-04-27, B안 선택)
+- [x] **✅ M11 완료 Checkpoint**: SPEC-0001 상태 `완료`로 업데이트, Changelog 마무리
 
 ## 7. 리스크 & 대응 (Risks & Mitigations)
 
@@ -491,7 +496,8 @@ src/components/generator/controls/
 
 ## 10. 변경 이력 (Changelog)
 
-| 날짜       | 변경 내용                                                                           | 변경자  |
-|------------|-------------------------------------------------------------------------------------|---------|
-| 2026-04-09 | 초안 작성 및 승인                                                                   | jsg3121 |
-| 2026-04-09 | 페이즈 체크리스트(6.6) 추가, ESLint 마지막 순서로 변경, 사전조사/툴팁 요구사항 반영 | jsg3121 |
+| 날짜       | 변경 내용                                                                                                                                       | 변경자  |
+|------------|-------------------------------------------------------------------------------------------------------------------------------------------------|---------|
+| 2026-04-09 | 초안 작성 및 승인                                                                                                                               | jsg3121 |
+| 2026-04-09 | 페이즈 체크리스트(6.6) 추가, ESLint 마지막 순서로 변경, 사전조사/툴팁 요구사항 반영                                                             | jsg3121 |
+| 2026-04-27 | M11 완료, 상태 `완료` (M11.1→SPEC-0004 분리, M11.2 정리, M11.4 자동검증)                                                                      | jsg3121 |

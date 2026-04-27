@@ -11,7 +11,7 @@
   import type { MigrationResult } from '@/lib/migration'
   import { buildEmptyValues } from '@/lib/modules/optionBuilder'
   import { decodeFileGeneratorUrl } from '@/lib/utils/shareUrl'
-  import type { NewOptionSection } from '@/types/generator'
+  import type { OptionSection } from '@/types/generator'
 
   import CodePreview from './CodePreview.svelte'
   import GeneratorTabs from './GeneratorTabs.svelte'
@@ -49,7 +49,7 @@
   let touchedKeys = $state(new Set<string>())
   let generatorOptions = $state<Record<string, unknown>>({})
   let optionValues = $state<Record<string, unknown>>(buildEmptyValues(fileSlug))
-  let formSections = $derived<NewOptionSection[]>(getOptionDefinition(fileSlug)?.sections ?? [])
+  let formSections = $derived<OptionSection[]>(getOptionDefinition(fileSlug)?.sections ?? [])
   let mobileView = $state<'options' | 'preview'>('options')
   let migrationResult = $state<MigrationResult | null>(null)
 
