@@ -22,13 +22,16 @@ test.describe('홈페이지', () => {
   })
 
   test('네비게이션 메뉴가 표시된다', async ({ page }) => {
-    const nav = page.locator('header')
+    // 사이트 헤더로 좁힘. preview 환경에서 Astro DevToolbar 패널이 주입한
+    // 내부 <header> 요소들과 충돌하는 strict mode violation을 회피한다.
+    // e2e-execution.md §4-2 (ARIA 셀렉터 우선) 참조.
+    const nav = page.locator('header.bg-surface')
     await expect(nav).toBeVisible()
   })
 
   test('언어 전환 링크가 동작한다', async ({ page }) => {
     // EN 링크 (exact match로 .env 링크와 구분)
-    const enLink = page.locator('header').getByRole('link', { name: 'EN', exact: true })
+    const enLink = page.locator('header.bg-surface').getByRole('link', { name: 'EN', exact: true })
     await expect(enLink).toBeVisible()
 
     await enLink.click()

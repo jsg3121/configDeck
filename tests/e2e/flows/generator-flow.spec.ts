@@ -114,7 +114,7 @@ test.describe('다국어 전환 플로우', () => {
     await page.goto('/ko/generator/eslint-config')
 
     // 2. 영어로 전환 (header 내의 EN 링크)
-    const enLink = page.locator('header').getByRole('link', { name: 'EN', exact: true })
+    const enLink = page.locator('header.bg-surface').getByRole('link', { name: 'EN', exact: true })
     await enLink.click()
 
     // 3. URL이 변경되었는지 확인
