@@ -262,7 +262,13 @@
       warnings,
     })
 
-    handleDismissAuditItem(`Consider adding "${ruleName}" rule`)
+    // Audit 모드에서는 적용 결과를 기준으로 진단을 재계산해
+    // "권장 규칙 추가" 항목이 자동으로 사라지고 새 상태에 대한 진단이 노출되도록 한다.
+    if (panelMode === 'audit') {
+      auditResult = auditEslintConfig(newCode)
+    } else {
+      handleDismissAuditItem(`Consider adding "${ruleName}" rule`)
+    }
   }
 
   let titleLabel = $derived(
@@ -281,8 +287,8 @@
   let auditModeBadge = $derived(locale === 'ko' ? '진단 모드' : 'Audit only')
   let auditModeNotice = $derived(
     locale === 'ko'
-      ? 'Flat config가 감지되었습니다. 변환 없이 진단 결과만 표시합니다.'
-      : 'Flat config detected. Showing audit results only (no migration).',
+      ? 'Flat config가 감지되었습니다. 변환 없이 진단 결과만 표시합니다. 권장 규칙을 적용하면 미리보기에만 반영되며, 실제 파일은 변경되지 않습니다.'
+      : 'Flat config detected. Showing audit results only (no migration). Applying recommended rules updates the preview only — your original file is unchanged.',
   )
   const placeholder =
     '{\n  "extends": ["eslint:recommended"],\n  "rules": {\n    "no-console": "warn"\n  }\n}'
