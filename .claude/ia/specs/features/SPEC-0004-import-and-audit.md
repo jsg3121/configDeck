@@ -4,7 +4,7 @@ title: Import & Audit — 기존 설정 파일 분석/진단/마이그레이션
 status: 구현 중
 owner: jsg3121
 created: 2026-04-26
-updated: 2026-04-27
+updated: 2026-04-28
 related_adrs:
   - ADR-0014  # 성장 전략 로드맵 (Import & Audit P0.5 신설)
 related_specs:
@@ -162,9 +162,18 @@ export interface MigrationResult<TModern = unknown> {
    └─ 8. (옵션) 변환 결과를 생성기에 import → 추가 옵션 조정
 ```
 
-#### 3.2.4 Audit-only 모드 (Phase B)
+#### 3.2.4 Audit-only 모드 (Phase B — 1.3.0 구현 완료)
 
 Phase A의 [eslintAuditor.ts](../../../../src/lib/migration/eslintAuditor.ts)는 이미 Legacy/Flat 두 형식 모두에 대한 점검 항목을 가지고 있다. UI에서 "마이그레이션" 버튼을 isLegacyConfig=false 일 때 숨기고 audit 결과만 노출하면 Phase B는 즉시 가능하다.
+
+[MigrationPanel.svelte](../../../../src/components/generator/MigrationPanel.svelte)는 입력 코드에 대해 `auditEslintConfig`를 먼저 호출해 `isLegacyConfig`를 판정하고 두 흐름으로 분기한다.
+
+| 입력 | panelMode | 미리보기 | 진단 | 변환 경고 |
+| ---- | --------- | -------- | ---- | --------- |
+| Legacy (`isLegacyConfig=true`) | `migrate` | 변환 결과 | 변환 결과 기준 | 노출 |
+| Flat (`isLegacyConfig=false`) | `audit` | 입력 그대로 | 입력 기준 | 미노출 |
+
+Audit 모드에서는 형식 배지 옆에 "Audit only" 배지를 노출하고, "Flat config가 감지되었습니다" 안내문을 표시한다. 권장 규칙 적용(`handleApplyRule`)은 양쪽 모드 모두 지원되며, Audit 모드에서는 적용 결과 위에서 audit를 재계산해 진단 항목이 자연스럽게 갱신된다.
 
 ### 3.3 1.2.0 구현분(Phase A) 사후 명세
 
@@ -248,7 +257,7 @@ Phase A의 [eslintAuditor.ts](../../../../src/lib/migration/eslintAuditor.ts)는
 
 - [x] M1: 1.2.0 QA 통과 (2026-04-26 재검증 완료)
 - [x] M2 시작 전: 공통 인터페이스(`ConfigInspector`) 설계 검토 → 사용자 승인 (2026-04-27, feature/1.3.0-config-inspector)
-- [ ] M2 완료 후: Audit-only 모드 UX 검토 (마이그레이션 버튼 노출 조건)
+- [x] M2 완료 후: Audit-only 모드 UX 검토 (Q1 자동 변환 유지, Q2 모드 배지+안내문, Q3 권장 규칙 적용 허용 + 미리보기 한정 안내) — 2026-04-28, feature/1.3.0-audit-only
 - [ ] M3 시작 전: Prettier·TSConfig deprecated 옵션·권장 규칙 데이터셋 출처 검토
 - [ ] M3 완료 후: 허브 페이지 SEO 메타·구조화 데이터 검토 (seo-specialist 위임)
 
@@ -292,3 +301,4 @@ Phase A의 [eslintAuditor.ts](../../../../src/lib/migration/eslintAuditor.ts)는
 | ---------- | ---------- | -------- |
 | 2026-04-26 | 초안 작성. 1.2.0의 Phase A를 회수하고 Phase B/C 골격 정의 | jsg3121 |
 | 2026-04-27 | §3.2.1 인터페이스 정형화 (Phase B 5단계 완료). MigrationResult.outputCode → output 리네임, AuditItem에 suggestion?/suggestionKo? 보강, ConfigInspector TModern 옵셔널화. 브랜치 feature/1.3.0-config-inspector | jsg3121 |
+| 2026-04-28 | Audit-only 진입 동선 추가 (Phase B 6단계 완료). MigrationPanel에 panelMode 분기 도입, Flat config 입력 시 입력 그대로 미리보기 + audit-only 흐름. 모드 배지 + 안내문 + 권장 규칙 재적용 후 audit 재계산. 단위 테스트 4건 추가. 브랜치 feature/1.3.0-audit-only | jsg3121 |
