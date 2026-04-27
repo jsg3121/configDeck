@@ -9,26 +9,26 @@ describe('migrateEslintConfig', () => {
   describe('extends 변환', () => {
     it('eslint:recommended를 매핑한다', () => {
       const result = migrateEslintConfig({ extends: ['eslint:recommended'] })
-      expect(result.outputCode).toContain("import js from '@eslint/js'")
-      expect(result.outputCode).toContain('js.configs.recommended')
+      expect(result.output).toContain("import js from '@eslint/js'")
+      expect(result.output).toContain('js.configs.recommended')
     })
 
     it('plugin:@typescript-eslint/recommended를 매핑한다', () => {
       const result = migrateEslintConfig({
         extends: ['plugin:@typescript-eslint/recommended'],
       })
-      expect(result.outputCode).toContain("import tseslint from 'typescript-eslint'")
-      expect(result.outputCode).toContain('...tseslint.configs.recommended')
+      expect(result.output).toContain("import tseslint from 'typescript-eslint'")
+      expect(result.output).toContain('...tseslint.configs.recommended')
     })
 
     it('plugin:react/recommended를 매핑한다', () => {
       const result = migrateEslintConfig({ extends: ['plugin:react/recommended'] })
-      expect(result.outputCode).toContain("import react from 'eslint-plugin-react'")
+      expect(result.output).toContain("import react from 'eslint-plugin-react'")
     })
 
     it('prettier를 매핑한다', () => {
       const result = migrateEslintConfig({ extends: ['prettier'] })
-      expect(result.outputCode).toContain("import prettierConfig from 'eslint-config-prettier'")
+      expect(result.output).toContain("import prettierConfig from 'eslint-config-prettier'")
     })
 
     it('매핑되지 않는 extends는 경고로 보고한다', () => {
@@ -42,9 +42,9 @@ describe('migrateEslintConfig', () => {
       const result = migrateEslintConfig({
         extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'prettier'],
       })
-      expect(result.outputCode).toContain('@eslint/js')
-      expect(result.outputCode).toContain('typescript-eslint')
-      expect(result.outputCode).toContain('eslint-config-prettier')
+      expect(result.output).toContain('@eslint/js')
+      expect(result.output).toContain('typescript-eslint')
+      expect(result.output).toContain('eslint-config-prettier')
     })
   })
 
@@ -53,22 +53,22 @@ describe('migrateEslintConfig', () => {
       const result = migrateEslintConfig({
         env: { browser: true, node: true },
       })
-      expect(result.outputCode).toContain("import globals from 'globals'")
-      expect(result.outputCode).toContain('...globals.browser')
-      expect(result.outputCode).toContain('...globals.node')
+      expect(result.output).toContain("import globals from 'globals'")
+      expect(result.output).toContain('...globals.browser')
+      expect(result.output).toContain('...globals.node')
     })
 
     it('env가 false인 항목은 제외한다', () => {
       const result = migrateEslintConfig({
         env: { browser: true, node: false },
       })
-      expect(result.outputCode).toContain('...globals.browser')
-      expect(result.outputCode).not.toContain('...globals.node')
+      expect(result.output).toContain('...globals.browser')
+      expect(result.output).not.toContain('...globals.node')
     })
 
     it('env가 비어있으면 globals import를 추가하지 않는다', () => {
       const result = migrateEslintConfig({ env: {} })
-      expect(result.outputCode).not.toContain('globals')
+      expect(result.output).not.toContain('globals')
     })
   })
 
@@ -77,13 +77,13 @@ describe('migrateEslintConfig', () => {
       const result = migrateEslintConfig({
         rules: { 'no-console': 'warn', 'no-debugger': 'error' },
       })
-      expect(result.outputCode).toContain('"no-console": "warn"')
-      expect(result.outputCode).toContain('"no-debugger": "error"')
+      expect(result.output).toContain('"no-console": "warn"')
+      expect(result.output).toContain('"no-debugger": "error"')
     })
 
     it('rules가 빈 객체면 rules 블록을 추가하지 않는다', () => {
       const result = migrateEslintConfig({ rules: {} })
-      expect(result.outputCode).not.toContain('rules:')
+      expect(result.output).not.toContain('rules:')
     })
 
     it('rules의 들여쓰기가 일관성 있게 정렬된다', () => {
@@ -91,8 +91,8 @@ describe('migrateEslintConfig', () => {
         rules: { 'no-console': 'warn' },
       })
       // 4칸 prefix + JSON.stringify(null, 2) → 키는 6칸, 닫는 } 는 4칸
-      expect(result.outputCode).toMatch(/ {6}"no-console": "warn"/)
-      expect(result.outputCode).toMatch(/ {4}\}/)
+      expect(result.output).toMatch(/ {6}"no-console": "warn"/)
+      expect(result.output).toMatch(/ {4}\}/)
     })
   })
 
@@ -124,13 +124,13 @@ describe('migrateEslintConfig', () => {
   describe('출력 구조', () => {
     it('export default 배열 구조를 생성한다', () => {
       const result = migrateEslintConfig({ extends: ['eslint:recommended'] })
-      expect(result.outputCode).toContain('export default [')
-      expect(result.outputCode).toContain(']')
+      expect(result.output).toContain('export default [')
+      expect(result.output).toContain(']')
     })
 
     it('빈 입력이면 빈 배열을 생성한다', () => {
       const result = migrateEslintConfig({})
-      expect(result.outputCode).toContain('export default [')
+      expect(result.output).toContain('export default [')
     })
   })
 
