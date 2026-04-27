@@ -24,12 +24,16 @@
 
   let { locale, onmigrationresult }: Props = $props()
 
+  /** 패널 동작 모드 */
+  type PanelMode = 'migrate' | 'audit'
+
   let inputCode = $state('')
   let detectedFormat = $derived(detectConfigFormat(inputCode))
   let warnings = $state<MigrationWarning[]>([])
   let errorMessage = $state<string | null>(null)
   let auditResult = $state<AuditResult | null>(null)
   let currentOutputCode = $state('')
+  let panelMode = $state<PanelMode>('migrate')
   let fileInputRef = $state<HTMLInputElement | null>(null)
   let uploadedFileName = $state('')
 
@@ -38,9 +42,27 @@
       onmigrationresult(null)
       warnings = []
       auditResult = null
+      panelMode = 'migrate'
       return
     }
 
+    // 입력 코드를 먼저 진단해 Legacy/Flat 여부를 판정한다.
+    // Legacy → 기존 마이그레이션 흐름, Flat → audit-only 흐름으로 분기한다.
+    const inputAudit = auditEslintConfig(inputCode)
+
+    if (!inputAudit.isLegacyConfig) {
+      // Audit-only 모드: 입력을 그대로 미리보기에 노출하고 진단 결과만 표시한다.
+      panelMode = 'audit'
+      warnings = []
+      errorMessage = null
+      currentOutputCode = inputCode
+      auditResult = inputAudit
+      onmigrationresult({ output: inputCode, warnings: [] })
+      return
+    }
+
+    // Legacy: 기존 마이그레이션 흐름.
+    panelMode = 'migrate'
     try {
       const parsed = parseEslintLegacyConfig(inputCode, detectedFormat)
       const result = migrateEslintConfig(parsed)
