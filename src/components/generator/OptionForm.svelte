@@ -3,7 +3,7 @@
    * 옵션 섹션 목록을 받아 각 컨트롤 타입에 맞는 서브컴포넌트를 렌더링하는 디스패처.
    * tier 기반 core/advanced 분리, "전체 옵션 보기" 토글, 옵션 검색(Ctrl+K)을 지원한다.
    */
-  import type { NewOptionSection, OptionControl } from '@/types/generator'
+  import type { OptionControl, OptionSection } from '@/types/generator'
 
   import {
     getAdvancedCount,
@@ -16,7 +16,7 @@
   import OptionSearchModal from './OptionSearchModal.svelte'
 
   interface Props {
-    sections: NewOptionSection[]
+    sections: OptionSection[]
     values: Record<string, unknown>
     locale: string
     onchange: (key: string, value: unknown) => void
@@ -35,11 +35,11 @@
 
   let searchResults = $derived(searchOptions(sections, searchQuery, locale))
 
-  const getSectionTitle = (section: NewOptionSection): string => {
+  const getSectionTitle = (section: OptionSection): string => {
     return locale === 'ko' ? section.title : section.titleEn
   }
 
-  const getSectionDescription = (section: NewOptionSection): string | undefined => {
+  const getSectionDescription = (section: OptionSection): string | undefined => {
     return locale === 'ko' ? section.description : section.descriptionEn
   }
 

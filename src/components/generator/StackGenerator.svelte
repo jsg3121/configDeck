@@ -10,7 +10,7 @@
   import type { StackFile } from '@/lib/data/stacks'
   import { generateConfigBySlug } from '@/lib/generators'
   import { decodeStackGeneratorUrl, encodeStackGeneratorUrl } from '@/lib/utils/shareUrl'
-  import type { NewOptionSection, OptionControl } from '@/types/generator'
+  import type { OptionControl, OptionSection } from '@/types/generator'
 
   import CodePreview from './CodePreview.svelte'
   import FileAccordionItem from './FileAccordionItem.svelte'
@@ -57,7 +57,7 @@
     files.filter((f) => enabledFileMap[f.fileName]).map((f) => f.fileName),
   )
 
-  const getCoreSections = (slug: string): NewOptionSection[] => {
+  const getCoreSections = (slug: string): OptionSection[] => {
     const definition = getOptionDefinition(slug)
     if (!definition) return []
     return definition.sections

@@ -3,14 +3,14 @@
  * 옵션 검색, 섹션 필터링, 하이라이트 로직을 담당한다.
  */
 
-import type { NewOptionSection, OptionControl } from '@/types/generator'
+import type { OptionControl, OptionSection } from '@/types/generator'
 
 /**
  * 섹션 내 advanced 옵션 수를 계산한다.
  * @param section - 옵션 섹션
  * @returns advanced tier 컨트롤 개수
  */
-export const getAdvancedCount = (section: NewOptionSection): number => {
+export const getAdvancedCount = (section: OptionSection): number => {
   return section.controls.filter((c) => c.tier === 'advanced').length
 }
 
@@ -19,7 +19,7 @@ export const getAdvancedCount = (section: NewOptionSection): number => {
  * @param sections - 옵션 섹션 목록
  * @returns 전체 advanced tier 컨트롤 개수
  */
-export const getTotalAdvancedCount = (sections: NewOptionSection[]): number => {
+export const getTotalAdvancedCount = (sections: OptionSection[]): number => {
   return sections.reduce((sum, section) => sum + getAdvancedCount(section), 0)
 }
 
@@ -31,7 +31,7 @@ export const getTotalAdvancedCount = (sections: NewOptionSection[]): number => {
  * @returns 매칭된 컨트롤과 섹션 타이틀 목록
  */
 export const searchOptions = (
-  sections: NewOptionSection[],
+  sections: OptionSection[],
   query: string,
   locale: string,
 ): Array<{ control: OptionControl; sectionTitle: string }> => {
@@ -62,7 +62,7 @@ export const searchOptions = (
  * @param key - 컨트롤 키
  * @returns advanced tier 여부
  */
-export const isAdvancedOption = (sections: NewOptionSection[], key: string): boolean => {
+export const isAdvancedOption = (sections: OptionSection[], key: string): boolean => {
   const control = sections.flatMap((s) => s.controls).find((c) => c.key === key)
   return control?.tier === 'advanced'
 }
