@@ -24,12 +24,16 @@
 
   let { locale, onmigrationresult }: Props = $props()
 
+  /** 패널 동작 모드 */
+  type PanelMode = 'migrate' | 'audit'
+
   let inputCode = $state('')
   let detectedFormat = $derived(detectConfigFormat(inputCode))
   let warnings = $state<MigrationWarning[]>([])
   let errorMessage = $state<string | null>(null)
   let auditResult = $state<AuditResult | null>(null)
   let currentOutputCode = $state('')
+  let panelMode = $state<PanelMode>('migrate')
   let fileInputRef = $state<HTMLInputElement | null>(null)
   let uploadedFileName = $state('')
 
@@ -38,9 +42,27 @@
       onmigrationresult(null)
       warnings = []
       auditResult = null
+      panelMode = 'migrate'
       return
     }
 
+    // 입력 코드를 먼저 진단해 Legacy/Flat 여부를 판정한다.
+    // Legacy → 기존 마이그레이션 흐름, Flat → audit-only 흐름으로 분기한다.
+    const inputAudit = auditEslintConfig(inputCode)
+
+    if (!inputAudit.isLegacyConfig) {
+      // Audit-only 모드: 입력을 그대로 미리보기에 노출하고 진단 결과만 표시한다.
+      panelMode = 'audit'
+      warnings = []
+      errorMessage = null
+      currentOutputCode = inputCode
+      auditResult = inputAudit
+      onmigrationresult({ output: inputCode, warnings: [] })
+      return
+    }
+
+    // Legacy: 기존 마이그레이션 흐름.
+    panelMode = 'migrate'
     try {
       const parsed = parseEslintLegacyConfig(inputCode, detectedFormat)
       const result = migrateEslintConfig(parsed)
@@ -91,6 +113,7 @@
     warnings = []
     errorMessage = null
     auditResult = null
+    panelMode = 'migrate'
     onmigrationresult(null)
     if (fileInputRef) fileInputRef.value = ''
   }
@@ -239,21 +262,33 @@
       warnings,
     })
 
-    handleDismissAuditItem(`Consider adding "${ruleName}" rule`)
+    // Audit 모드에서는 적용 결과를 기준으로 진단을 재계산해
+    // "권장 규칙 추가" 항목이 자동으로 사라지고 새 상태에 대한 진단이 노출되도록 한다.
+    if (panelMode === 'audit') {
+      auditResult = auditEslintConfig(newCode)
+    } else {
+      handleDismissAuditItem(`Consider adding "${ruleName}" rule`)
+    }
   }
 
   let titleLabel = $derived(
     locale === 'ko'
-      ? '기존 .eslintrc 파일을 붙여넣거나 업로드하세요'
-      : 'Paste or upload your legacy .eslintrc file',
+      ? 'ESLint 설정 파일을 붙여넣거나 업로드하세요'
+      : 'Paste or upload your ESLint config file',
   )
   let uploadLabel = $derived(locale === 'ko' ? '파일 업로드' : 'Upload file')
   let clearLabel = $derived(locale === 'ko' ? '초기화' : 'Clear')
   let formatLabel = $derived(locale === 'ko' ? '감지된 형식' : 'Detected format')
   let supportedLabel = $derived(
     locale === 'ko'
-      ? '지원 형식: .eslintrc (JSON), .eslintrc.js (CommonJS)'
-      : 'Supported: .eslintrc (JSON), .eslintrc.js (CommonJS)',
+      ? '지원 형식: .eslintrc (JSON / CommonJS), eslint.config.mjs (Flat — 진단만)'
+      : 'Supported: .eslintrc (JSON / CommonJS), eslint.config.mjs (Flat — audit only)',
+  )
+  let auditModeBadge = $derived(locale === 'ko' ? '진단 모드' : 'Audit only')
+  let auditModeNotice = $derived(
+    locale === 'ko'
+      ? 'Flat config가 감지되었습니다. 변환 없이 진단 결과만 표시합니다. 권장 규칙을 적용하면 미리보기에만 반영되며, 실제 파일은 변경되지 않습니다.'
+      : 'Flat config detected. Showing audit results only (no migration). Applying recommended rules updates the preview only — your original file is unchanged.',
   )
   const placeholder =
     '{\n  "extends": ["eslint:recommended"],\n  "rules": {\n    "no-console": "warn"\n  }\n}'
@@ -343,7 +378,18 @@
       <span class="rounded bg-gray-100 px-2 py-0.5 font-mono">
         {detectedFormat === 'unknown' ? '?' : detectedFormat}
       </span>
+      {#if panelMode === 'audit'}
+        <span class="rounded bg-blue-50 px-2 py-0.5 font-medium text-blue-700">
+          {auditModeBadge}
+        </span>
+      {/if}
     </div>
+
+    {#if panelMode === 'audit'}
+      <div class="rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-700">
+        {auditModeNotice}
+      </div>
+    {/if}
   {/if}
 
   <MigrationFeedback
