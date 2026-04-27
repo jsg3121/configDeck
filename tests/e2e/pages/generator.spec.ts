@@ -205,7 +205,6 @@ test.describe('tsconfig 생성기 페이지', () => {
   })
 
   test('tsconfig.json 파일명이 표시된다', async ({ page }) => {
-
     // 모바일에서는 미리보기 탭 클릭 필요
     const previewTab = page.locator('button').filter({ hasText: '미리보기' }).first()
     if (await previewTab.isVisible()) {

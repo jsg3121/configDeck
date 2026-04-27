@@ -109,9 +109,7 @@ test.describe('마이그레이션 플로우', () => {
     await expect(page.getByText('변환에 실패했습니다')).toBeVisible()
   })
 
-  test('S4: Audit 모드에서 권장 규칙 [적용] 시 미리보기와 진단이 갱신된다', async ({
-    page,
-  }) => {
+  test('S4: Audit 모드에서 권장 규칙 [적용] 시 미리보기와 진단이 갱신된다', async ({ page }) => {
     await enterMigrationTab(page)
 
     // Flat config 입력 → Audit-only 모드 진입
@@ -131,7 +129,9 @@ test.describe('마이그레이션 플로우', () => {
 
     // 미리보기에 새 규칙이 반영되어야 한다
     await ensurePreviewVisible(page)
-    await expect(page.getByRole('region', { name: '생성된 코드' }).locator('pre code')).toContainText('"no-console": "warn"')
+    await expect(
+      page.getByRole('region', { name: '생성된 코드' }).locator('pre code'),
+    ).toContainText('"no-console": "warn"')
 
     // "no-console" info 항목이 사라져야 한다 (audit 재계산 결과)
     await expect(
