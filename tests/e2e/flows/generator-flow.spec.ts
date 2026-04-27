@@ -17,6 +17,8 @@ test.describe('설정 파일 생성 플로우', () => {
     const eslintLink = page.locator('a[href*="/generator/eslint-config"]').first()
     await eslintLink.click()
     await expect(page).toHaveURL(/eslint-config/)
+    // Svelte 아일랜드 hydration 안정화. e2e-execution.md §4-1 참조.
+    await page.waitForLoadState('networkidle')
 
     // 4. 모바일에서는 미리보기 탭 클릭 필요
     const previewTab = page.locator('button').filter({ hasText: '미리보기' }).first()
@@ -25,7 +27,7 @@ test.describe('설정 파일 생성 플로우', () => {
     }
 
     // 5. 코드 미리보기 확인
-    const codePreview = page.locator('pre code')
+    const codePreview = page.getByRole('region', { name: '생성된 코드' }).locator('pre code')
     await expect(codePreview).toBeVisible()
     const code = await codePreview.textContent()
     expect(code).toContain('export default')
@@ -37,6 +39,8 @@ test.describe('설정 파일 생성 플로우', () => {
 
   test('프리셋 선택 및 옵션 변경 플로우', async ({ page }) => {
     await page.goto('/ko/generator/eslint-config')
+    // Svelte 아일랜드 hydration 안정화. e2e-execution.md §4-1 참조.
+    await page.waitForLoadState('networkidle')
 
     // 모바일에서는 미리보기 탭 클릭
     const previewTab = page.locator('button').filter({ hasText: '미리보기' }).first()
@@ -45,7 +49,7 @@ test.describe('설정 파일 생성 플로우', () => {
     }
 
     // 1. 초기 상태 확인
-    const codePreview = page.locator('pre code')
+    const codePreview = page.getByRole('region', { name: '생성된 코드' }).locator('pre code')
     const initialCode = await codePreview.textContent()
 
     // 모바일에서는 옵션 탭으로 전환
@@ -73,6 +77,8 @@ test.describe('설정 파일 생성 플로우', () => {
 
   test('검색 기능 플로우', async ({ page }) => {
     await page.goto('/ko/generator/eslint-config')
+    // Svelte 아일랜드 hydration 대기 — 검색 모달 onclick 핸들러가 바인딩되어야 한다
+    await page.waitForLoadState('networkidle')
 
     // 1. 검색 버튼 클릭
     const searchButton = page.locator('button').filter({ hasText: /옵션 검색/i })
@@ -112,7 +118,7 @@ test.describe('다국어 전환 플로우', () => {
     await page.goto('/ko/generator/eslint-config')
 
     // 2. 영어로 전환 (header 내의 EN 링크)
-    const enLink = page.locator('header').getByRole('link', { name: 'EN', exact: true })
+    const enLink = page.locator('header.bg-surface').getByRole('link', { name: 'EN', exact: true })
     await enLink.click()
 
     // 3. URL이 변경되었는지 확인
@@ -129,6 +135,8 @@ test.describe('모바일 뷰 플로우', () => {
 
   test('모바일에서 옵션/미리보기 탭이 표시된다', async ({ page }) => {
     await page.goto('/ko/generator/eslint-config')
+    // Svelte 아일랜드 hydration 안정화. e2e-execution.md §4-1 참조.
+    await page.waitForLoadState('networkidle')
 
     // 모바일 탭 버튼 확인 (lg 미만에서만 표시됨)
     const optionsTab = page.locator('button').filter({ hasText: '옵션' }).first()
@@ -142,7 +150,7 @@ test.describe('모바일 뷰 플로우', () => {
     await previewTab.click()
 
     // 코드 미리보기가 표시되는지 확인
-    const codePreview = page.locator('pre code')
+    const codePreview = page.getByRole('region', { name: '생성된 코드' }).locator('pre code')
     await expect(codePreview).toBeVisible()
   })
 })

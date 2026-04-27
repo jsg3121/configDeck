@@ -200,9 +200,9 @@ export default [
 ]`
     const result = auditEslintConfig(code)
     expect(result.isLegacyConfig).toBe(false)
-    expect(result.items.some((i) => i.severity === 'warning' && i.message.includes('"indent"'))).toBe(
-      true,
-    )
+    expect(
+      result.items.some((i) => i.severity === 'warning' && i.message.includes('"indent"')),
+    ).toBe(true)
   })
 
   it('flat config에서 권장 규칙이 빠져 있으면 info로 제안한다', () => {

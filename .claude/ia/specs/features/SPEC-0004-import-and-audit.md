@@ -7,6 +7,7 @@ created: 2026-04-26
 updated: 2026-04-28
 related_adrs:
   - ADR-0014  # 성장 전략 로드맵 (Import & Audit P0.5 신설)
+  - ADR-0016  # E2E 테스트 검증 전략 (7단계 작업에서 도출)
 related_specs:
   - SPEC-0001  # 파일 옵션 생성기 기능 보강
 ---
@@ -240,9 +241,9 @@ Audit 모드에서는 형식 배지 옆에 "Audit only" 배지를 노출하고, 
 | 2 | A | MigrationPanel UI 통합 | MigrationPanel.svelte/astro | 1 |
 | 3 | A | 단위 테스트 작성 | tests/unit/lib/migration/* | 1 |
 | 4 | A | QA 후속 보정 (extractRules brace-balance, parser commonjs 보정, indent 통일) | 1.2.0 QA 사이클 | 3 |
-| 5 | **B** | **공통 인터페이스 정형화** (`ConfigInspector`) | src/lib/migration/types.ts | 4 |
-| 6 | **B** | **Audit-only 진입 동선 추가** | `/migration` 허브 페이지, MigrationPanel 모드 분기 | 5 |
-| 7 | **B** | **E2E 테스트 보완** (마이그레이션 실패/성공 플로우) | tests/e2e/flows/migration-flow.spec.ts | 6 |
+| 5 | **B** | **공통 인터페이스 정형화** (`ConfigInspector`) ✅ | src/lib/migration/types.ts | 4 |
+| 6 | **B** | **Audit-only 진입 동선 추가** ✅ | MigrationPanel 모드 분기 (허브 페이지는 10단계로 분리) | 5 |
+| 7 | **B** | **E2E 테스트 보완** (마이그레이션 실패/성공 플로우) ✅ | tests/e2e/flows/migration-flow.spec.ts | 6 |
 | 8 | C | Prettier inspector 구현 | src/lib/migration/prettier* | 5 |
 | 9 | C | TSConfig inspector 구현 | src/lib/migration/tsconfig* | 5 |
 | 10 | C | 도구 선택 허브 페이지 + SEO 메타 | src/pages/[locale]/migration/* | 6, 8, 9 |
@@ -258,6 +259,7 @@ Audit 모드에서는 형식 배지 옆에 "Audit only" 배지를 노출하고, 
 - [x] M1: 1.2.0 QA 통과 (2026-04-26 재검증 완료)
 - [x] M2 시작 전: 공통 인터페이스(`ConfigInspector`) 설계 검토 → 사용자 승인 (2026-04-27, feature/1.3.0-config-inspector)
 - [x] M2 완료 후: Audit-only 모드 UX 검토 (Q1 자동 변환 유지, Q2 모드 배지+안내문, Q3 권장 규칙 적용 허용 + 미리보기 한정 안내) — 2026-04-28, feature/1.3.0-audit-only
+- [x] M2 머지 직전: 종합 QA 검증 통과 (단위 105/105, E2E 182 passed × 5 브라우저, 정적 분석 0 errors) — 2026-04-28, feature/1.3.0-qa, [QA v3 리포트](../../../qa/reports/2026-04-28-1.3.0-phase-b-qa-v3.md)
 - [ ] M3 시작 전: Prettier·TSConfig deprecated 옵션·권장 규칙 데이터셋 출처 검토
 - [ ] M3 완료 후: 허브 페이지 SEO 메타·구조화 데이터 검토 (seo-specialist 위임)
 
@@ -287,6 +289,7 @@ Audit 모드에서는 형식 배지 옆에 "Audit only" 배지를 노출하고, 
 ## 9. 참고 자료 (References)
 
 - [ADR-0014: 성장 전략 로드맵](../../../decisions/records/ADR-0014-growth-strategy-roadmap.md) — Import & Audit 신설 근거
+- [ADR-0016: E2E 테스트 검증 전략](../../../decisions/records/ADR-0016-e2e-validation-strategy.md) — 7단계 작업에서 도출한 디버깅·검증 운영 원칙
 - [STR-0002: ConfigDeck 전략 보고서](../../../research/reports/STR-0002-configdeck-strategy-2026-04.md) — ESLint v9 전환 수요
 - [MI-0002: 경쟁사 분석](../../../research/reports/MI-0002-competitor-analysis-2026-04.md) — 직접 경쟁자 부재
 - [BA-0002: 경쟁력 분석](../../../research/reports/BA-0002-configdeck-competitiveness-2026-04.md) — Import & Audit 차별화 가치
@@ -302,3 +305,4 @@ Audit 모드에서는 형식 배지 옆에 "Audit only" 배지를 노출하고, 
 | 2026-04-26 | 초안 작성. 1.2.0의 Phase A를 회수하고 Phase B/C 골격 정의 | jsg3121 |
 | 2026-04-27 | §3.2.1 인터페이스 정형화 (Phase B 5단계 완료). MigrationResult.outputCode → output 리네임, AuditItem에 suggestion?/suggestionKo? 보강, ConfigInspector TModern 옵셔널화. 브랜치 feature/1.3.0-config-inspector | jsg3121 |
 | 2026-04-28 | Audit-only 진입 동선 추가 (Phase B 6단계 완료). MigrationPanel에 panelMode 분기 도입, Flat config 입력 시 입력 그대로 미리보기 + audit-only 흐름. 모드 배지 + 안내문 + 권장 규칙 재적용 후 audit 재계산. 단위 테스트 4건 추가. 브랜치 feature/1.3.0-audit-only | jsg3121 |
+| 2026-04-28 | E2E 테스트 보완 + Phase B 종합 QA 검증 완료 (Phase B 7단계 완료). migration-flow.spec.ts 신규(4 시나리오 × 5 브라우저). qa-agent v1→v2→v3 사이클로 차단 이슈 4건 fix(Q3-A 인라인 import 타입, Q3-B 'pre code' ARIA 셀렉터 + hydration 대기, Q3-C 사이트 header 셀렉터 구체화, Q3-D Prettier 포맷). E2E 운영 가이드 신규(.claude/qa/guides/e2e-execution.md). Phase B 마일스톤(M2) 완료, 1.3.0 main 머지 가능 판정. 브랜치 feature/1.3.0-qa | jsg3121 |
