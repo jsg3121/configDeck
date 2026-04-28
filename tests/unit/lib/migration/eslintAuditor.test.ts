@@ -226,3 +226,111 @@ export default [
     expect(result.isLegacyConfig).toBe(true)
   })
 })
+
+/**
+ * 1.4.0 parser-hardening 회귀 방지 (PR #32 Gemini Code Assist 후속).
+ * eslintAuditor 내부의 stripComments / findRulesBlockBounds / extractRules /
+ * extractExtends 4개 함수를 codeUtils의 문자열-안전 유틸로 교체한 결과,
+ * 다음 케이스가 정확히 처리되어야 한다.
+ */
+describe('auditEslintConfig - 문자열 리터럴 보호 (1.4.0 hardening)', () => {
+  it('문자열 안 URL이 한 줄 주석으로 잘못 제거되지 않아 deprecated 규칙을 정확히 감지한다', () => {
+    // 문자열 값 안에 "//" 패턴이 있을 때, 그 뒤의 deprecated 규칙(indent)이
+    // 주석으로 잘못 처리되어 사라지면 안 된다
+    const code = `export default [{
+      rules: {
+        "comment": "https://example.com",
+        "indent": ["error", 2]
+      }
+    }]`
+    const result = auditEslintConfig(code)
+    expect(result.items.some((i) => i.message.includes('"indent"'))).toBe(true)
+  })
+
+  it('문자열 안 "/*" 패턴이 블록 주석으로 오인되지 않는다', () => {
+    // 문자열 값에 "/*" 패턴이 있을 때, 그 뒤의 규칙이 사라지면 안 된다
+    const code = `export default [{
+      rules: {
+        "no-restricted-syntax": ["error", "Pattern: /*hidden*/"],
+        "indent": ["error", 2]
+      }
+    }]`
+    const result = auditEslintConfig(code)
+    expect(result.items.some((i) => i.message.includes('"indent"'))).toBe(true)
+  })
+
+  it('extractRules가 문자열 값 안의 객체 패턴을 키로 오인하지 않는다', () => {
+    // 문자열 값 안의 "key:" 패턴이 키로 추출되면 잘못된 deprecated 경고가 발생할 수 있다
+    const code = `export default [{
+      rules: {
+        "no-restricted-syntax": ["error", { selector: "X", message: "use { semi: true } only" }],
+        "no-console": "warn"
+      }
+    }]`
+    const result = auditEslintConfig(code)
+    // no-console은 권장 규칙이라 이미 있으면 info 안내가 없어야 함
+    const noConsoleInfos = result.items.filter(
+      (i) => i.severity === 'info' && i.message.includes('"no-console"'),
+    )
+    expect(noConsoleInfos).toHaveLength(0)
+    // semi가 키로 잘못 추출되어 deprecated 경고로 노출되면 안 됨 (문자열 내부)
+    const falseSemiWarnings = result.items.filter(
+      (i) => i.severity === 'warning' && i.message.includes('"semi"'),
+    )
+    expect(falseSemiWarnings).toHaveLength(0)
+  })
+
+  it('짝수 백슬래시로 끝나는 문자열 뒤의 키 추출이 정상 동작한다', () => {
+    // "C:\\\\" 같이 백슬래시 2개로 끝나는 문자열 뒤에 다른 규칙이 와도
+    // extractRules가 종료 따옴표를 정확히 인식해야 한다
+    const code = `export default [{
+      rules: {
+        "comment": "C:\\\\\\\\",
+        "no-console": "warn"
+      }
+    }]`
+    const result = auditEslintConfig(code)
+    // no-console이 정상 추출되어 권장 규칙 info 안내가 없어야 함
+    const noConsoleInfos = result.items.filter(
+      (i) => i.severity === 'info' && i.message.includes('"no-console"'),
+    )
+    expect(noConsoleInfos).toHaveLength(0)
+  })
+
+  /**
+   * PR #33 Gemini Code Assist 후속 — extractRules가 키 내부의 이스케이프된
+   * 따옴표를 만났을 때 인덱스 indexOf로 종료 따옴표를 잘못 잡던 결함을 회귀 방지한다.
+   */
+  it('extractRules가 키 내부의 이스케이프된 따옴표를 정확히 처리한다', () => {
+    // "key\"with-quote": true 형태 — 키 안에 이스케이프된 따옴표가 있어도
+    // 종료 따옴표를 정확히 인식해야 한다
+    const code = `export default [{
+      rules: {
+        "key\\"with-quote": "warn",
+        "no-console": "warn"
+      }
+    }]`
+    const result = auditEslintConfig(code)
+    // no-console이 정상 추출되어 권장 info 안내가 없어야 함
+    // (이스케이프된 따옴표 처리가 깨지면 no-console까지 도달하지 못함)
+    const noConsoleInfos = result.items.filter(
+      (i) => i.severity === 'info' && i.message.includes('"no-console"'),
+    )
+    expect(noConsoleInfos).toHaveLength(0)
+  })
+
+  it('이스케이프된 따옴표 키 뒤의 deprecated 규칙도 정확히 감지한다', () => {
+    const code = `export default [{
+      rules: {
+        "weird\\"key": "warn",
+        "indent": ["error", 2]
+      }
+    }]`
+    const result = auditEslintConfig(code)
+    // indent가 deprecated 경고로 정확히 감지되어야 함
+    const indentWarnings = result.items.filter(
+      (i) => i.severity === 'warning' && i.message.includes('"indent"'),
+    )
+    expect(indentWarnings.length).toBeGreaterThan(0)
+  })
+})

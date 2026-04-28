@@ -26,8 +26,14 @@ const countTrailingBackslashes = (code: string, i: number): number => {
   return count
 }
 
-/** 인덱스 i 위치 문자가 이스케이프된 상태인지 판별 (앞선 백슬래시가 홀수) */
-const isEscaped = (code: string, i: number): boolean => {
+/**
+ * 인덱스 i 위치 문자가 이스케이프된 상태인지 판별한다.
+ * 앞선 연속 백슬래시 개수가 홀수면 true, 짝수(또는 0)면 false.
+ *
+ *   "hello\""    → 따옴표 위치에서 앞 백슬래시 1개(홀수) → isEscaped=true
+ *   "C:\\\\"     → 따옴표 위치에서 앞 백슬래시 2개(짝수) → isEscaped=false
+ */
+export const isEscaped = (code: string, i: number): boolean => {
   return countTrailingBackslashes(code, i) % 2 === 1
 }
 
