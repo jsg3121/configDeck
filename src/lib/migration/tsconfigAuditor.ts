@@ -76,88 +76,87 @@ const DEPRECATED_OPTIONS: Record<string, { en: string; ko: string }> = {
  *
  * key: 옵션명, value: { 권장값, 사유(영문/한글) }
  */
-const RECOMMENDED_OPTIONS: Record<
-  string,
-  { value: unknown; reasonEn: string; reasonKo: string }
-> = {
-  // 컴파일 타깃
-  target: {
-    value: 'ES2022',
-    reasonEn: 'Modern bundlers/runtimes support ES2022; older targets ship more polyfills',
-    reasonKo: '현대 번들러·런타임은 ES2022를 지원하며, 낮은 타깃은 폴리필이 늘어납니다',
-  },
-  module: {
-    value: 'ESNext',
-    reasonEn: 'Bundler resolves module interop; ESNext keeps tree-shaking efficient',
-    reasonKo: '번들러가 모듈 호환을 처리하므로 ESNext가 트리 셰이킹에 유리합니다',
-  },
-  moduleResolution: {
-    value: 'bundler',
-    reasonEn: 'Use "bundler" with bundlers, "nodenext" with native Node.js ESM',
-    reasonKo: '번들러 환경은 "bundler", Node.js 네이티브 ESM 환경은 "nodenext"가 적절합니다',
-  },
+const RECOMMENDED_OPTIONS: Record<string, { value: unknown; reasonEn: string; reasonKo: string }> =
+  {
+    // 컴파일 타깃
+    target: {
+      value: 'ES2022',
+      reasonEn: 'Modern bundlers/runtimes support ES2022; older targets ship more polyfills',
+      reasonKo: '현대 번들러·런타임은 ES2022를 지원하며, 낮은 타깃은 폴리필이 늘어납니다',
+    },
+    module: {
+      value: 'ESNext',
+      reasonEn: 'Bundler resolves module interop; ESNext keeps tree-shaking efficient',
+      reasonKo: '번들러가 모듈 호환을 처리하므로 ESNext가 트리 셰이킹에 유리합니다',
+    },
+    moduleResolution: {
+      value: 'bundler',
+      reasonEn: 'Use "bundler" with bundlers, "nodenext" with native Node.js ESM',
+      reasonKo: '번들러 환경은 "bundler", Node.js 네이티브 ESM 환경은 "nodenext"가 적절합니다',
+    },
 
-  // strict 계열
-  strict: {
-    value: true,
-    reasonEn: 'Enables all strict type-checking options at once',
-    reasonKo: '모든 strict 옵션을 한 번에 활성화합니다',
-  },
+    // strict 계열
+    strict: {
+      value: true,
+      reasonEn: 'Enables all strict type-checking options at once',
+      reasonKo: '모든 strict 옵션을 한 번에 활성화합니다',
+    },
 
-  // 빌드 위생
-  esModuleInterop: {
-    value: true,
-    reasonEn: 'Improves CommonJS/ESM interop; almost always desired in modern projects',
-    reasonKo: 'CommonJS/ESM 호환을 개선합니다. 모던 프로젝트에서 거의 항상 권장됩니다',
-  },
-  forceConsistentCasingInFileNames: {
-    value: true,
-    reasonEn: 'Avoids case-sensitivity bugs across OSes',
-    reasonKo: '운영체제 간 대소문자 차이로 인한 버그를 방지합니다',
-  },
-  isolatedModules: {
-    value: true,
-    reasonEn: 'Required for tools that transpile files in isolation (esbuild, swc, etc.)',
-    reasonKo: '파일 단위로 변환하는 도구(esbuild, swc 등)와의 호환을 위해 권장합니다',
-  },
-  resolveJsonModule: {
-    value: true,
-    reasonEn: 'Allows importing .json files',
-    reasonKo: '.json 파일 import를 허용합니다',
-  },
-  skipLibCheck: {
-    value: true,
-    reasonEn: 'Significantly speeds up compilation; tradeoff is less coverage of @types files',
-    reasonKo: '컴파일 속도를 크게 높입니다. @types의 검사 범위가 줄어드는 트레이드오프가 있습니다',
-  },
+    // 빌드 위생
+    esModuleInterop: {
+      value: true,
+      reasonEn: 'Improves CommonJS/ESM interop; almost always desired in modern projects',
+      reasonKo: 'CommonJS/ESM 호환을 개선합니다. 모던 프로젝트에서 거의 항상 권장됩니다',
+    },
+    forceConsistentCasingInFileNames: {
+      value: true,
+      reasonEn: 'Avoids case-sensitivity bugs across OSes',
+      reasonKo: '운영체제 간 대소문자 차이로 인한 버그를 방지합니다',
+    },
+    isolatedModules: {
+      value: true,
+      reasonEn: 'Required for tools that transpile files in isolation (esbuild, swc, etc.)',
+      reasonKo: '파일 단위로 변환하는 도구(esbuild, swc 등)와의 호환을 위해 권장합니다',
+    },
+    resolveJsonModule: {
+      value: true,
+      reasonEn: 'Allows importing .json files',
+      reasonKo: '.json 파일 import를 허용합니다',
+    },
+    skipLibCheck: {
+      value: true,
+      reasonEn: 'Significantly speeds up compilation; tradeoff is less coverage of @types files',
+      reasonKo:
+        '컴파일 속도를 크게 높입니다. @types의 검사 범위가 줄어드는 트레이드오프가 있습니다',
+    },
 
-  // 코드 품질 (린트성)
-  noUnusedLocals: {
-    value: true,
-    reasonEn: 'Catches unused local variables; complements ESLint',
-    reasonKo: '사용되지 않는 지역 변수를 잡습니다. ESLint를 보완합니다',
-  },
-  noUnusedParameters: {
-    value: true,
-    reasonEn: 'Catches unused function parameters',
-    reasonKo: '사용되지 않는 함수 매개변수를 잡습니다',
-  },
-  noFallthroughCasesInSwitch: {
-    value: true,
-    reasonEn: 'Prevents accidental switch fallthrough',
-    reasonKo: 'switch 의도치 않은 fallthrough를 방지합니다',
-  },
-  noImplicitReturns: {
-    value: true,
-    reasonEn: 'Ensures all code paths return a value',
-    reasonKo: '모든 분기에서 반환값을 명시하도록 강제합니다',
-  },
-  noUncheckedIndexedAccess: {
-    value: true,
-    reasonEn: 'Adds undefined to indexed access types; safer at runtime',
-    reasonKo: '인덱스 접근 결과에 undefined를 추가해 런타임 안전성을 높입니다',
-  },
-}
+    // 코드 품질 (린트성)
+    noUnusedLocals: {
+      value: true,
+      reasonEn: 'Catches unused local variables; complements ESLint',
+      reasonKo: '사용되지 않는 지역 변수를 잡습니다. ESLint를 보완합니다',
+    },
+    noUnusedParameters: {
+      value: true,
+      reasonEn: 'Catches unused function parameters',
+      reasonKo: '사용되지 않는 함수 매개변수를 잡습니다',
+    },
+    noFallthroughCasesInSwitch: {
+      value: true,
+      reasonEn: 'Prevents accidental switch fallthrough',
+      reasonKo: 'switch 의도치 않은 fallthrough를 방지합니다',
+    },
+    noImplicitReturns: {
+      value: true,
+      reasonEn: 'Ensures all code paths return a value',
+      reasonKo: '모든 분기에서 반환값을 명시하도록 강제합니다',
+    },
+    noUncheckedIndexedAccess: {
+      value: true,
+      reasonEn: 'Adds undefined to indexed access types; safer at runtime',
+      reasonKo: '인덱스 접근 결과에 undefined를 추가해 런타임 안전성을 높입니다',
+    },
+  }
 
 /** 코드 차원에서 옵션 키 사용 여부를 빠르게 검사 (compilerOptions 안에 있는지 모호하지만 audit 목적상 충분) */
 const hasOptionKey = (code: string, key: string): boolean => {
