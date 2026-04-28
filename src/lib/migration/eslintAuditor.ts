@@ -1,7 +1,11 @@
 /**
  * ESLint 설정 파일을 분석하여 문제점과 개선점을 진단한다.
  * flat config와 legacy config 모두 지원한다.
+ *
+ * 주석 제거/문자열 종료 판별은 codeUtils의 문자열-안전 구현을 사용한다.
+ * (1.4.0 parser-hardening — Gemini Code Assist 후속)
  */
+import { isEscaped, stripCommentsFromCode } from './codeUtils'
 import type { AuditItem, AuditResult, AuditSeverity } from './types'
 
 export type { AuditItem, AuditResult, AuditSeverity }
@@ -92,54 +96,6 @@ const RECOMMENDED_RULES: Record<string, { value: string; reason: string; reasonK
   },
 }
 
-/**
- * 코드에서 주석을 제거한다.
- * 문자열 리터럴 내부의 `//`, `/*`은 보존한다.
- * audit/parsing 단계에서 주석 처리된 규칙을 활성 규칙으로 오인하는 것을 방지한다.
- */
-const stripComments = (code: string): string => {
-  let result = ''
-  let i = 0
-  let inString: '"' | "'" | '`' | null = null
-  while (i < code.length) {
-    const ch = code[i]
-    const next = code[i + 1]
-    const prev = code[i - 1]
-
-    if (inString) {
-      result += ch
-      if (ch === inString && prev !== '\\') inString = null
-      i++
-      continue
-    }
-
-    if (ch === '"' || ch === "'" || ch === '`') {
-      inString = ch
-      result += ch
-      i++
-      continue
-    }
-
-    // 한 줄 주석
-    if (ch === '/' && next === '/') {
-      while (i < code.length && code[i] !== '\n') i++
-      continue
-    }
-
-    // 블록 주석
-    if (ch === '/' && next === '*') {
-      i += 2
-      while (i < code.length - 1 && !(code[i] === '*' && code[i + 1] === '/')) i++
-      i += 2
-      continue
-    }
-
-    result += ch
-    i++
-  }
-  return result
-}
-
 /** legacy config 패턴 감지 */
 const isLegacyConfig = (code: string): boolean => {
   const legacyPatterns = [
@@ -172,9 +128,8 @@ const findRulesBlockBounds = (code: string): { start: number; end: number } | nu
   let inString: '"' | "'" | null = null
   while (i < code.length && depth > 0) {
     const ch = code[i]
-    const prev = code[i - 1]
     if (inString) {
-      if (ch === inString && prev !== '\\') inString = null
+      if (ch === inString && !isEscaped(code, i)) inString = null
     } else if (ch === '"' || ch === "'") {
       inString = ch
     } else if (ch === '{') {
@@ -206,9 +161,8 @@ const extractRules = (code: string): Record<string, unknown> => {
   let i = 0
   while (i < inner.length) {
     const ch = inner[i]
-    const prev = inner[i - 1]
     if (inString) {
-      if (ch === inString && prev !== '\\') inString = null
+      if (ch === inString && !isEscaped(inner, i)) inString = null
       i++
       continue
     }
@@ -269,9 +223,8 @@ const extractExtends = (code: string): string[] => {
       let inString: '"' | "'" | null = null
       while (i < code.length && depth > 0) {
         const ch = code[i]
-        const prev = code[i - 1]
         if (inString) {
-          if (ch === inString && prev !== '\\') inString = null
+          if (ch === inString && !isEscaped(code, i)) inString = null
         } else if (ch === '"' || ch === "'") {
           inString = ch
         } else if (ch === '[') {
@@ -307,7 +260,7 @@ const extractExtends = (code: string): string[] => {
 export const auditEslintConfig = (code: string): AuditResult => {
   const items: AuditItem[] = []
   // 주석 처리된 규칙을 활성 규칙으로 오인하지 않도록 사전 제거
-  const cleanCode = stripComments(code)
+  const cleanCode = stripCommentsFromCode(code)
   const isLegacy = isLegacyConfig(cleanCode)
 
   if (isLegacy) {
