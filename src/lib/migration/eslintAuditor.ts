@@ -170,8 +170,15 @@ const extractRules = (code: string): Record<string, unknown> => {
       // depth 0에서 따옴표로 감싼 키 후보
       if (depth === 0) {
         const quote = ch
-        const end = inner.indexOf(quote, i + 1)
-        if (end !== -1) {
+        // 이스케이프되지 않은 종료 따옴표 위치를 찾는다.
+        // 단순 indexOf는 키 내부의 이스케이프된 따옴표("key\"with-quote")를
+        // 종료로 오인하므로 isEscaped 기반 루프로 안전하게 탐색한다.
+        let end = i + 1
+        while (end < inner.length) {
+          if (inner[end] === quote && !isEscaped(inner, end)) break
+          end++
+        }
+        if (end < inner.length) {
           const key = inner.slice(i + 1, end)
           // 다음 non-whitespace가 ':' 인지 확인
           let j = end + 1

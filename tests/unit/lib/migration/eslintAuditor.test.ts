@@ -296,4 +296,41 @@ describe('auditEslintConfig - 문자열 리터럴 보호 (1.4.0 hardening)', () 
     )
     expect(noConsoleInfos).toHaveLength(0)
   })
+
+  /**
+   * PR #33 Gemini Code Assist 후속 — extractRules가 키 내부의 이스케이프된
+   * 따옴표를 만났을 때 인덱스 indexOf로 종료 따옴표를 잘못 잡던 결함을 회귀 방지한다.
+   */
+  it('extractRules가 키 내부의 이스케이프된 따옴표를 정확히 처리한다', () => {
+    // "key\"with-quote": true 형태 — 키 안에 이스케이프된 따옴표가 있어도
+    // 종료 따옴표를 정확히 인식해야 한다
+    const code = `export default [{
+      rules: {
+        "key\\"with-quote": "warn",
+        "no-console": "warn"
+      }
+    }]`
+    const result = auditEslintConfig(code)
+    // no-console이 정상 추출되어 권장 info 안내가 없어야 함
+    // (이스케이프된 따옴표 처리가 깨지면 no-console까지 도달하지 못함)
+    const noConsoleInfos = result.items.filter(
+      (i) => i.severity === 'info' && i.message.includes('"no-console"'),
+    )
+    expect(noConsoleInfos).toHaveLength(0)
+  })
+
+  it('이스케이프된 따옴표 키 뒤의 deprecated 규칙도 정확히 감지한다', () => {
+    const code = `export default [{
+      rules: {
+        "weird\\"key": "warn",
+        "indent": ["error", 2]
+      }
+    }]`
+    const result = auditEslintConfig(code)
+    // indent가 deprecated 경고로 정확히 감지되어야 함
+    const indentWarnings = result.items.filter(
+      (i) => i.severity === 'warning' && i.message.includes('"indent"'),
+    )
+    expect(indentWarnings.length).toBeGreaterThan(0)
+  })
 })
