@@ -114,3 +114,27 @@ describe('parsePrettierConfig - unknown', () => {
     expect(result).toEqual({})
   })
 })
+
+/**
+ * Gemini Code Assist (PR #32) 코멘트 회귀 방지.
+ * 본 테스트는 codeUtils.test.ts와 별도로 parser 진입점 차원의 통합을 검증한다.
+ */
+describe('parsePrettierConfig - 문자열 리터럴 보호 (Gemini PR #32)', () => {
+  it('JSON 입력의 문자열 안 URL을 주석으로 오인하지 않는다', () => {
+    const input = `{ "homepage": "https://example.com/path", "semi": true }`
+    const result = parsePrettierConfig(input, 'json')
+    expect(result).toEqual({ homepage: 'https://example.com/path', semi: true })
+  })
+
+  it('JSON 입력의 문자열 안 "/*" 패턴을 블록 주석으로 오인하지 않는다', () => {
+    const input = `{ "regex": "a/*b/c" }`
+    const result = parsePrettierConfig(input, 'json')
+    expect(result).toEqual({ regex: 'a/*b/c' })
+  })
+
+  it('CommonJS 입력의 문자열 값 안 객체 패턴은 그대로 보존된다', () => {
+    const input = `module.exports = { msg: 'has { key: pattern }', semi: true }`
+    const result = parsePrettierConfig(input, 'commonjs')
+    expect(result).toEqual({ msg: 'has { key: pattern }', semi: true })
+  })
+})
