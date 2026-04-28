@@ -13,6 +13,7 @@
  *   MigrationPanel의 panelMode 분기는 이 정의를 따라 작동한다
  *   (deprecated 있으면 migrate 흐름, 없으면 audit-only 흐름).
  */
+import { stripCommentsFromCode } from './codeUtils'
 import type { AuditItem, AuditResult } from './types'
 
 /**
@@ -35,51 +36,6 @@ const CHANGED_DEFAULTS: Record<string, { v2: string; v3: string }> = {
 }
 
 /**
- * 코드에서 주석을 제거한다.
- * 문자열 리터럴 내부의 //, /* 는 보존한다.
- */
-const stripComments = (code: string): string => {
-  let result = ''
-  let i = 0
-  let inString: '"' | "'" | '`' | null = null
-  while (i < code.length) {
-    const ch = code[i]
-    const next = code[i + 1]
-    const prev = code[i - 1]
-
-    if (inString) {
-      result += ch
-      if (ch === inString && prev !== '\\') inString = null
-      i++
-      continue
-    }
-
-    if (ch === '"' || ch === "'" || ch === '`') {
-      inString = ch
-      result += ch
-      i++
-      continue
-    }
-
-    if (ch === '/' && next === '/') {
-      while (i < code.length && code[i] !== '\n') i++
-      continue
-    }
-
-    if (ch === '/' && next === '*') {
-      i += 2
-      while (i < code.length - 1 && !(code[i] === '*' && code[i + 1] === '/')) i++
-      i += 2
-      continue
-    }
-
-    result += ch
-    i++
-  }
-  return result
-}
-
-/**
  * 코드에서 단일 옵션 키의 사용 여부를 검사한다.
  * "key": 또는 'key': 또는 식별자 key: 형태 모두 매칭한다.
  */
@@ -92,7 +48,7 @@ const hasOptionKey = (code: string, key: string): boolean => {
 /** Prettier 설정 분석 */
 export const auditPrettierConfig = (code: string): AuditResult => {
   const items: AuditItem[] = []
-  const cleanCode = stripComments(code)
+  const cleanCode = stripCommentsFromCode(code)
 
   // 1. Deprecated 옵션 감지
   let hasDeprecated = false
