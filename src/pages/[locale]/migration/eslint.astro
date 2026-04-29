@@ -1,0 +1,68 @@
+---
+/**
+ * ESLint Legacy → Flat 마이그레이션 페이지.
+ *
+ * SPEC-0004 §3.2.2 — Phase C 10단계.
+ * 부모 아일랜드 1개(MigrationWorkbench) + 자식 컴포넌트 2개(MigrationPanel + MigrationResultPreview) 구조.
+ */
+import { buildLocalizedPath, getTranslation, SUPPORTED_LOCALES, type Locale } from '@/i18n'
+
+import Layout from '@/layouts/Layout.astro'
+import MigrationWorkbench from '@/components/migration/MigrationWorkbench.svelte'
+
+export const getStaticPaths = () => {
+  return SUPPORTED_LOCALES.map((locale) => ({ params: { locale } }))
+}
+
+const { locale } = Astro.params as { locale: Locale }
+---
+
+<Layout
+  title={getTranslation(locale, 'seo.migrationEslintTitle')}
+  description={getTranslation(locale, 'seo.migrationEslintDescription')}
+  locale={locale}
+  pagePath="/migration/eslint"
+  currentPath="/migration"
+>
+  <div class="mx-auto flex w-full max-w-7xl flex-col lg:h-[calc(100vh-65px)]">
+    <div class="shrink-0 px-6 pt-8">
+      <a
+        href={buildLocalizedPath(locale, '/migration')}
+        class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900"
+      >
+        <svg
+          class="h-4 w-4"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path>
+        </svg>
+        {getTranslation(locale, 'migration.hubTitle')}
+      </a>
+
+      <header class="mt-6 mb-6">
+        <h1 class="text-3xl font-bold tracking-tight lg:text-4xl">
+          {getTranslation(locale, 'migration.page.eslintTitle')}
+        </h1>
+        <p class="mt-3 max-w-3xl text-base text-gray-500">
+          {getTranslation(locale, 'migration.page.eslintDescription')}
+        </p>
+      </header>
+    </div>
+
+    <div class="w-full min-h-0 flex-1">
+      <MigrationWorkbench
+        client:load
+        locale={locale}
+        toolType="eslint"
+        outputFileName="eslint.config.mjs"
+        placeholder={getTranslation(locale, 'migration.page.placeholders.eslint')}
+        supportedFormatsLabel={getTranslation(locale, 'migration.page.supportedFormats.eslint')}
+        acceptExtensions=".eslintrc,.eslintrc.json,.eslintrc.js,.eslintrc.cjs,.eslintrc.yml,.eslintrc.yaml,.json,.js,.cjs"
+      />
+    </div>
+  </div>
+</Layout>

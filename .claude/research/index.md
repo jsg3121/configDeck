@@ -17,12 +17,13 @@
 
 ### 파일명 접두사
 
-| 접두사 | 용도                                     | 생성 에이전트         |
-| ------ | ---------------------------------------- | --------------------- |
-| `RES`  | 기술 리서치, UI/UX 레퍼런스 등 일반 조사 | `/research` 스킬      |
-| `MI`   | 시장 조사 (시장 규모, 경쟁사, 트렌드)    | market-intelligence   |
-| `BA`   | 경쟁력 분석 (SWOT, 포지셔닝)             | business-analyst      |
-| `STR`  | 전략 보고서 (전략 옵션, 로드맵)          | strategy-planner      |
+| 접두사 | 용도                                          | 생성 에이전트       |
+| ------ | --------------------------------------------- | ------------------- |
+| `RES`  | 기술 리서치, UI/UX 레퍼런스 등 일반 조사      | `/research` 스킬    |
+| `MI`   | 시장 조사 (시장 규모, 경쟁사, 트렌드)         | market-intelligence |
+| `BA`   | 경쟁력 분석 (SWOT, 포지셔닝)                  | business-analyst    |
+| `STR`  | 전략 보고서 (전략 옵션, 로드맵)               | strategy-planner    |
+| `MKT`  | 마케팅/그로스 채널 전략 (유입, SEO, 커뮤니티) | `/research` 스킬    |
 
 ### 네이밍 규칙
 
@@ -33,7 +34,14 @@
 
 ## 보고서 목록
 
-| 번호                                                     | 제목                                     | 날짜       |
-| -------------------------------------------------------- | ---------------------------------------- | ---------- |
-| [0001](reports/RES-0001-ui-ux-reference.md)              | ConfigDeck UI/UX 레퍼런스 분석           | 2026-04-06 |
-| [0002](reports/RES-0002-stack-generator-ux-patterns.md)  | 스택 단위 설정 파일 생성기 UX 패턴 조사  | 2026-04-13 |
+| 번호                                                                        | 제목                                          | 날짜       |
+| --------------------------------------------------------------------------- | --------------------------------------------- | ---------- |
+| [RES-0001](reports/RES-0001-ui-ux-reference.md)                             | ConfigDeck UI/UX 레퍼런스 분석                | 2026-04-06 |
+| [RES-0002](reports/RES-0002-stack-generator-ux-patterns.md)                 | 스택 단위 설정 파일 생성기 UX 패턴 조사       | 2026-04-13 |
+| [MI-0001](reports/MI-0001-configdeck-market-analysis.md)                    | ConfigDeck 시장 분석 (초기)                   | 2026-04    |
+| [MI-0002](reports/MI-0002-competitor-analysis-2026-04.md)                   | ConfigDeck 경쟁사 분석                        | 2026-04    |
+| [BA-0001](reports/BA-0001-configdeck-competitiveness.md)                    | ConfigDeck 경쟁력 분석 (초기)                 | 2026-04    |
+| [BA-0002](reports/BA-0002-configdeck-competitiveness-2026-04.md)            | ConfigDeck 경쟁력 분석 (2026-04 재실행)       | 2026-04    |
+| [STR-0001](reports/STR-0001-configdeck-strategy.md)                         | ConfigDeck 전략 보고서 (초기)                 | 2026-04    |
+| [STR-0002](reports/STR-0002-configdeck-strategy-2026-04.md)                 | ConfigDeck 시장 진입 및 성장 전략             | 2026-04-24 |
+| [MKT-0001](reports/MKT-0001-user-acquisition-channels-2026-04.md)           | ConfigDeck 사용자 유입 채널 전략              | 2026-04-29 |

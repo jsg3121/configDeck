@@ -8,14 +8,11 @@
 
   import { getOptionDefinition } from '@/lib/data/options'
   import { generateConfigBySlug } from '@/lib/generators'
-  import type { MigrationResult } from '@/lib/migration'
   import { buildEmptyValues } from '@/lib/modules/optionBuilder'
   import { decodeFileGeneratorUrl } from '@/lib/utils/shareUrl'
   import type { OptionSection } from '@/types/generator'
 
   import CodePreview from './CodePreview.svelte'
-  import GeneratorTabs from './GeneratorTabs.svelte'
-  import MigrationPanel from './MigrationPanel.svelte'
   import {
     applyPreset,
     buildShareUrl,
@@ -38,36 +35,19 @@
     fileSlug: string
     locale: string
     presets: string[]
-    supportsMigration: boolean
     relatedFiles?: RelatedFile[]
   }
 
-  const { fileSlug, locale, presets, supportsMigration, relatedFiles = [] }: Props = $props()
+  const { fileSlug, locale, presets, relatedFiles = [] }: Props = $props()
 
   let selectedPreset = $state<string | null>(null)
-  let activeTab = $state<'generate' | 'migrate'>('generate')
   let touchedKeys = $state(new Set<string>())
   let generatorOptions = $state<Record<string, unknown>>({})
   let optionValues = $state<Record<string, unknown>>(buildEmptyValues(fileSlug))
   let formSections = $derived<OptionSection[]>(getOptionDefinition(fileSlug)?.sections ?? [])
   let mobileView = $state<'options' | 'preview'>('options')
-  let migrationResult = $state<MigrationResult | null>(null)
 
-  const baseOutput = generateConfigBySlug(fileSlug, {})
-
-  let generatedOutput = $derived(
-    activeTab === 'migrate' && migrationResult
-      ? {
-          fileName: baseOutput.fileName || 'eslint.config.mjs',
-          code: migrationResult.output,
-          language: baseOutput.language || 'javascript',
-        }
-      : generateConfigBySlug(fileSlug, generatorOptions),
-  )
-
-  const handleMigrationResult = (result: MigrationResult | null) => {
-    migrationResult = result
-  }
+  let generatedOutput = $derived(generateConfigBySlug(fileSlug, generatorOptions))
 
   const handlePresetChange = (presetName: string) => {
     selectedPreset = presetName
@@ -149,41 +129,33 @@
     class="w-full lg:w-1/2 lg:overflow-y-auto {mobileView === 'preview' ? 'hidden lg:block' : ''}"
   >
     <div class="mx-auto max-w-full px-6 py-8">
-      {#if supportsMigration}
-        <GeneratorTabs {activeTab} {locale} ontabchange={(tab) => (activeTab = tab)} />
-      {/if}
-
-      {#if activeTab === 'generate'}
-        <div class="border-b border-border pb-6">
-          <div class="flex items-center justify-between">
-            <h2 class="text-xs font-semibold uppercase tracking-wider text-gray-400">
-              {presetLabel}
-            </h2>
-            <button
-              type="button"
-              class="text-xs text-gray-400 hover:text-gray-600"
-              onclick={handleClear}
-            >
-              {clearLabel}
-            </button>
-          </div>
-          <div class="mt-3">
-            <PresetSelector {presets} {selectedPreset} onpresetchange={handlePresetChange} />
-          </div>
+      <div class="border-b border-border pb-6">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xs font-semibold uppercase tracking-wider text-gray-400">
+            {presetLabel}
+          </h2>
+          <button
+            type="button"
+            class="text-xs text-gray-400 hover:text-gray-600"
+            onclick={handleClear}
+          >
+            {clearLabel}
+          </button>
         </div>
+        <div class="mt-3">
+          <PresetSelector {presets} {selectedPreset} onpresetchange={handlePresetChange} />
+        </div>
+      </div>
 
-        <OptionForm
-          sections={formSections}
-          values={optionValues}
-          {locale}
-          onchange={handleOptionChange}
-        />
+      <OptionForm
+        sections={formSections}
+        values={optionValues}
+        {locale}
+        onchange={handleOptionChange}
+      />
 
-        {#if relatedFiles.length > 0}
-          <RelatedFilesSection files={relatedFiles} {locale} />
-        {/if}
-      {:else}
-        <MigrationPanel {locale} onmigrationresult={handleMigrationResult} />
+      {#if relatedFiles.length > 0}
+        <RelatedFilesSection files={relatedFiles} {locale} />
       {/if}
     </div>
   </div>

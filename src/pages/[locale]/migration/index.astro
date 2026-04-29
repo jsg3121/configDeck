@@ -1,0 +1,70 @@
+---
+/**
+ * 마이그레이션 허브 페이지.
+ * ESLint / Prettier / TSConfig 진입점을 카드 형태로 노출한다.
+ *
+ * SPEC-0004 §3.2.2 — 도구 선택 (Phase C 10단계, 결정 1 — A안: 허브 + 개별 페이지).
+ */
+import { buildLocalizedPath, getTranslation, SUPPORTED_LOCALES, type Locale } from '@/i18n'
+
+import Layout from '@/layouts/Layout.astro'
+import MigrationToolCard from '@/components/migration/MigrationToolCard.svelte'
+
+export const getStaticPaths = () => {
+  return SUPPORTED_LOCALES.map((locale) => ({ params: { locale } }))
+}
+
+const { locale } = Astro.params as { locale: Locale }
+
+const tools = [
+  {
+    slug: 'eslint',
+    iconColor: 'eslint' as const,
+  },
+  {
+    slug: 'prettier',
+    iconColor: 'prettier' as const,
+  },
+  {
+    slug: 'tsconfig',
+    iconColor: 'tsconfig' as const,
+  },
+]
+---
+
+<Layout
+  title={getTranslation(locale, 'seo.migrationHubTitle')}
+  description={getTranslation(locale, 'seo.migrationHubDescription')}
+  locale={locale}
+  pagePath="/migration"
+  currentPath="/migration"
+>
+  <section class="mx-auto max-w-7xl px-6 pt-16 pb-10">
+    <h1 class="text-4xl font-extrabold tracking-tight lg:text-5xl">
+      {getTranslation(locale, 'migration.hubTitle')}
+    </h1>
+    <p class="mt-4 max-w-3xl text-lg text-gray-500">
+      {getTranslation(locale, 'migration.hubDescription')}
+    </p>
+  </section>
+
+  <section class="mx-auto max-w-7xl px-6 pb-20">
+    <h2 class="text-xs font-semibold uppercase tracking-wider text-gray-400">
+      {getTranslation(locale, 'migration.chooseToolHeading')}
+    </h2>
+    <div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+      {
+        tools.map((tool) => (
+          <MigrationToolCard
+            href={buildLocalizedPath(locale, `/migration/${tool.slug}`)}
+            name={getTranslation(locale, `migration.tools.${tool.slug}.name`)}
+            tagline={getTranslation(locale, `migration.tools.${tool.slug}.tagline`)}
+            description={getTranslation(locale, `migration.tools.${tool.slug}.description`)}
+            ctaLabel={getTranslation(locale, `migration.tools.${tool.slug}.ctaLabel`)}
+            iconColor={tool.iconColor}
+          />
+        ))
+      }
+    </div>
+  </section>
+</Layout>

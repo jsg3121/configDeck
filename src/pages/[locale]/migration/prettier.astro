@@ -1,0 +1,67 @@
+---
+/**
+ * Prettier 설정 진단 페이지.
+ *
+ * SPEC-0004 §3.2.2 — Phase C 10단계.
+ */
+import { buildLocalizedPath, getTranslation, SUPPORTED_LOCALES, type Locale } from '@/i18n'
+
+import Layout from '@/layouts/Layout.astro'
+import MigrationWorkbench from '@/components/migration/MigrationWorkbench.svelte'
+
+export const getStaticPaths = () => {
+  return SUPPORTED_LOCALES.map((locale) => ({ params: { locale } }))
+}
+
+const { locale } = Astro.params as { locale: Locale }
+---
+
+<Layout
+  title={getTranslation(locale, 'seo.migrationPrettierTitle')}
+  description={getTranslation(locale, 'seo.migrationPrettierDescription')}
+  locale={locale}
+  pagePath="/migration/prettier"
+  currentPath="/migration"
+>
+  <div class="mx-auto flex w-full max-w-7xl flex-col lg:h-[calc(100vh-65px)]">
+    <div class="shrink-0 px-6 pt-8">
+      <a
+        href={buildLocalizedPath(locale, '/migration')}
+        class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900"
+      >
+        <svg
+          class="h-4 w-4"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path>
+        </svg>
+        {getTranslation(locale, 'migration.hubTitle')}
+      </a>
+
+      <header class="mt-6 mb-6">
+        <h1 class="text-3xl font-bold tracking-tight lg:text-4xl">
+          {getTranslation(locale, 'migration.page.prettierTitle')}
+        </h1>
+        <p class="mt-3 max-w-3xl text-base text-gray-500">
+          {getTranslation(locale, 'migration.page.prettierDescription')}
+        </p>
+      </header>
+    </div>
+
+    <div class="w-full min-h-0 flex-1">
+      <MigrationWorkbench
+        client:load
+        locale={locale}
+        toolType="prettier"
+        outputFileName="prettier.config.mjs"
+        placeholder={getTranslation(locale, 'migration.page.placeholders.prettier')}
+        supportedFormatsLabel={getTranslation(locale, 'migration.page.supportedFormats.prettier')}
+        acceptExtensions=".prettierrc,.prettierrc.json,.prettierrc.js,.prettierrc.cjs,.prettierrc.mjs,prettier.config.js,prettier.config.cjs,prettier.config.mjs,.json,.js,.cjs,.mjs"
+      />
+    </div>
+  </div>
+</Layout>

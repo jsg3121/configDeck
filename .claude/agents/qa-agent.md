@@ -5,7 +5,7 @@ description: |
   TRIGGER when: "검증해줘", "테스트 실행해줘", "QA 해줘", "품질 검사", 전체/특정 영역 종합 테스트 필요, PR 생성 전 품질 게이트 확인
   DO NOT TRIGGER when: 테스트 작성(test-writer/e2e-test 스킬 사용), 린트 검사만 필요(lint-check 스킬), 코드 리뷰(code-review 스킬)
 model: sonnet
-permissionMode: default
+permissionMode: plan
 tools:
   - Read
   - Write
