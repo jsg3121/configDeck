@@ -16,3 +16,11 @@ export { eslintInspector } from './eslintInspector'
 export { migrateEslintConfig } from './eslintMigrator'
 export { detectConfigFormat, parseEslintLegacyConfig, type LegacyEslintConfig } from './parser'
 export { auditEslintConfig } from './eslintAuditor'
+
+// Prettier 인스펙터 (객체 래퍼)
+export { prettierInspector } from './prettierInspector'
+export type { PrettierConfig } from './prettierParser'
+
+// TSConfig 인스펙터 (객체 래퍼)
+export { tsconfigInspector } from './tsconfigInspector'
+export type { TsconfigJson } from './tsconfigParser'

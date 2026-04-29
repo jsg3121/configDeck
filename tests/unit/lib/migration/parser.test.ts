@@ -128,3 +128,45 @@ describe('parseEslintLegacyConfig - 알 수 없는 형식', () => {
     expect(result).toEqual({})
   })
 })
+
+/**
+ * 1.4.0 parser-hardening 회귀 방지 (PR #32 Gemini Code Assist 후속).
+ * codeUtils의 문자열-안전 유틸을 ESLint parser도 사용하도록 교체한 결과,
+ * 다음 케이스가 정확히 처리되어야 한다.
+ */
+describe('parseEslintLegacyConfig - 문자열 리터럴 보호 (1.4.0 hardening)', () => {
+  it('JSON 입력의 문자열 안 URL이 한 줄 주석으로 잘못 제거되지 않는다', () => {
+    const input = `{
+      "extends": ["./config-base"],
+      "rules": {
+        "no-restricted-imports": ["error", { "paths": ["https://example.com"] }]
+      }
+    }`
+    const result = parseEslintLegacyConfig(input, 'json')
+    expect(result.extends).toEqual(['./config-base'])
+    expect(result.rules).toBeDefined()
+  })
+
+  it('JSON 입력의 문자열 안 "/*" 패턴이 블록 주석으로 오인되지 않는다', () => {
+    const input = `{
+      "rules": {
+        "no-restricted-syntax": ["error", "Pattern: /*hidden*/"]
+      }
+    }`
+    const result = parseEslintLegacyConfig(input, 'json')
+    expect(result.rules).toBeDefined()
+    // "no-restricted-syntax" 키가 그대로 유지되어야 함
+    expect(Object.keys(result.rules ?? {})).toContain('no-restricted-syntax')
+  })
+
+  it('CommonJS 입력에서 문자열 값 안의 객체 패턴이 변환되지 않는다', () => {
+    const input = `module.exports = {
+      rules: {
+        'no-restricted-syntax': ['error', { selector: 'CallExpression', message: 'use { allowed: true } syntax' }]
+      }
+    }`
+    const result = parseEslintLegacyConfig(input, 'commonjs')
+    expect(result.rules).toBeDefined()
+    expect(Object.keys(result.rules ?? {})).toContain('no-restricted-syntax')
+  })
+})

@@ -4,7 +4,7 @@ title: Import & Audit — 기존 설정 파일 분석/진단/마이그레이션
 status: 구현 중
 owner: jsg3121
 created: 2026-04-26
-updated: 2026-04-28
+updated: 2026-04-29
 related_adrs:
   - ADR-0014  # 성장 전략 로드맵 (Import & Audit P0.5 신설)
   - ADR-0016  # E2E 테스트 검증 전략 (7단계 작업에서 도출)
@@ -244,9 +244,9 @@ Audit 모드에서는 형식 배지 옆에 "Audit only" 배지를 노출하고, 
 | 5 | **B** | **공통 인터페이스 정형화** (`ConfigInspector`) ✅ | src/lib/migration/types.ts | 4 |
 | 6 | **B** | **Audit-only 진입 동선 추가** ✅ | MigrationPanel 모드 분기 (허브 페이지는 10단계로 분리) | 5 |
 | 7 | **B** | **E2E 테스트 보완** (마이그레이션 실패/성공 플로우) ✅ | tests/e2e/flows/migration-flow.spec.ts | 6 |
-| 8 | C | Prettier inspector 구현 | src/lib/migration/prettier* | 5 |
-| 9 | C | TSConfig inspector 구현 | src/lib/migration/tsconfig* | 5 |
-| 10 | C | 도구 선택 허브 페이지 + SEO 메타 | src/pages/[locale]/migration/* | 6, 8, 9 |
+| 8 | C | Prettier inspector 구현 ✅ | src/lib/migration/prettier{Parser,Auditor,Migrator,Inspector}.ts | 5 |
+| 9 | C | TSConfig inspector 구현 ✅ | src/lib/migration/tsconfig{Parser,Auditor,Migrator,Inspector}.ts | 5 |
+| 10 | C | 도구 선택 허브 페이지 + SEO 메타 ✅ | src/pages/[locale]/migration/* | 6, 8, 9 |
 
 ### 6.2 마일스톤
 
@@ -306,3 +306,6 @@ Audit 모드에서는 형식 배지 옆에 "Audit only" 배지를 노출하고, 
 | 2026-04-27 | §3.2.1 인터페이스 정형화 (Phase B 5단계 완료). MigrationResult.outputCode → output 리네임, AuditItem에 suggestion?/suggestionKo? 보강, ConfigInspector TModern 옵셔널화. 브랜치 feature/1.3.0-config-inspector | jsg3121 |
 | 2026-04-28 | Audit-only 진입 동선 추가 (Phase B 6단계 완료). MigrationPanel에 panelMode 분기 도입, Flat config 입력 시 입력 그대로 미리보기 + audit-only 흐름. 모드 배지 + 안내문 + 권장 규칙 재적용 후 audit 재계산. 단위 테스트 4건 추가. 브랜치 feature/1.3.0-audit-only | jsg3121 |
 | 2026-04-28 | E2E 테스트 보완 + Phase B 종합 QA 검증 완료 (Phase B 7단계 완료). migration-flow.spec.ts 신규(4 시나리오 × 5 브라우저). qa-agent v1→v2→v3 사이클로 차단 이슈 4건 fix(Q3-A 인라인 import 타입, Q3-B 'pre code' ARIA 셀렉터 + hydration 대기, Q3-C 사이트 header 셀렉터 구체화, Q3-D Prettier 포맷). E2E 운영 가이드 신규(.claude/qa/guides/e2e-execution.md). Phase B 마일스톤(M2) 완료, 1.3.0 main 머지 가능 판정. 브랜치 feature/1.3.0-qa | jsg3121 |
+| 2026-04-29 | Prettier inspector 구현 (Phase C 8단계 완료). prettierParser/Auditor/Migrator/Inspector 신규. Prettier 3.0.0 릴리즈 노트 기반 데이터셋: jsxBracketSameLine→bracketSameLine 자동 변환, pluginSearchDirs 제거+경고, trailingComma 기본값 변경 info 안내. ESLint와 달리 객체 환원이 자연스러워 MigrationResult.config 필드를 채움. 단위 테스트 43건 추가(parser 17 + auditor 15 + migrator 11). 브랜치 feature/1.4.0-prettier-inspector | jsg3121 |
+| 2026-04-29 | TSConfig inspector 구현 (Phase C 9단계 완료). tsconfigParser/Auditor/Migrator/Inspector 신규. TypeScript 공식 레퍼런스 기반 데이터셋: deprecated 9개(out, charset, suppressExcessPropertyErrors, importsNotUsedAsValues 등), 권장 옵션 14개(target/module/strict/skipLibCheck/noUncheckedIndexedAccess 등). migrate는 "권장값 적용" 동작(Q3 사용자 결정). extends 필드는 외부 fetch 없이 표면 분석만 + "extends된 옵션은 진단에 포함되지 않음" info 안내(Q1 사용자 결정). 모든 메시지를 단정적이지 않은 "권장합니다/검토하세요" 톤으로 통일하고 migrator output 헤더에 "권장값 기반 결과 — 검토 후 적용" 안내 주석 + warnings 첫 항목으로 일반 경고 추가(사용자 합의 — TSConfig는 정답이 아닌 권장형이므로 사용자 혼동 방지). 단위 테스트 47건 추가(parser 19 + auditor 15 + migrator 13). 브랜치 feature/1.4.0-tsconfig-inspector | jsg3121 |
+| 2026-04-29 | 마이그레이션 허브 + 도구별 페이지 4개 추가 (Phase C 10단계 완료). `src/pages/[locale]/migration/{index,eslint,prettier,tsconfig}.astro` 신규. MigrationPanel을 `src/components/migration/`로 이전 + prop 주입 방식으로 범용화(toolType/inspector/acceptExtensions/placeholder 주입). 신규 컴포넌트 3종 추가: MigrationToolCard(허브 카드), TSConfigDisclaimer(top/result 2 variant — 결정 7), MigrationResultPreview(미리보기+복사/다운로드). 부모 아일랜드 1개(MigrationWorkbench) + 자식 컴포넌트 2개 구조로 결과 상태 공유. 입력 변경 시 300ms debounce 자동 audit+migrate(결정 3 — A안). 기존 `/{locale}/generator/eslint-config` 페이지에서 마이그레이션 탭 단순 제거(결정 5 — 리다이렉트/배너 없음), `supportsMigration` prop과 데이터 필드 모두 제거. 데스크톱 좌:우 1:1 비율 + lg sticky 미리보기. 빈 상태 가이드 텍스트로 CLS 방지. i18n 카피(영/한) 등록(SEO title/description 4세트, 도구 카드 3세트, placeholder/supportedFormats/disclaimer 등). 브랜치 feature/1.4.0-migration-hub | jsg3121 |
