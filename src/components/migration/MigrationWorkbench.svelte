@@ -18,6 +18,7 @@
 
   import MigrationPanel from './MigrationPanel.svelte'
   import MigrationResultPreview from './MigrationResultPreview.svelte'
+  import ToolMismatchBanner from './ToolMismatchBanner.svelte'
   import TSConfigDisclaimer from './TSConfigDisclaimer.svelte'
 
   type ToolType = 'eslint' | 'prettier' | 'tsconfig'
@@ -56,43 +57,59 @@
   /** MigrationPanel에서 받은 변환/감사 결과 — 미리보기에 그대로 흘려보낸다. */
   let migrationResult = $state<MigrationResult | null>(null)
 
-  let previewCode = $derived(migrationResult?.output ?? '')
+  /** 입력이 다른 도구의 설정으로 추정되면 배너를 노출하고 미리보기를 비운다. */
+  let detectedMismatch = $state<ToolType | null>(null)
+
+  let previewCode = $derived(detectedMismatch ? '' : (migrationResult?.output ?? ''))
 
   const handleMigrationResult = (result: MigrationResult | null) => {
     migrationResult = result
   }
+
+  const handleDetectedMismatch = (detected: ToolType | null) => {
+    detectedMismatch = detected
+  }
 </script>
 
-<div class="flex h-full w-full flex-col gap-6 lg:flex-row lg:gap-8">
+<div class="mx-auto flex h-full w-full flex-col lg:flex-row">
   <!-- 좌측: 입력 + 진단 -->
-  <div class="w-full lg:w-1/2">
-    {#if toolType === 'tsconfig'}
-      <div class="mb-4">
-        <TSConfigDisclaimer {locale} variant="top" />
-      </div>
-    {/if}
+  <div class="w-full lg:w-1/2 lg:overflow-y-auto">
+    <div class="mx-auto max-w-full px-6 py-8">
+      {#if toolType === 'tsconfig'}
+        <div class="mb-4">
+          <TSConfigDisclaimer {locale} variant="top" />
+        </div>
+      {/if}
 
-    <MigrationPanel
-      {locale}
-      {toolType}
-      {inspector}
-      {acceptExtensions}
-      {placeholder}
-      {supportedFormatsLabel}
-      onmigrationresult={handleMigrationResult}
-    />
+      {#if detectedMismatch}
+        <div class="mb-4">
+          <ToolMismatchBanner {locale} currentTool={toolType} detectedTool={detectedMismatch} />
+        </div>
+      {/if}
+
+      <MigrationPanel
+        {locale}
+        {toolType}
+        {inspector}
+        {acceptExtensions}
+        {placeholder}
+        {supportedFormatsLabel}
+        onmigrationresult={handleMigrationResult}
+        ondetectedmismatch={handleDetectedMismatch}
+      />
+    </div>
   </div>
 
-  <!-- 우측: 미리보기 (lg 이상 sticky) -->
-  <div class="w-full lg:w-1/2">
-    <div class="lg:sticky lg:top-6 lg:h-[calc(100vh-8rem)]">
-      <MigrationResultPreview {locale} code={previewCode} fileName={outputFileName}>
-        {#snippet headerSlot()}
-          {#if toolType === 'tsconfig' && previewCode.length > 0}
-            <TSConfigDisclaimer {locale} variant="result" />
-          {/if}
-        {/snippet}
-      </MigrationResultPreview>
-    </div>
+  <!-- 우측: 미리보기 -->
+  <div
+    class="w-full border-t border-border lg:w-[calc(100%-444px)] lg:h-full lg:border-t-0 lg:border-l lg:overflow-hidden"
+  >
+    <MigrationResultPreview {locale} code={previewCode} fileName={outputFileName}>
+      {#snippet headerSlot()}
+        {#if toolType === 'tsconfig' && previewCode.length > 0}
+          <TSConfigDisclaimer {locale} variant="result" />
+        {/if}
+      {/snippet}
+    </MigrationResultPreview>
   </div>
 </div>

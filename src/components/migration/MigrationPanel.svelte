@@ -18,6 +18,7 @@
   import MigrationFeedback from '@/components/generator/MigrationFeedback.svelte'
   import type { ConfigInspector } from '@/lib/migration'
   import { type AuditResult, type MigrationResult, type MigrationWarning } from '@/lib/migration'
+  import { detectToolType } from '@/lib/migration/toolSignature'
 
   type ToolType = 'eslint' | 'prettier' | 'tsconfig'
 
@@ -30,6 +31,8 @@
     supportedFormatsLabel: string
     onmigrationresult?: (result: MigrationResult | null) => void
     onapplyrule?: (ruleName: string, ruleValue: string) => void
+    /** 입력이 다른 도구의 설정으로 추정될 때 부모에게 알린다. null이면 일치/판별불가. */
+    ondetectedmismatch?: (detectedTool: ToolType | null) => void
   }
 
   let {
@@ -41,6 +44,7 @@
     supportedFormatsLabel,
     onmigrationresult,
     onapplyrule,
+    ondetectedmismatch,
   }: Props = $props()
 
   /** 패널 동작 모드 */
@@ -67,12 +71,31 @@
   const runMigration = () => {
     if (inputCode.trim().length < 5) {
       onmigrationresult?.(null)
+      ondetectedmismatch?.(null)
       warnings = []
       auditResult = null
+      errorMessage = null
       panelMode = 'migrate'
       currentOutputCode = ''
       return
     }
+
+    // 도구 유형 검증 — 다른 도구의 설정으로 추정되면 변환을 차단한다.
+    const detected = detectToolType(inputCode)
+    if (
+      (detected === 'eslint' || detected === 'prettier' || detected === 'tsconfig') &&
+      detected !== toolType
+    ) {
+      ondetectedmismatch?.(detected)
+      onmigrationresult?.(null)
+      warnings = []
+      auditResult = null
+      errorMessage = null
+      panelMode = 'migrate'
+      currentOutputCode = ''
+      return
+    }
+    ondetectedmismatch?.(null)
 
     // 입력 코드를 먼저 진단해 Legacy 여부를 판정한다.
     const inputAudit = inspector.audit(inputCode)

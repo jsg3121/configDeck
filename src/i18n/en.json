@@ -157,6 +157,17 @@
       "copiedLabel": "Copied!",
       "downloadButton": "Download",
       "downloadedLabel": "Done!"
+    },
+    "mismatchWarning": {
+      "title": "This looks like a different tool's config",
+      "description": "Your input looks like a {detectedTool} config, but this page is for {currentTool}. Go to the right tool page for accurate results.",
+      "goToTool": "Go to {detectedTool} page",
+      "blockedNotice": "Conversion blocked due to tool type mismatch."
+    },
+    "toolNames": {
+      "eslint": "ESLint",
+      "prettier": "Prettier",
+      "tsconfig": "TSConfig"
     }
   },
   "seo": {

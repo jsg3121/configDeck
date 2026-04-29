@@ -157,6 +157,17 @@
       "copiedLabel": "복사됨!",
       "downloadButton": "다운로드",
       "downloadedLabel": "완료!"
+    },
+    "mismatchWarning": {
+      "title": "다른 도구의 설정으로 보입니다",
+      "description": "입력한 내용은 {detectedTool} 설정처럼 보이지만, 이 페이지는 {currentTool}용입니다. 정확한 결과를 위해 해당 도구의 페이지로 이동하세요.",
+      "goToTool": "{detectedTool} 페이지로 이동",
+      "blockedNotice": "도구 유형 불일치로 변환이 차단되었습니다."
+    },
+    "toolNames": {
+      "eslint": "ESLint",
+      "prettier": "Prettier",
+      "tsconfig": "TSConfig"
     }
   },
   "seo": {
