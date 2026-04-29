@@ -16,6 +16,48 @@ export const getStaticPaths = () => {
 }
 
 const { locale } = Astro.params as { locale: Locale }
+
+// JSON-LD 구조화 데이터
+const siteUrl = 'https://configdeck.dev'
+
+const webApplicationJsonLd = {
+  '@type': 'WebApplication',
+  name: 'ConfigDeck',
+  url: `${siteUrl}/${locale}/migration/tsconfig`,
+  description: getTranslation(locale, 'seo.migrationTsconfigDescription'),
+  applicationCategory: 'DeveloperApplication',
+  operatingSystem: 'Any',
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'USD',
+  },
+  browserRequirements: 'Requires JavaScript',
+  inLanguage: ['en', 'ko'],
+}
+
+const breadcrumbJsonLd = {
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: getTranslation(locale, 'migration.breadcrumb.home'),
+      item: `${siteUrl}/${locale}`,
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: getTranslation(locale, 'migration.breadcrumb.hub'),
+      item: `${siteUrl}/${locale}/migration`,
+    },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      name: getTranslation(locale, 'migration.toolNames.tsconfig'),
+    },
+  ],
+}
 ---
 
 <Layout
@@ -24,25 +66,28 @@ const { locale } = Astro.params as { locale: Locale }
   locale={locale}
   pagePath="/migration/tsconfig"
   currentPath="/migration"
+  jsonLd={[webApplicationJsonLd, breadcrumbJsonLd]}
 >
   <div class="mx-auto flex w-full max-w-7xl flex-col lg:h-[calc(100vh-65px)]">
     <div class="shrink-0 px-6 pt-8">
-      <a
-        href={buildLocalizedPath(locale, '/migration')}
-        class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900"
-      >
-        <svg
-          class="h-4 w-4"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          stroke-width="2"
-          aria-hidden="true"
+      <nav aria-label="Breadcrumb">
+        <a
+          href={buildLocalizedPath(locale, '/migration')}
+          class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900"
         >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path>
-        </svg>
-        {getTranslation(locale, 'migration.hubTitle')}
-      </a>
+          <svg
+            class="h-4 w-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+            aria-hidden="true"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          {getTranslation(locale, 'migration.hubTitle')}
+        </a>
+      </nav>
 
       <header class="mt-6 mb-6">
         <h1 class="text-3xl font-bold tracking-tight lg:text-4xl">
@@ -54,7 +99,10 @@ const { locale } = Astro.params as { locale: Locale }
       </header>
     </div>
 
-    <div class="w-full min-h-0 flex-1">
+    <section
+      class="w-full min-h-0 flex-1"
+      aria-label={getTranslation(locale, 'migration.page.tsconfigTitle')}
+    >
       <MigrationWorkbench
         client:load
         locale={locale}
@@ -64,6 +112,6 @@ const { locale } = Astro.params as { locale: Locale }
         supportedFormatsLabel={getTranslation(locale, 'migration.page.supportedFormats.tsconfig')}
         acceptExtensions=".json,tsconfig.json,tsconfig.base.json"
       />
-    </div>
+    </section>
   </div>
 </Layout>

@@ -30,6 +30,38 @@ const tools = [
     iconColor: 'tsconfig' as const,
   },
 ]
+
+// JSON-LD 구조화 데이터
+const siteUrl = 'https://configdeck.dev'
+
+const webApplicationJsonLd = {
+  '@type': 'WebApplication',
+  name: 'ConfigDeck',
+  url: `${siteUrl}/${locale}/migration`,
+  description: getTranslation(locale, 'seo.migrationHubDescription'),
+  applicationCategory: 'DeveloperApplication',
+  operatingSystem: 'Any',
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'USD',
+  },
+  browserRequirements: 'Requires JavaScript',
+  inLanguage: ['en', 'ko'],
+}
+
+const itemListJsonLd = {
+  '@type': 'ItemList',
+  name: getTranslation(locale, 'migration.hubTitle'),
+  description: getTranslation(locale, 'migration.hubDescription'),
+  numberOfItems: tools.length,
+  itemListElement: tools.map((tool, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name: getTranslation(locale, `migration.tools.${tool.slug}.name`),
+    url: `${siteUrl}/${locale}/migration/${tool.slug}`,
+  })),
+}
 ---
 
 <Layout
@@ -38,6 +70,7 @@ const tools = [
   locale={locale}
   pagePath="/migration"
   currentPath="/migration"
+  jsonLd={[webApplicationJsonLd, itemListJsonLd]}
 >
   <section class="mx-auto max-w-7xl px-6 pt-16 pb-10">
     <h1 class="text-4xl font-extrabold tracking-tight lg:text-5xl">
