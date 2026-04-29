@@ -168,6 +168,10 @@
       "eslint": "ESLint",
       "prettier": "Prettier",
       "tsconfig": "TSConfig"
+    },
+    "breadcrumb": {
+      "home": "홈",
+      "hub": "마이그레이션 허브"
     }
   },
   "seo": {
