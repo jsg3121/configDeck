@@ -9,6 +9,7 @@
   },
   "nav": {
     "generator": "Generator",
+    "migration": "Migrate & Audit",
     "docs": "Docs",
     "blog": "Blog",
     "article": "Articles"
@@ -101,11 +102,76 @@
     "changelog": "Changelog",
     "feedback": "Feedback"
   },
+  "migration": {
+    "hubTitle": "Migrate & Audit Your Configs",
+    "hubDescription": "Paste a legacy config and modernize it, or audit your current setup against best practices. Everything runs in your browser — your code never leaves your machine.",
+    "chooseToolHeading": "Choose a tool",
+    "tools": {
+      "eslint": {
+        "name": "ESLint",
+        "tagline": "Legacy → Flat Config",
+        "description": "Convert .eslintrc (JSON / CommonJS) to ESLint v9 flat config and audit deprecated rules.",
+        "ctaLabel": "Migrate ESLint config"
+      },
+      "prettier": {
+        "name": "Prettier",
+        "tagline": "Audit & modernize",
+        "description": "Detect deprecated options and review your Prettier config against current recommendations.",
+        "ctaLabel": "Audit Prettier config"
+      },
+      "tsconfig": {
+        "name": "TSConfig",
+        "tagline": "Compiler options audit",
+        "description": "Find deprecated TypeScript compiler options and missing recommended settings.",
+        "ctaLabel": "Audit tsconfig.json"
+      }
+    },
+    "page": {
+      "eslintTitle": "ESLint Legacy → Flat Migration",
+      "eslintDescription": "Paste your .eslintrc (JSON or CommonJS) and migrate to ESLint v9 flat config. Deprecated rules are detected and explained.",
+      "prettierTitle": "Prettier Config Audit",
+      "prettierDescription": "Audit your Prettier config for deprecated options and review against current recommendations.",
+      "tsconfigTitle": "TSConfig Audit",
+      "tsconfigDescription": "Audit tsconfig.json for deprecated compiler options and missing recommended settings.",
+      "previewHeading": "Preview",
+      "emptyPreview": "Your migrated or normalized config will appear here once you paste an input.",
+      "supportedFormats": {
+        "eslint": "Supported: .eslintrc (JSON / CommonJS), eslint.config.mjs (Flat — audit only)",
+        "prettier": "Supported: .prettierrc, .prettierrc.json, prettier.config.mjs (JSON / CommonJS / ESM)",
+        "tsconfig": "Supported: tsconfig.json (with comments and trailing commas)"
+      },
+      "placeholders": {
+        "eslint": "{\n  \"extends\": [\"eslint:recommended\"],\n  \"rules\": {\n    \"no-console\": \"warn\"\n  }\n}",
+        "prettier": "{\n  \"semi\": false,\n  \"singleQuote\": true,\n  \"trailingComma\": \"all\"\n}",
+        "tsconfig": "{\n  \"compilerOptions\": {\n    \"target\": \"ES2022\",\n    \"strict\": true\n  }\n}"
+      }
+    },
+    "tsconfigDisclaimer": {
+      "topTitle": "Recommended values are not absolutes",
+      "topBody": "This tool diagnoses deprecated and missing recommended options in tsconfig.json. The recommended values are not the only correct answers — the optimal settings depend on your project type (monorepo / library / app) and build target (ESNext / Node / Browser). Use the audit results as a reference and decide in your own project context.",
+      "resultTitle": "Review against your project context",
+      "resultBody": "The diagnostics below are based on recommended values. Appropriate settings can vary depending on whether your project is a monorepo, a library, or an app."
+    },
+    "previewActions": {
+      "copyButton": "Copy",
+      "copiedLabel": "Copied!",
+      "downloadButton": "Download",
+      "downloadedLabel": "Done!"
+    }
+  },
   "seo": {
     "homeTitle": "ConfigDeck — Build your project config in seconds",
     "homeDescription": "Generate ESLint, Prettier, TypeScript, and more config files with stack-based presets. No more copy-pasting from docs.",
     "generatorTitle": "Config Generator — ConfigDeck",
     "generatorDescription": "Generate production-ready config files for your project. Start with a stack preset or pick individual files.",
+    "migrationHubTitle": "Migrate & Audit Configs — ConfigDeck",
+    "migrationHubDescription": "Modernize legacy configs or audit existing ones for ESLint, Prettier, and TypeScript. Runs entirely in your browser.",
+    "migrationEslintTitle": "ESLint Legacy → Flat Migration — ConfigDeck",
+    "migrationEslintDescription": "Paste .eslintrc (JSON or CommonJS) and migrate to ESLint v9 flat config. Detects deprecated rules.",
+    "migrationPrettierTitle": "Prettier Config Audit — ConfigDeck",
+    "migrationPrettierDescription": "Audit your Prettier config for deprecated options and modern best practices.",
+    "migrationTsconfigTitle": "TSConfig Audit — ConfigDeck",
+    "migrationTsconfigDescription": "Audit tsconfig.json for deprecated compiler options and missing recommended settings.",
     "docsTitle": "Documentation — ConfigDeck",
     "docsDescription": "Learn how to use ConfigDeck to generate config files for your project. Guides, API reference, and more.",
     "blogTitle": "Blog — ConfigDeck",
