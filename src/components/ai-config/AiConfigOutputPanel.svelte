@@ -76,14 +76,42 @@
     <section class="flex min-w-0 flex-col gap-2 rounded-lg border border-border bg-white p-3">
       <div class="flex items-center justify-between">
         <h3 class="text-sm font-semibold text-gray-900">생성될 파일 ({files.length}개)</h3>
-        <button
-          type="button"
-          onclick={handleDownload}
-          disabled={downloading}
-          class="rounded bg-primary px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-primary/90 disabled:opacity-50"
-        >
-          {downloading ? '다운로드 중...' : '전체 ZIP 다운로드'}
-        </button>
+        <div class="group relative">
+          <button
+            type="button"
+            onclick={handleDownload}
+            disabled={downloading}
+            class="rounded bg-primary px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-primary/90 disabled:opacity-50"
+          >
+            {downloading ? '다운로드 중...' : '전체 ZIP 다운로드'}
+          </button>
+          <!-- hover 시 버튼 위에 툴팁: macOS 숨김 파일 안내 -->
+          <div
+            role="tooltip"
+            class="pointer-events-none absolute right-0 bottom-full z-10 mb-2 w-72 rounded-lg border border-gray-200 bg-white p-3 text-left text-xs text-gray-700 opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100"
+          >
+            <p class="mb-1 font-semibold text-gray-900">📂 숨김 파일에 주의하세요</p>
+            <p class="leading-relaxed text-gray-600">
+              <code class="rounded bg-gray-100 px-1">.cursor/</code>,
+              <code class="rounded bg-gray-100 px-1">.claude/</code>,
+              <code class="rounded bg-gray-100 px-1">.github/</code> 같은 점(.)으로 시작하는
+              폴더는 macOS Finder 기본 설정에서 숨겨져 있습니다.
+            </p>
+            <ul class="mt-2 flex flex-col gap-0.5 text-gray-600">
+              <li>
+                <span class="font-medium text-gray-800">macOS Finder</span>:
+                <kbd class="rounded border border-gray-300 bg-gray-50 px-1 font-mono">⌘ + ⇧ + .</kbd>
+              </li>
+              <li>
+                <span class="font-medium text-gray-800">VS Code / Cursor</span>: 사이드바에서 정상 표시
+              </li>
+              <li>
+                <span class="font-medium text-gray-800">터미널</span>:
+                <code class="rounded bg-gray-100 px-1">ls -la</code>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
       <AiConfigFileTree
         nodes={tree}
