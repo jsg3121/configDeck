@@ -134,13 +134,13 @@
             </button>
             {#if infoOpen}
               <!--
-                모바일(<sm): 화면 좌우에서 12px 여백 둔 폭(=뷰포트-1.5rem). 우측 끝에 정렬해
-                ⓘ 버튼과 시각적 연결을 유지하되 좌측이 화면을 벗어나지 않도록 한다.
-                데스크톱(>=sm): 버튼 우측 위쪽에 18rem 폭으로 정렬.
+                모바일(<sm): 화면 하단 시트로 표시. fixed inset-x-3 + bottom-3으로
+                  ⓘ 버튼 위치와 무관하게 화면 안에 들어오게 한다 (절단 방지).
+                데스크톱(>=sm): 기존대로 ⓘ 버튼 우측 위쪽에 18rem 폭으로 absolute 정렬.
               -->
               <div
                 role="dialog"
-                class="absolute right-0 top-full z-20 mt-2 w-[calc(100vw-1.5rem)] max-w-xs rounded-lg border border-gray-200 bg-white p-3 shadow-lg sm:bottom-full sm:top-auto sm:mt-0 sm:mb-2 sm:w-72 sm:max-w-none"
+                class="fixed inset-x-3 bottom-3 z-20 rounded-lg border border-gray-200 bg-white p-3 shadow-lg sm:absolute sm:inset-x-auto sm:bottom-full sm:right-0 sm:mb-2 sm:w-72"
               >
                 <HiddenFilesNotice />
               </div>
