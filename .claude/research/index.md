@@ -45,3 +45,4 @@
 | [STR-0001](reports/STR-0001-configdeck-strategy.md)                         | ConfigDeck 전략 보고서 (초기)                 | 2026-04    |
 | [STR-0002](reports/STR-0002-configdeck-strategy-2026-04.md)                 | ConfigDeck 시장 진입 및 성장 전략             | 2026-04-24 |
 | [MKT-0001](reports/MKT-0001-user-acquisition-channels-2026-04.md)           | ConfigDeck 사용자 유입 채널 전략              | 2026-04-29 |
+| [RES-0003](reports/RES-0003-ai-tool-config-files-2026-04.md)                | AI 코딩 도구 설정 파일 생성기 시장 리서치     | 2026-04-30 |
