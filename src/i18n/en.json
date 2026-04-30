@@ -9,7 +9,7 @@
   },
   "nav": {
     "generator": "Generator",
-    "aiConfig": "AI Config",
+    "aiConfig": "AI Config Files",
     "migration": "Migrate & Audit",
     "docs": "Docs",
     "blog": "Blog",

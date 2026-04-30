@@ -9,7 +9,7 @@
   },
   "nav": {
     "generator": "생성기",
-    "aiConfig": "AI 설정",
+    "aiConfig": "AI 문서 생성기",
     "migration": "마이그레이션 & 진단",
     "docs": "문서",
     "blog": "블로그",
