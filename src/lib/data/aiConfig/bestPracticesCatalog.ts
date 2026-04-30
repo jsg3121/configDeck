@@ -24,14 +24,16 @@ export const UNIVERSAL_BEST_PRACTICES: readonly BestPracticeItem[] = [
   {
     id: 'tests-must-pass-before-merge',
     label: '머지 전 모든 테스트 통과 필수',
-    outputText: 'All tests must pass locally before opening a pull request. Do not push failing tests.',
+    outputText:
+      'All tests must pass locally before opening a pull request. Do not push failing tests.',
     category: 'testing',
     appliesTo: ['all'],
   },
   {
     id: 'add-tests-for-new-code',
     label: '신규 기능에는 테스트를 함께 추가한다',
-    outputText: 'Every new feature or bug fix must include corresponding unit or integration tests.',
+    outputText:
+      'Every new feature or bug fix must include corresponding unit or integration tests.',
     category: 'testing',
     appliesTo: ['all'],
   },
@@ -48,7 +50,8 @@ export const UNIVERSAL_BEST_PRACTICES: readonly BestPracticeItem[] = [
   {
     id: 'no-typescript-any',
     label: 'TypeScript any 금지',
-    outputText: 'Never use the `any` type in TypeScript. Prefer `unknown` with type narrowing or precise types.',
+    outputText:
+      'Never use the `any` type in TypeScript. Prefer `unknown` with type narrowing or precise types.',
     category: 'code-style',
     appliesTo: ['typescript'],
   },

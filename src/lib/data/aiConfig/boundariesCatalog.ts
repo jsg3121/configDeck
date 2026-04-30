@@ -22,7 +22,8 @@ const ALWAYS_DO_ITEMS: readonly BoundaryItem[] = [
   {
     id: 'always-typecheck',
     label: '변경 후 타입 체크 실행',
-    outputText: 'Always run type checking (`tsc --noEmit` or equivalent) after modifying TypeScript files.',
+    outputText:
+      'Always run type checking (`tsc --noEmit` or equivalent) after modifying TypeScript files.',
     tier: 'always-do',
     appliesTo: ['typescript'],
   },
@@ -36,7 +37,8 @@ const ALWAYS_DO_ITEMS: readonly BoundaryItem[] = [
   {
     id: 'always-explain-failures',
     label: '실패 시 원인을 명확히 설명',
-    outputText: 'When a command fails, explain the root cause clearly. Do not silently retry or work around it.',
+    outputText:
+      'When a command fails, explain the root cause clearly. Do not silently retry or work around it.',
     tier: 'always-do',
     appliesTo: ['all'],
   },
@@ -54,7 +56,8 @@ const ASK_FIRST_ITEMS: readonly BoundaryItem[] = [
   {
     id: 'ask-before-deps',
     label: '신규 npm 패키지 추가 전 확인',
-    outputText: 'Ask the user before adding any new npm dependency. Justify why an existing utility cannot be used.',
+    outputText:
+      'Ask the user before adding any new npm dependency. Justify why an existing utility cannot be used.',
     tier: 'ask-first',
     appliesTo: ['all'],
   },
@@ -69,14 +72,16 @@ const ASK_FIRST_ITEMS: readonly BoundaryItem[] = [
   {
     id: 'ask-before-bulk-edits',
     label: '대규모 파일 수정 전 확인',
-    outputText: 'Ask before making bulk edits across many files (rename refactors, mass formatting changes).',
+    outputText:
+      'Ask before making bulk edits across many files (rename refactors, mass formatting changes).',
     tier: 'ask-first',
     appliesTo: ['all'],
   },
   {
     id: 'ask-before-public-api-change',
     label: '공개 API 변경 전 확인',
-    outputText: 'Ask before changing public APIs, exported types, or interfaces consumed by other packages.',
+    outputText:
+      'Ask before changing public APIs, exported types, or interfaces consumed by other packages.',
     tier: 'ask-first',
     appliesTo: ['all'],
   },
@@ -87,14 +92,16 @@ const NEVER_DO_ITEMS: readonly BoundaryItem[] = [
   {
     id: 'never-commit-secrets',
     label: '시크릿/API 키 커밋 금지',
-    outputText: 'Never commit secrets, API keys, tokens, or credentials. Use environment variables instead.',
+    outputText:
+      'Never commit secrets, API keys, tokens, or credentials. Use environment variables instead.',
     tier: 'never-do',
     appliesTo: ['all'],
   },
   {
     id: 'never-force-push',
     label: 'force push, reset --hard 금지',
-    outputText: 'Never force push to shared branches or run `git reset --hard` without explicit user approval.',
+    outputText:
+      'Never force push to shared branches or run `git reset --hard` without explicit user approval.',
     tier: 'never-do',
     appliesTo: ['all'],
   },
@@ -125,7 +132,8 @@ const NEVER_DO_ITEMS: readonly BoundaryItem[] = [
   {
     id: 'never-modify-lockfile',
     label: '수동으로 lockfile 편집 금지',
-    outputText: 'Never edit `pnpm-lock.yaml` (or equivalent) manually. Always regenerate via the package manager.',
+    outputText:
+      'Never edit `pnpm-lock.yaml` (or equivalent) manually. Always regenerate via the package manager.',
     tier: 'never-do',
     appliesTo: ['all'],
   },

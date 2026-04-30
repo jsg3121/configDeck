@@ -35,14 +35,20 @@ export const AI_TOOLS: readonly AiToolMeta[] = [
     descriptionKo: '`.cursor/rules/*.mdc` 형식의 룰 파일을 사용하는 AI 코드 에디터.',
     descriptionEn: 'AI code editor using `.cursor/rules/*.mdc` MDC rule files.',
     docsUrl: 'https://cursor.com/docs/context/rules',
-    primaryConfigPaths: ['.cursor/rules/core.mdc', '.cursor/rules/stack.mdc', '.cursor/rules/boundaries.mdc'],
+    primaryConfigPaths: [
+      '.cursor/rules/core.mdc',
+      '.cursor/rules/stack.mdc',
+      '.cursor/rules/boundaries.mdc',
+    ],
   },
   {
     id: 'copilot',
     displayName: 'GitHub Copilot',
     descriptionKo: '`.github/copilot-instructions.md`로 저장소 전반의 인스트럭션을 관리한다.',
-    descriptionEn: 'GitHub Copilot uses `.github/copilot-instructions.md` for repository-wide instructions.',
-    docsUrl: 'https://docs.github.com/copilot/customizing-copilot/adding-custom-instructions-for-github-copilot',
+    descriptionEn:
+      'GitHub Copilot uses `.github/copilot-instructions.md` for repository-wide instructions.',
+    docsUrl:
+      'https://docs.github.com/copilot/customizing-copilot/adding-custom-instructions-for-github-copilot',
     primaryConfigPaths: ['.github/copilot-instructions.md'],
   },
   {
@@ -59,7 +65,8 @@ export const AI_TOOLS: readonly AiToolMeta[] = [
     id: 'codex',
     displayName: 'OpenAI Codex',
     descriptionKo: 'AGENTS.md를 1순위로 인식하는 OpenAI의 코딩 에이전트.',
-    descriptionEn: 'OpenAI coding agent that natively reads AGENTS.md as the primary configuration source.',
+    descriptionEn:
+      'OpenAI coding agent that natively reads AGENTS.md as the primary configuration source.',
     docsUrl: 'https://developers.openai.com/codex/guides/agents-md',
     primaryConfigPaths: ['AGENTS.md'],
   },
