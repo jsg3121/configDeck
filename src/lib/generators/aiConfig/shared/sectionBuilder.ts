@@ -45,7 +45,7 @@ const BOUNDARY_TIER_HEADERS: Readonly<Record<BoundaryTier, string>> = {
 
 /** 카테고리별로 베스트 프랙티스를 그룹핑한다 */
 const groupByCategory = (
-  items: readonly BestPracticeItem[]
+  items: readonly BestPracticeItem[],
 ): Map<BestPracticeCategory, readonly BestPracticeItem[]> => {
   const map = new Map<BestPracticeCategory, BestPracticeItem[]>()
   for (const item of items) {
@@ -58,7 +58,7 @@ const groupByCategory = (
 
 /** Tier별로 Boundaries 항목을 그룹핑한다 */
 const groupByTier = (
-  items: readonly BoundaryItem[]
+  items: readonly BoundaryItem[],
 ): Map<BoundaryTier, readonly BoundaryItem[]> => {
   const map = new Map<BoundaryTier, BoundaryItem[]>()
   for (const item of items) {
@@ -73,9 +73,7 @@ const groupByTier = (
  * 베스트 프랙티스 항목들을 6대 섹션 Markdown으로 변환한다.
  * 비어있는 카테고리는 출력에서 제외한다.
  */
-const buildBestPracticeSections = (
-  items: readonly BestPracticeItem[]
-): readonly string[] => {
+const buildBestPracticeSections = (items: readonly BestPracticeItem[]): readonly string[] => {
   const grouped = groupByCategory(items)
   const sections: string[] = []
 
@@ -102,7 +100,7 @@ const buildBestPracticeSections = (
  */
 const buildBoundariesSection = (
   bestPracticeBoundaries: readonly BestPracticeItem[],
-  boundaries: readonly BoundaryItem[]
+  boundaries: readonly BoundaryItem[],
 ): readonly string[] => {
   if (bestPracticeBoundaries.length === 0 && boundaries.length === 0) return []
 
@@ -145,9 +143,7 @@ const buildAdditionalNotes = (notes: string): readonly string[] => {
  * 결과는 끝에 개행 없이 반환한다 (호출 측에서 파일별 포맷팅).
  */
 export const buildSharedBody = (input: AiConfigInput): string => {
-  const bestPractices = resolveBestPractices(
-    input.bestPractices.selectedIds
-  )
+  const bestPractices = resolveBestPractices(input.bestPractices.selectedIds)
   const boundaryIds = [
     ...input.boundaries.alwaysDoIds,
     ...input.boundaries.askFirstIds,
@@ -156,12 +152,8 @@ export const buildSharedBody = (input: AiConfigInput): string => {
   const boundaries = resolveBoundaries(boundaryIds)
 
   // 베스트 프랙티스의 'boundaries' 카테고리는 Boundaries 섹션에 합친다
-  const boundaryCategoryItems = bestPractices.filter(
-    (item) => item.category === 'boundaries'
-  )
-  const nonBoundaryItems = bestPractices.filter(
-    (item) => item.category !== 'boundaries'
-  )
+  const boundaryCategoryItems = bestPractices.filter((item) => item.category === 'boundaries')
+  const nonBoundaryItems = bestPractices.filter((item) => item.category !== 'boundaries')
 
   const lines: string[] = []
   lines.push(...buildBestPracticeSections(nonBoundaryItems))
