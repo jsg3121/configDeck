@@ -9,9 +9,6 @@
  * MDC 형식: YAML frontmatter + Markdown 본문 (RES-0003 §1.1).
  */
 
-import { resolveBestPractices, resolveBoundaries } from './shared/filterCatalog'
-import { STACK_GLOBS } from './shared/stackGlobs'
-
 import type {
   AiConfigInput,
   BestPracticeCategory,
@@ -21,6 +18,9 @@ import type {
   CursorMdcFrontmatter,
   CursorMdcOutput,
 } from '@/types/aiConfig'
+
+import { resolveBestPractices, resolveBoundaries } from './shared/filterCatalog'
+import { STACK_GLOBS } from './shared/stackGlobs'
 
 /** core.mdc에 포함될 카테고리 */
 const CORE_CATEGORIES: readonly BestPracticeCategory[] = ['commands', 'code-style', 'git-workflow']
@@ -64,7 +64,7 @@ const serializeFrontmatter = (frontmatter: CursorMdcFrontmatter): string => {
 /** 카테고리 묶음을 Markdown 섹션으로 변환 */
 const renderCategorySections = (
   items: readonly BestPracticeItem[],
-  categories: readonly BestPracticeCategory[]
+  categories: readonly BestPracticeCategory[],
 ): string => {
   const sections: string[] = []
   for (const category of categories) {

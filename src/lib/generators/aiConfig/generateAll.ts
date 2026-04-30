@@ -9,13 +9,13 @@
  * - SKILL.md 목록: selectedSkillIds 기반
  */
 
+import type { AiConfigInput, AiConfigOutput } from '@/types/aiConfig'
+
 import { generateAgentsMd } from './generateAgentsMd'
 import { generateClaudeMd } from './generateClaudeMd'
 import { generateCopilotInstructions } from './generateCopilotInstructions'
 import { generateCursorMdc } from './generateCursorMdc'
 import { generateSkills } from './generateSkills'
-
-import type { AiConfigInput, AiConfigOutput } from '@/types/aiConfig'
 
 /**
  * 사용자 입력으로부터 모든 AI 설정 + Skills 출력을 생성한다.
