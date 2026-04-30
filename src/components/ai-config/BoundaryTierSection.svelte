@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { BoundaryItem, BoundaryTier } from '@/types/aiConfig'
+
   import type { CustomBoundaryItem } from './modules/aiConfigGeneratorLogic'
 
   interface Props {
@@ -25,7 +26,10 @@
   }: Props = $props()
 
   // tier별 색상/이모지
-  const TIER_STYLES: Record<BoundaryTier, { bg: string; ring: string; text: string; emoji: string }> = {
+  const TIER_STYLES: Record<
+    BoundaryTier,
+    { bg: string; ring: string; text: string; emoji: string }
+  > = {
     'always-do': { bg: 'bg-green-50', ring: 'ring-green-200', text: 'text-green-900', emoji: '✅' },
     'ask-first': { bg: 'bg-amber-50', ring: 'ring-amber-200', text: 'text-amber-900', emoji: '⚠️' },
     'never-do': { bg: 'bg-red-50', ring: 'ring-red-200', text: 'text-red-900', emoji: '🚫' },
@@ -71,7 +75,10 @@
     {/each}
     {#each customItems as custom, idx (idx)}
       <li class="flex items-start gap-2 text-sm text-gray-800">
-        <span class="mt-0.5 inline-block size-4 rounded border border-gray-400 bg-white" aria-hidden="true">
+        <span
+          class="mt-0.5 inline-block size-4 rounded border border-gray-400 bg-white"
+          aria-hidden="true"
+        >
           ✓
         </span>
         <span class="flex-1">{custom.text}</span>

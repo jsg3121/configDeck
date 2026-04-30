@@ -8,14 +8,15 @@
  * 생성기 자체는 src/lib/generators/aiConfig/에 있고, 본 모듈은 UI ↔ 생성기 사이의 어댑터다.
  */
 
+// ---------------------------------------------------------------------------
+// 5. Boundaries 카탈로그 ID → AiConfigBoundariesInput 변환 헬퍼
+// ---------------------------------------------------------------------------
+
+import { BOUNDARIES_CATALOG } from '@/lib/data/aiConfig'
 import { generateAiConfig } from '@/lib/generators/aiConfig/generateAll'
 import { serializeCursorMdcFile } from '@/lib/generators/aiConfig/generateCursorMdc'
 import { serializeSkillFile } from '@/lib/generators/aiConfig/generateSkills'
-import type {
-  AiConfigBoundariesInput,
-  AiConfigInput,
-  AiConfigOutput,
-} from '@/types/aiConfig'
+import type { AiConfigBoundariesInput, AiConfigInput, AiConfigOutput } from '@/types/aiConfig'
 
 // ---------------------------------------------------------------------------
 // 1. 평면 파일 맵 — ZIP 패키징과 미리보기 탭에 공통 사용
@@ -50,7 +51,11 @@ export const flattenOutput = (output: AiConfigOutput): readonly FlatFile[] => {
   }
 
   if (output.cursorMdc) {
-    for (const file of [output.cursorMdc.core, output.cursorMdc.stack, output.cursorMdc.boundaries]) {
+    for (const file of [
+      output.cursorMdc.core,
+      output.cursorMdc.stack,
+      output.cursorMdc.boundaries,
+    ]) {
       files.push({
         path: file.outputPath,
         label: file.fileName,
@@ -100,7 +105,7 @@ export const buildFileTree = (files: readonly FlatFile[]): readonly FileTreeNode
     for (const folderName of folders) {
       let folder = cursor.find(
         (node): node is Extract<FileTreeNode, { type: 'folder' }> =>
-          node.type === 'folder' && node.name === folderName
+          node.type === 'folder' && node.name === folderName,
       )
       if (!folder) {
         folder = { type: 'folder', name: folderName, children: [] }
@@ -137,7 +142,7 @@ const TIER_PREFIX: Readonly<Record<CustomBoundaryItem['tier'], string>> = {
  */
 export const buildAdditionalNotesWithCustomBoundaries = (
   notes: string,
-  customBoundaries: readonly CustomBoundaryItem[]
+  customBoundaries: readonly CustomBoundaryItem[],
 ): string => {
   const parts: string[] = []
 
@@ -173,21 +178,17 @@ export const downloadAiConfigAsZip = async (input: AiConfigInput): Promise<void>
   const url = URL.createObjectURL(blob)
   const anchor = document.createElement('a')
   anchor.href = url
-  anchor.download = `configdeck-ai-config-${input.stack.stack}.zip`
+  anchor.download = `configdeck-ai-config.zip`
   document.body.appendChild(anchor)
   anchor.click()
   document.body.removeChild(anchor)
   URL.revokeObjectURL(url)
 }
 
-// ---------------------------------------------------------------------------
-// 5. Boundaries 카탈로그 ID → AiConfigBoundariesInput 변환 헬퍼
-// ---------------------------------------------------------------------------
-
-import { BOUNDARIES_CATALOG } from '@/lib/data/aiConfig'
-
 /** 단일 Set에서 tier별로 분리된 입력 객체로 변환 */
-export const splitBoundariesByTier = (selectedIds: ReadonlySet<string>): AiConfigBoundariesInput => {
+export const splitBoundariesByTier = (
+  selectedIds: ReadonlySet<string>,
+): AiConfigBoundariesInput => {
   const alwaysDoIds: string[] = []
   const askFirstIds: string[] = []
   const neverDoIds: string[] = []

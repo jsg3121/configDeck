@@ -10,11 +10,10 @@ import {
 import type { AiConfigInput } from '@/types/aiConfig'
 
 const makeInput = (overrides: Partial<AiConfigInput> = {}): AiConfigInput => ({
-  stack: { stack: 'react-vite-ts' },
-  bestPractices: { selectedIds: [], additionalNotes: '' },
-  boundaries: { alwaysDoIds: [], askFirstIds: [], neverDoIds: [] },
   tools: { enabledTools: ['cursor'], claudeCodeOnly: false },
   selectedSkillIds: [],
+  bestPractices: { selectedIds: [], additionalNotes: '' },
+  boundaries: { alwaysDoIds: [], askFirstIds: [], neverDoIds: [] },
   locale: 'ko',
   ...overrides,
 })
@@ -62,24 +61,18 @@ describe('generateCursorMdc', () => {
     })
   })
 
-  describe('스택별 globs', () => {
-    it('react-vite-ts 스택의 globs는 src 하위 ts/tsx를 포함한다', () => {
-      const result = generateCursorMdc(makeInput({ stack: { stack: 'react-vite-ts' } }))
+  describe('범용 globs (스택 입력 제거 후)', () => {
+    it('stack.mdc의 globs는 ts/tsx를 포함한다', () => {
+      const result = generateCursorMdc(makeInput())
 
-      expect(result.stack.frontmatter.globs).toContain('src/**/*.tsx')
+      expect(result.stack.frontmatter.globs).toContain('**/*.ts')
+      expect(result.stack.frontmatter.globs).toContain('**/*.tsx')
     })
 
-    it('nextjs 스택의 globs는 app과 pages 디렉토리를 포함한다', () => {
-      const result = generateCursorMdc(makeInput({ stack: { stack: 'nextjs' } }))
+    it('stack.mdc의 globs는 .astro 파일을 포함한다', () => {
+      const result = generateCursorMdc(makeInput())
 
-      expect(result.stack.frontmatter.globs).toContain('app/**/*.tsx')
-      expect(result.stack.frontmatter.globs).toContain('pages/**/*.tsx')
-    })
-
-    it('astro 스택의 globs는 .astro 파일을 포함한다', () => {
-      const result = generateCursorMdc(makeInput({ stack: { stack: 'astro' } }))
-
-      expect(result.stack.frontmatter.globs).toContain('src/**/*.astro')
+      expect(result.stack.frontmatter.globs).toContain('**/*.astro')
     })
   })
 
@@ -100,7 +93,6 @@ describe('generateCursorMdc', () => {
     it('Project Structure 항목은 stack.mdc에 들어간다', () => {
       const result = generateCursorMdc(
         makeInput({
-          stack: { stack: 'astro' },
           bestPractices: {
             selectedIds: ['astro-prefer-content-collections'],
             additionalNotes: '',

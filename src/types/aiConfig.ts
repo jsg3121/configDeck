@@ -7,14 +7,22 @@
 // 1. 입력 도메인 식별자 (엄격 유니온)
 // ---------------------------------------------------------------------------
 
-/** 1차 출시 지원 스택 (src/lib/data/stacks.ts STACK_DEFINITIONS와 일치) */
-export type AiConfigStackSlug = 'react-vite-ts' | 'nextjs' | 'astro' | 'nodejs'
-
 /** AI 코딩 도구 식별자 */
 export type AiToolId = 'cursor' | 'copilot' | 'claude-code' | 'codex'
 
-/** 베스트 프랙티스 / Skills 적용 범위. 'all'은 모든 스택 공통 */
-export type AppliesTo = AiConfigStackSlug | 'tailwind' | 'typescript' | 'all'
+/**
+ * 베스트 프랙티스 / Boundaries 적용 범위 마커.
+ * 카탈로그 항목의 메타데이터로 유지되지만, Phase A UI에서는 필터링하지 않고 모두 노출한다.
+ * 'all'은 범용을 표시한다.
+ */
+export type AppliesTo =
+  | 'all'
+  | 'react-vite-ts'
+  | 'nextjs'
+  | 'astro'
+  | 'nodejs'
+  | 'tailwind'
+  | 'typescript'
 
 /** 6대 핵심 섹션 — GitHub Blog의 2,500+ AGENTS.md 분석 (RES-0003 §2.2) */
 export type BestPracticeCategory =
@@ -103,29 +111,7 @@ export interface SkillCatalogItem {
 // 3. 사용자 입력 모델
 // ---------------------------------------------------------------------------
 
-/** 1단계 — 스택 선택 */
-export interface AiConfigStackInput {
-  /** 선택한 스택 */
-  stack: AiConfigStackSlug
-}
-
-/** 2단계 — 베스트 프랙티스 (카탈로그 + 자유 텍스트, CP-1) */
-export interface AiConfigBestPracticesInput {
-  /** 선택된 카탈로그 항목 ID 목록 */
-  selectedIds: readonly string[]
-  /** 자유 텍스트 추가 지시사항 (Additional Notes 섹션으로 삽입) */
-  additionalNotes: string
-}
-
-/** 3단계 — Boundaries 3-tier */
-export interface AiConfigBoundariesInput {
-  /** Tier별 선택된 카탈로그 항목 ID 목록 */
-  alwaysDoIds: readonly string[]
-  askFirstIds: readonly string[]
-  neverDoIds: readonly string[]
-}
-
-/** 4단계 — 사용 도구 (CP-3 핵심: claudeCodeOnly 토글) */
+/** Step 1 — 사용 도구 (CP-3 핵심: claudeCodeOnly 토글) */
 export interface AiConfigToolsInput {
   /** 사용자가 사용 중인 AI 도구 목록 */
   enabledTools: readonly AiToolId[]
@@ -137,14 +123,29 @@ export interface AiConfigToolsInput {
   claudeCodeOnly: boolean
 }
 
+/** Step 3 — 베스트 프랙티스 (카탈로그 + 자유 텍스트, CP-1) */
+export interface AiConfigBestPracticesInput {
+  /** 선택된 카탈로그 항목 ID 목록 */
+  selectedIds: readonly string[]
+  /** 자유 텍스트 추가 지시사항 (Additional Notes 섹션으로 삽입) */
+  additionalNotes: string
+}
+
+/** Step 4 — Boundaries 3-tier */
+export interface AiConfigBoundariesInput {
+  /** Tier별 선택된 카탈로그 항목 ID 목록 */
+  alwaysDoIds: readonly string[]
+  askFirstIds: readonly string[]
+  neverDoIds: readonly string[]
+}
+
 /** 통합 입력 모델 — 모든 단계의 입력을 한 곳에 모음 */
 export interface AiConfigInput {
-  stack: AiConfigStackInput
+  tools: AiConfigToolsInput
+  /** Step 2 — 선택된 Skills ID 목록 */
+  selectedSkillIds: readonly SkillId[]
   bestPractices: AiConfigBestPracticesInput
   boundaries: AiConfigBoundariesInput
-  tools: AiConfigToolsInput
-  /** 선택된 Skills ID 목록 */
-  selectedSkillIds: readonly SkillId[]
   /** UI 로케일. AI 출력 본문은 항상 영어이므로 영향 없음 */
   locale: AiConfigLocale
 }

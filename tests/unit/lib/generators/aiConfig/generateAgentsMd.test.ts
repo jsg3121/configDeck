@@ -7,11 +7,10 @@ import { generateAgentsMd } from '@/lib/generators/aiConfig/generateAgentsMd'
 import type { AiConfigInput } from '@/types/aiConfig'
 
 const makeInput = (overrides: Partial<AiConfigInput> = {}): AiConfigInput => ({
-  stack: { stack: 'react-vite-ts' },
-  bestPractices: { selectedIds: [], additionalNotes: '' },
-  boundaries: { alwaysDoIds: [], askFirstIds: [], neverDoIds: [] },
   tools: { enabledTools: ['cursor', 'codex'], claudeCodeOnly: false },
   selectedSkillIds: [],
+  bestPractices: { selectedIds: [], additionalNotes: '' },
+  boundaries: { alwaysDoIds: [], askFirstIds: [], neverDoIds: [] },
   locale: 'ko',
   ...overrides,
 })

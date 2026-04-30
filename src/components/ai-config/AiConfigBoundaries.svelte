@@ -1,12 +1,11 @@
 <script lang="ts">
   import { BOUNDARIES_CATALOG } from '@/lib/data/aiConfig'
-  import type { AiConfigStackSlug, AppliesTo, BoundaryItem, BoundaryTier } from '@/types/aiConfig'
+  import type { BoundaryItem, BoundaryTier } from '@/types/aiConfig'
 
   import BoundaryTierSection from './BoundaryTierSection.svelte'
   import type { CustomBoundaryItem } from './modules/aiConfigGeneratorLogic'
 
   interface Props {
-    stack: AiConfigStackSlug
     selectedIds: ReadonlySet<string>
     customItems: readonly CustomBoundaryItem[]
     onToggleId: (id: string) => void
@@ -14,17 +13,10 @@
     onRemoveCustom: (index: number) => void
   }
 
-  const { stack, selectedIds, customItems, onToggleId, onAddCustom, onRemoveCustom }: Props = $props()
-
-  const stackMarkers = $derived<readonly AppliesTo[]>([stack, 'typescript', 'tailwind'])
-
-  function matchesStack(item: BoundaryItem): boolean {
-    if (item.appliesTo.includes('all')) return true
-    return stackMarkers.some((marker) => item.appliesTo.includes(marker))
-  }
+  const { selectedIds, customItems, onToggleId, onAddCustom, onRemoveCustom }: Props = $props()
 
   function itemsForTier(tier: BoundaryTier): readonly BoundaryItem[] {
-    return BOUNDARIES_CATALOG.filter((item) => item.tier === tier && matchesStack(item))
+    return BOUNDARIES_CATALOG.filter((item) => item.tier === tier)
   }
 
   function customItemsForTier(tier: BoundaryTier): readonly CustomBoundaryItem[] {

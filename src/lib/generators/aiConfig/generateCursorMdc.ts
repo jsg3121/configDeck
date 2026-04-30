@@ -20,7 +20,7 @@ import type {
 } from '@/types/aiConfig'
 
 import { resolveBestPractices, resolveBoundaries } from './shared/filterCatalog'
-import { STACK_GLOBS } from './shared/stackGlobs'
+import { DEFAULT_CURSOR_GLOBS } from './shared/stackGlobs'
 
 /** core.mdc에 포함될 카테고리 */
 const CORE_CATEGORIES: readonly BestPracticeCategory[] = ['commands', 'code-style', 'git-workflow']
@@ -97,7 +97,7 @@ const buildCoreFile = (input: AiConfigInput): CursorMdcFile => {
   }
 }
 
-/** stack.mdc — 스택별 파일 패턴 매칭 시 자동 적용 */
+/** stack.mdc — 소스 파일 패턴 매칭 시 자동 적용. Phase A는 범용 globs 사용 */
 const buildStackFile = (input: AiConfigInput): CursorMdcFile => {
   const items = resolveBestPractices(input.bestPractices.selectedIds)
   const body = renderCategorySections(items, STACK_CATEGORIES).trimEnd()
@@ -106,8 +106,8 @@ const buildStackFile = (input: AiConfigInput): CursorMdcFile => {
     fileName: 'stack.mdc',
     outputPath: '.cursor/rules/stack.mdc',
     frontmatter: {
-      description: 'Stack-specific rules (auto-applied to matching files)',
-      globs: STACK_GLOBS[input.stack.stack],
+      description: 'Source-file rules (auto-applied to matching files)',
+      globs: DEFAULT_CURSOR_GLOBS,
     },
     body: body.length > 0 ? `${body}\n` : '',
   }

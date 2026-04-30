@@ -25,21 +25,22 @@
     {#if claudeCodeOnly}
       <p class="font-semibold">ⓘ Claude Code 단독 사용 모드</p>
       <p class="mt-1 leading-relaxed">
-        Claude Code만 사용하므로 CLAUDE.md를 단일 진실원으로 작성합니다.
-        AGENTS.md 임포트(<code class="rounded bg-blue-100 px-1">@AGENTS.md</code>)는 생략됩니다.
+        Claude Code만 사용하므로 CLAUDE.md를 단일 진실원으로 작성합니다. AGENTS.md 임포트(<code
+          class="rounded bg-blue-100 px-1">@AGENTS.md</code
+        >)는 생략됩니다.
       </p>
     {:else if hasOtherTools}
       <p class="font-semibold">ⓘ Claude Code와 다른 도구를 함께 사용 중</p>
       <p class="mt-1 leading-relaxed">
         Claude Code는 AGENTS.md를 직접 읽지 않으므로, CLAUDE.md에
-        <code class="rounded bg-blue-100 px-1">@AGENTS.md</code> 임포트를 자동으로 삽입합니다.
-        AGENTS.md 하나로 4개 도구 모두에서 동일한 설정을 공유할 수 있습니다.
+        <code class="rounded bg-blue-100 px-1">@AGENTS.md</code> 임포트를 자동으로 삽입합니다. AGENTS.md
+        하나로 4개 도구 모두에서 동일한 설정을 공유할 수 있습니다.
       </p>
     {:else}
       <p class="font-semibold">ⓘ Claude Code 사용</p>
       <p class="mt-1 leading-relaxed">
-        Claude Code 외 다른 도구도 함께 사용한다면 "Claude Code 단독 사용" 토글을 해제한 채로
-        다른 도구도 함께 선택해주세요.
+        Claude Code 외 다른 도구도 함께 사용한다면 "Claude Code 단독 사용" 토글을 해제한 채로 다른
+        도구도 함께 선택해주세요.
       </p>
     {/if}
     <p class="mt-2">

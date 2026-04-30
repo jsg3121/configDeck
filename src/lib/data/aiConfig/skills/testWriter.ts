@@ -3,7 +3,7 @@
  * SPEC-0005 P0 8종 중 4번.
  *
  * Phase A는 스택 무관 범용. Phase B에서 스택별 본문 분기 추가 (ADR-0018).
- * 함수 시그니처는 향후 input.stack을 활용한 분기를 위해 함수형으로 통일.
+ * bodyTemplate은 함수형 시그니처로 향후 입력 분기 확장 가능성을 열어둔다.
  */
 
 import type { SkillCatalogItem } from '@/types/aiConfig'

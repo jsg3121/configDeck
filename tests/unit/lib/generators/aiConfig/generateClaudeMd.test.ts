@@ -7,11 +7,10 @@ import { generateClaudeMd } from '@/lib/generators/aiConfig/generateClaudeMd'
 import type { AiConfigInput } from '@/types/aiConfig'
 
 const makeInput = (overrides: Partial<AiConfigInput> = {}): AiConfigInput => ({
-  stack: { stack: 'react-vite-ts' },
-  bestPractices: { selectedIds: [], additionalNotes: '' },
-  boundaries: { alwaysDoIds: [], askFirstIds: [], neverDoIds: [] },
   tools: { enabledTools: ['claude-code'], claudeCodeOnly: true },
   selectedSkillIds: [],
+  bestPractices: { selectedIds: [], additionalNotes: '' },
+  boundaries: { alwaysDoIds: [], askFirstIds: [], neverDoIds: [] },
   locale: 'ko',
   ...overrides,
 })
