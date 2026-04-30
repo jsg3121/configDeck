@@ -41,5 +41,5 @@
 | [0014](records/ADR-0014-growth-strategy-roadmap.md)        | 서비스 성장 전략 및 통합 로드맵                   | 승인됨 | 2026-04-24 |
 | [0015](records/ADR-0015-article-source-diversity.md)       | 아티클 소스 다양성 확보 전략 (디우선순위)         | 승인됨 | 2026-04-26 |
 | [0016](records/ADR-0016-e2e-validation-strategy.md)        | E2E 테스트 검증 전략 (디버깅 선별 + 머지 전 전체) | 승인됨 | 2026-04-28 |
-| [0017](records/ADR-0017-ai-config-file-format-priority.md) | AI 도구 설정 파일 형식 우선순위 (AGENTS.md 1순위) | 제안됨 | 2026-04-30 |
-| [0018](records/ADR-0018-agent-skills-catalog.md)           | Agent Skills 카탈로그 채택 및 P0 8종 범위         | 제안됨 | 2026-04-30 |
+| [0017](records/ADR-0017-ai-config-file-format-priority.md) | AI 도구 설정 파일 형식 우선순위 (AGENTS.md 1순위) | 승인됨 | 2026-04-30 |
+| [0018](records/ADR-0018-agent-skills-catalog.md)           | Agent Skills 카탈로그 채택 및 P0 8종 범위         | 승인됨 | 2026-04-30 |

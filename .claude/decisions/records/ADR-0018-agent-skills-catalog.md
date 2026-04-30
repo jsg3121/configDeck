@@ -1,7 +1,8 @@
 # ADR-0018: Agent Skills 카탈로그 채택 및 P0 범위
 
-- 상태: 제안됨
+- 상태: 승인됨
 - 날짜: 2026-04-30
+- 승인일: 2026-04-30
 - 의사결정자: 사용자, Claude Code
 - 관련 SPEC: [SPEC-0005](../../ia/specs/features/SPEC-0005-ai-tool-config-and-skills.md)
 - 관련 리서치: [RES-0003 §5 Agent Skills 표준](../../research/reports/RES-0003-ai-tool-config-files-2026-04.md)
