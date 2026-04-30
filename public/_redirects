@@ -1,2 +1,12 @@
-# 루트 접근 시 /en/으로 즉시 리다이렉트 (302)
-/ /en/ 302
+# 루트 접근 시 /en으로 즉시 리다이렉트 (302)
+# trailingSlash: 'never' 정책에 따라 /en/ 형태가 아닌 /en으로 보낸다.
+/ /en 302
+
+# 트레일링 슬래시가 붙은 기존 인덱싱 URL을 슬래시 없는 URL로 영구 리다이렉트 (301)
+# 예: /en/about/ → /en/about
+# Cloudflare Pages는 :splat 변수로 와일드카드 매칭 부분을 재사용한다.
+/:locale/*/ /:locale/:splat 301
+
+# locale 루트의 트레일링 슬래시 케이스 (/en/ → /en)
+/en/ /en 301
+/ko/ /ko 301

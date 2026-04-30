@@ -80,7 +80,7 @@ export const getTranslationRaw = (locale: Locale, translationKey: string): unkno
  */
 export const buildLocalizedPath = (locale: Locale, pagePath: string = '/'): string => {
   const normalizedPath = pagePath.startsWith('/') ? pagePath : `/${pagePath}`
-  return `/${locale}${normalizedPath === '/' ? '/' : normalizedPath}`
+  return `/${locale}${normalizedPath === '/' ? '' : normalizedPath}`
 }
 
 /**

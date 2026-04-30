@@ -76,7 +76,7 @@ const ESLINT_INPUT_FOR_MISMATCH = `{
  * 마이그레이션 허브 페이지로 진입한다.
  */
 const enterMigrationHub = async (page: Page) => {
-  await page.goto('/ko/migration/')
+  await page.goto('/ko/migration')
   await page.waitForLoadState('networkidle')
 }
 
