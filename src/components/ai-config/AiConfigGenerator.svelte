@@ -1,12 +1,7 @@
 <script lang="ts">
   import { SvelteSet } from 'svelte/reactivity'
 
-  import type {
-    AiConfigInput,
-    AiConfigStackSlug,
-    AiToolId,
-    SkillId,
-  } from '@/types/aiConfig'
+  import type { AiConfigInput, AiConfigStackSlug, AiToolId, SkillId } from '@/types/aiConfig'
 
   import AiConfigBestPractices from './AiConfigBestPractices.svelte'
   import AiConfigBoundaries from './AiConfigBoundaries.svelte'
@@ -41,7 +36,10 @@
     stack: { stack },
     bestPractices: {
       selectedIds: Array.from(bestPracticeIds),
-      additionalNotes: buildAdditionalNotesWithCustomBoundaries(additionalNotes, customBoundaryItems),
+      additionalNotes: buildAdditionalNotesWithCustomBoundaries(
+        additionalNotes,
+        customBoundaryItems,
+      ),
     },
     boundaries: splitBoundariesByTier(boundaryIds),
     tools: {
@@ -173,7 +171,7 @@
   </section>
 
   <!-- 우측 출력 패널 -->
-  <section class="min-h-96 flex-1 lg:sticky lg:top-4">
+  <section class="min-h-96 min-w-0 flex-1 lg:sticky lg:top-4">
     <AiConfigOutputPanel {input} {ready} />
   </section>
 </div>
