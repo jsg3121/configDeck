@@ -10,4 +10,5 @@
  * Cursor MDC globs 범용 패턴 (쉼표 구분 문자열, RES-0003 §1.1).
  * TypeScript/JavaScript/Astro/Vue/Svelte 등 일반적인 프로젝트 소스 파일을 폭넓게 커버한다.
  */
-export const DEFAULT_CURSOR_GLOBS = '**/*.ts, **/*.tsx, **/*.js, **/*.jsx, **/*.astro, **/*.vue, **/*.svelte'
+export const DEFAULT_CURSOR_GLOBS =
+  '**/*.ts, **/*.tsx, **/*.js, **/*.jsx, **/*.astro, **/*.vue, **/*.svelte'

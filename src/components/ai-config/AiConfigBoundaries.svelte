@@ -46,7 +46,8 @@
 
 <div class="flex flex-col gap-3">
   <p class="text-xs text-gray-500">
-    AI가 따라야 할 경계를 3단계로 구분해 정의합니다. 건너뛰어도 문제 없으며, 직접 입력 항목을 추가할 수 있습니다.
+    AI가 따라야 할 경계를 3단계로 구분해 정의합니다. 건너뛰어도 문제 없으며, 직접 입력 항목을 추가할
+    수 있습니다.
   </p>
 
   <BoundaryTierSection

@@ -11,7 +11,8 @@
     onDeselectAllSkills: () => void
   }
 
-  const { selectedSkillIds, onToggleSkill, onSelectAllSkills, onDeselectAllSkills }: Props = $props()
+  const { selectedSkillIds, onToggleSkill, onSelectAllSkills, onDeselectAllSkills }: Props =
+    $props()
 </script>
 
 <fieldset class="flex flex-col gap-2">

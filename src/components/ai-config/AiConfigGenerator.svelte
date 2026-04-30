@@ -8,6 +8,7 @@
   import AiConfigOutputPanel from './AiConfigOutputPanel.svelte'
   import AiConfigSkills from './AiConfigSkills.svelte'
   import AiConfigTools from './AiConfigTools.svelte'
+  import StepAccordion from './StepAccordion.svelte'
   import {
     buildAdditionalNotesWithCustomBoundaries,
     splitBoundariesByTier,
@@ -33,6 +34,11 @@
   const boundaryIds = new SvelteSet<string>()
   let customBoundaryItems = $state<CustomBoundaryItem[]>([])
 
+  // ---- Step 2/3/4 외부 아코디언 펼침 상태 (Step 1은 항상 펼침, 기본 모두 닫힘) ----
+  let openStep2 = $state<boolean>(false)
+  let openStep3 = $state<boolean>(false)
+  let openStep4 = $state<boolean>(false)
+
   // ---- 통합 입력 모델 ----
   const input = $derived<AiConfigInput>({
     tools: {
@@ -44,7 +50,7 @@
       selectedIds: Array.from(bestPracticeIds),
       additionalNotes: buildAdditionalNotesWithCustomBoundaries(
         additionalNotes,
-        customBoundaryItems
+        customBoundaryItems,
       ),
     },
     boundaries: splitBoundariesByTier(boundaryIds),
@@ -117,13 +123,34 @@
   function handleRemoveCustomBoundary(index: number) {
     customBoundaryItems = customBoundaryItems.filter((_, i) => i !== index)
   }
+
+  // ---- 헤더 우측 요약 텍스트 ----
+  const skillsSummary = $derived(
+    selectedSkillIds.size > 0 ? `선택 ${selectedSkillIds.size}` : ''
+  )
+  const bestPracticesSummary = $derived(
+    bestPracticeIds.size > 0 ? `선택 ${bestPracticeIds.size}` : ''
+  )
+  const boundariesSummary = $derived(
+    (() => {
+      const total = boundaryIds.size + customBoundaryItems.length
+      return total > 0 ? `선택 ${total}` : ''
+    })()
+  )
 </script>
 
 <div class="flex flex-col gap-6 lg:flex-row lg:items-start">
   <!-- 좌측 입력 패널 -->
   <section class="flex w-full flex-col gap-6 lg:w-md lg:max-w-md">
-    <div class="flex flex-col gap-2 rounded-lg border border-border bg-white p-4">
-      <h2 class="text-sm font-semibold text-gray-900">Step 1 · 사용 도구 선택</h2>
+    <div class="flex flex-col gap-3 rounded-lg border border-border bg-white p-4">
+      <h2 class="flex items-center gap-2 text-sm font-semibold text-gray-900">
+        <span
+          class="flex size-6 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary"
+        >
+          1
+        </span>
+        사용 도구 선택
+      </h2>
       <AiConfigTools
         {enabledTools}
         {claudeCodeOnly}
@@ -132,28 +159,43 @@
       />
     </div>
 
-    <div class="flex flex-col gap-2 rounded-lg border border-border bg-white p-4">
-      <h2 class="text-sm font-semibold text-gray-900">Step 2 · Agent Skills</h2>
+    <StepAccordion
+      step={2}
+      title="Agent Skills"
+      open={openStep2}
+      summary={skillsSummary}
+      onToggle={() => (openStep2 = !openStep2)}
+    >
       <AiConfigSkills
         {selectedSkillIds}
         onToggleSkill={handleToggleSkill}
         onSelectAllSkills={handleSelectAllSkills}
         onDeselectAllSkills={handleDeselectAllSkills}
       />
-    </div>
+    </StepAccordion>
 
-    <div class="flex flex-col gap-2 rounded-lg border border-border bg-white p-4">
-      <h2 class="text-sm font-semibold text-gray-900">Step 3 · Best Practices</h2>
+    <StepAccordion
+      step={3}
+      title="Best Practices"
+      open={openStep3}
+      summary={bestPracticesSummary}
+      onToggle={() => (openStep3 = !openStep3)}
+    >
       <AiConfigBestPractices
         selectedIds={bestPracticeIds}
         {additionalNotes}
         onToggleId={handleToggleBestPractice}
         onChangeNotes={handleChangeNotes}
       />
-    </div>
+    </StepAccordion>
 
-    <div class="flex flex-col gap-2 rounded-lg border border-border bg-white p-4">
-      <h2 class="text-sm font-semibold text-gray-900">Step 4 · Boundaries</h2>
+    <StepAccordion
+      step={4}
+      title="Boundaries"
+      open={openStep4}
+      summary={boundariesSummary}
+      onToggle={() => (openStep4 = !openStep4)}
+    >
       <AiConfigBoundaries
         selectedIds={boundaryIds}
         customItems={customBoundaryItems}
@@ -161,7 +203,7 @@
         onAddCustom={handleAddCustomBoundary}
         onRemoveCustom={handleRemoveCustomBoundary}
       />
-    </div>
+    </StepAccordion>
   </section>
 
   <!-- 우측 출력 패널 -->

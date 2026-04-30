@@ -19,7 +19,9 @@
 
 <div class="flex flex-col gap-4">
   <fieldset class="flex flex-col gap-2">
-    <legend class="text-sm font-medium text-gray-800">사용 중인 AI 코딩 도구를 모두 선택하세요</legend>
+    <legend class="text-sm font-medium text-gray-800 mb-2"
+      >사용 중인 AI 코딩 도구를 모두 선택하세요</legend
+    >
     <div class="flex flex-wrap gap-2">
       {#each AI_TOOLS as tool (tool.id)}
         {@const selected = enabledTools.has(tool.id)}
