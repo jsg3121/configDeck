@@ -33,7 +33,7 @@
         map[item.category] = bucket
       }
       return map as Record<BestPracticeCategory, readonly BestPracticeItem[]>
-    })()
+    })(),
   )
 
   // 아코디언 펼침 상태 — 첫 카테고리(commands)만 기본 펼침
@@ -75,7 +75,20 @@
             {#if count > 0}
               <span class="rounded-full bg-primary/10 px-2 py-0.5 text-primary">선택 {count}</span>
             {/if}
-            <span aria-hidden="true" class="text-gray-400">{isOpen ? '▾' : '▸'}</span>
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 20 20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="size-5 text-gray-500 transition-transform duration-150 {isOpen
+                ? 'rotate-180'
+                : ''}"
+            >
+              <path d="M5 8l5 5 5-5" />
+            </svg>
           </span>
         </button>
         {#if isOpen}
