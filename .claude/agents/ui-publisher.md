@@ -5,7 +5,7 @@ description: |
   TRIGGER when: "페이지 구현해줘", "UI 구현해줘", 여러 컴포넌트가 연결된 복잡한 UI 구현, 설계(ux-designer) 결과를 받아 구현, 페이지 전체 레이아웃 구현
   DO NOT TRIGGER when: 단일 컴포넌트 생성(component-builder 스킬 사용), UX 설계 필요(ux-designer 먼저), 설정 로직 구현(config-maker 사용)
 model: opus
-permissionMode: plan
+permissionMode: default
 ---
 
 # ui-publisher
