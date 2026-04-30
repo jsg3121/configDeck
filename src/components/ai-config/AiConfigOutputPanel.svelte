@@ -12,18 +12,33 @@
 
   interface Props {
     input: AiConfigInput
-    /** 입력이 출력을 만들 수 있는 상태인지 (스택 + 도구 1개 이상 선택) */
+    /** 입력이 출력을 만들 수 있는 상태인지 (도구 1개 이상 선택) */
     ready: boolean
+    /**
+     * 부모가 옵션 토글에 따라 영향받는 파일을 지정해 자동 활성화한다.
+     * 객체 래퍼를 사용해 같은 path로 연속 토글해도 effect가 매번 트리거되도록 한다.
+     * 매칭되는 파일이 없으면 현재 활성 파일을 유지한다.
+     */
+    focusSignal?: { path: string } | null
   }
 
-  const { input, ready }: Props = $props()
+  const { input, ready, focusSignal = null }: Props = $props()
 
   const output = $derived(generateAiConfig(input))
   const files = $derived<readonly FlatFile[]>(flattenOutput(output))
   const tree = $derived(buildFileTree(files))
 
   let activePath = $state<string | null>(null)
-  // 활성 파일 자동 동기화 — 첫 파일을 기본 표시
+
+  // 부모가 focusSignal을 갱신할 때마다 activePath로 동기화 (객체 참조 변경으로 effect 재실행)
+  $effect(() => {
+    if (!focusSignal) return
+    if (files.some((f) => f.path === focusSignal.path)) {
+      activePath = focusSignal.path
+    }
+  })
+
+  // 활성 파일 자동 폴백 — activePath가 더 이상 존재하지 않으면 첫 파일
   const activeFile = $derived(files.find((f) => f.path === activePath) ?? files[0] ?? null)
 
   function handleSelectFile(path: string) {
