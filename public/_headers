@@ -1,9 +1,11 @@
 # 모든 페이지 공통 - 보안 헤더 + 기본 캐시 정책
+# 브라우저는 매번 재검증(max-age=0), CDN은 6개월 캐시(s-maxage=15552000).
+# 배포 시 Cloudflare Pages가 프로젝트 캐시를 자동 퍼지하므로 stale 위험 없음.
 /*
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
-  Cache-Control: public, max-age=0, must-revalidate
+  Cache-Control: public, max-age=0, s-maxage=15552000, must-revalidate
 
 # 정적 에셋 (해시 파일명) - 1년 캐시
 # Cloudflare는 더 구체적인 경로가 우선 적용됨
