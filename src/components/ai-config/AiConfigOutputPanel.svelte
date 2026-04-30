@@ -3,6 +3,7 @@
   import type { AiConfigInput } from '@/types/aiConfig'
 
   import AiConfigFileTree from './AiConfigFileTree.svelte'
+  import HiddenFilesNotice from './HiddenFilesNotice.svelte'
   import {
     buildFileTree,
     downloadAiConfigAsZip,
@@ -58,6 +59,36 @@
       }, 200)
     }
   }
+
+  // ⓘ 정보 아이콘 popover 상태 (모바일 tap 대응) — 데스크톱 hover 툴팁과 별도 동작
+  let infoOpen = $state(false)
+  let infoContainer = $state<HTMLElement | null>(null)
+
+  function toggleInfo() {
+    infoOpen = !infoOpen
+  }
+
+  // 외부 클릭/ESC로 popover 닫기
+  $effect(() => {
+    if (!infoOpen) return
+
+    function handleClickOutside(event: MouseEvent) {
+      if (!infoContainer) return
+      if (!infoContainer.contains(event.target as Node)) {
+        infoOpen = false
+      }
+    }
+    function handleKeydown(event: KeyboardEvent) {
+      if (event.key === 'Escape') infoOpen = false
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('keydown', handleKeydown)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', handleKeydown)
+    }
+  })
 </script>
 
 {#if !ready}
@@ -74,42 +105,60 @@
   <div class="flex h-full flex-col gap-4">
     <!-- 파일 트리 + ZIP 다운로드 -->
     <section class="flex min-w-0 flex-col gap-2 rounded-lg border border-border bg-white p-3">
-      <div class="flex items-center justify-between">
+      <div class="flex items-center justify-between gap-2">
         <h3 class="text-sm font-semibold text-gray-900">생성될 파일 ({files.length}개)</h3>
-        <div class="group relative">
-          <button
-            type="button"
-            onclick={handleDownload}
-            disabled={downloading}
-            class="rounded bg-primary px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-primary/90 disabled:opacity-50"
-          >
-            {downloading ? '다운로드 중...' : '전체 ZIP 다운로드'}
-          </button>
-          <!-- hover 시 버튼 위에 툴팁: macOS 숨김 파일 안내 -->
-          <div
-            role="tooltip"
-            class="pointer-events-none absolute right-0 bottom-full z-10 mb-2 w-72 rounded-lg border border-gray-200 bg-white p-3 text-left text-xs text-gray-700 opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100"
-          >
-            <p class="mb-1 font-semibold text-gray-900">📂 숨김 파일에 주의하세요</p>
-            <p class="leading-relaxed text-gray-600">
-              <code class="rounded bg-gray-100 px-1">.cursor/</code>,
-              <code class="rounded bg-gray-100 px-1">.claude/</code>,
-              <code class="rounded bg-gray-100 px-1">.github/</code> 같은 점(.)으로 시작하는
-              폴더는 macOS Finder 기본 설정에서 숨겨져 있습니다.
-            </p>
-            <ul class="mt-2 flex flex-col gap-0.5 text-gray-600">
-              <li>
-                <span class="font-medium text-gray-800">macOS Finder</span>:
-                <kbd class="rounded border border-gray-300 bg-gray-50 px-1 font-mono">⌘ + ⇧ + .</kbd>
-              </li>
-              <li>
-                <span class="font-medium text-gray-800">VS Code / Cursor</span>: 사이드바에서 정상 표시
-              </li>
-              <li>
-                <span class="font-medium text-gray-800">터미널</span>:
-                <code class="rounded bg-gray-100 px-1">ls -la</code>
-              </li>
-            </ul>
+        <div class="flex items-center gap-1">
+          <!-- ⓘ 정보 아이콘 (모바일 tap 대응) -->
+          <div bind:this={infoContainer} class="relative">
+            <button
+              type="button"
+              aria-label="숨김 파일 안내 보기"
+              aria-expanded={infoOpen}
+              onclick={toggleInfo}
+              class="flex size-7 items-center justify-center rounded-full border border-border bg-white text-gray-600 hover:border-primary/50 hover:text-primary"
+            >
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 20 20"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="size-4"
+              >
+                <circle cx="10" cy="10" r="8" />
+                <path d="M10 13.5V9.5" />
+                <circle cx="10" cy="6.8" r="0.6" fill="currentColor" />
+              </svg>
+            </button>
+            {#if infoOpen}
+              <div
+                role="dialog"
+                class="absolute right-0 bottom-full z-10 mb-2 w-72 rounded-lg border border-gray-200 bg-white p-3 shadow-lg"
+              >
+                <HiddenFilesNotice />
+              </div>
+            {/if}
+          </div>
+
+          <!-- ZIP 다운로드 버튼 (데스크톱 hover 툴팁 포함) -->
+          <div class="group relative">
+            <button
+              type="button"
+              onclick={handleDownload}
+              disabled={downloading}
+              class="rounded bg-primary px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-primary/90 disabled:opacity-50"
+            >
+              {downloading ? '다운로드 중...' : '전체 ZIP 다운로드'}
+            </button>
+            <!-- hover 시 버튼 위에 툴팁 -->
+            <div
+              role="tooltip"
+              class="pointer-events-none absolute right-0 bottom-full z-10 mb-2 hidden w-72 rounded-lg border border-gray-200 bg-white p-3 opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100 md:block"
+            >
+              <HiddenFilesNotice />
+            </div>
           </div>
         </div>
       </div>
