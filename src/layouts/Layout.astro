@@ -121,13 +121,13 @@ const ogImageUrl = ogImage ?? defaultOgImage
       ))
     }
   </head>
-  <body class="bg-surface-alt font-sans text-gray-900">
+  <body class="flex min-h-screen flex-col bg-surface-alt font-sans text-gray-900">
     {!bare && <Header locale={locale} currentPath={currentPath ?? pagePath} />}
     {
       bare ? (
         <slot />
       ) : (
-        <main>
+        <main class="flex-1">
           <slot />
         </main>
       )
