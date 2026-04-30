@@ -8,6 +8,11 @@ import { defineConfig } from 'astro/config'
 export default defineConfig({
   site: 'https://configdeck.dev',
 
+  trailingSlash: 'never',
+  build: {
+    format: 'file',
+  },
+
   i18n: {
     defaultLocale: 'en',
     locales: ['en', 'ko'],
