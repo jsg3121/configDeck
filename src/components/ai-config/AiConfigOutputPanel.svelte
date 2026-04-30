@@ -1,0 +1,91 @@
+<script lang="ts">
+  import type { AiConfigInput } from '@/types/aiConfig'
+
+  import AiConfigFileTree from './AiConfigFileTree.svelte'
+  import {
+    buildFileTree,
+    downloadAiConfigAsZip,
+    flattenOutput,
+    type FlatFile,
+  } from './modules/aiConfigGeneratorLogic'
+  import { generateAiConfig } from '@/lib/generators/aiConfig/generateAll'
+
+  interface Props {
+    input: AiConfigInput
+    /** 입력이 출력을 만들 수 있는 상태인지 (스택 + 도구 1개 이상 선택) */
+    ready: boolean
+  }
+
+  const { input, ready }: Props = $props()
+
+  const output = $derived(generateAiConfig(input))
+  const files = $derived<readonly FlatFile[]>(flattenOutput(output))
+  const tree = $derived(buildFileTree(files))
+
+  let activePath = $state<string | null>(null)
+  // 활성 파일 자동 동기화 — 첫 파일을 기본 표시
+  const activeFile = $derived(
+    files.find((f) => f.path === activePath) ?? (files[0] ?? null)
+  )
+
+  function handleSelectFile(path: string) {
+    activePath = path
+  }
+
+  let downloading = $state(false)
+  async function handleDownload() {
+    if (!ready || downloading) return
+    downloading = true
+    try {
+      await downloadAiConfigAsZip(input)
+    } finally {
+      // 짧은 시각 피드백 유지
+      setTimeout(() => {
+        downloading = false
+      }, 200)
+    }
+  }
+</script>
+
+{#if !ready}
+  <div class="flex h-full flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-border bg-gray-50 p-8 text-center">
+    <span class="text-2xl" aria-hidden="true">🛠</span>
+    <p class="text-sm font-medium text-gray-700">스택과 도구를 선택하면 생성될 파일이 여기에 표시됩니다</p>
+    <p class="text-xs text-gray-500">← 좌측에서 Step 1과 Step 4를 완료해주세요</p>
+  </div>
+{:else}
+  <div class="flex h-full flex-col gap-4">
+    <!-- 파일 트리 + ZIP 다운로드 -->
+    <section class="flex flex-col gap-2 rounded-lg border border-border bg-white p-3">
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-semibold text-gray-900">생성될 파일 ({files.length}개)</h3>
+        <button
+          type="button"
+          onclick={handleDownload}
+          disabled={downloading}
+          class="rounded bg-primary px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-primary/90 disabled:opacity-50"
+        >
+          {downloading ? '다운로드 중...' : '전체 ZIP 다운로드'}
+        </button>
+      </div>
+      <AiConfigFileTree
+        nodes={tree}
+        {files}
+        activePath={activeFile?.path ?? null}
+        onSelectFile={handleSelectFile}
+      />
+    </section>
+
+    <!-- 파일 미리보기 -->
+    <section class="flex min-h-0 flex-1 flex-col gap-2 rounded-lg border border-border bg-white p-3">
+      <div class="flex items-center justify-between border-b border-border pb-2">
+        <h3 class="font-mono text-xs font-medium text-gray-700">
+          {activeFile?.path ?? ''}
+        </h3>
+      </div>
+      {#if activeFile}
+        <pre class="overflow-auto rounded bg-gray-50 p-3 text-[11px] leading-relaxed text-gray-800"><code>{activeFile.content}</code></pre>
+      {/if}
+    </section>
+  </div>
+{/if}
