@@ -244,5 +244,91 @@
       "googlesearchcentral": "Google Search Central",
       "javascriptweekly": "JavaScript Weekly"
     }
+  },
+  "aiConfig": {
+    "page": {
+      "title": "AI Tool Config + Skills Generator",
+      "heading": "AI Tool Config + Skills Generator",
+      "description": "Pick a stack and generate AGENTS.md, CLAUDE.md, Cursor MDC, Copilot instructions, and popular Agent Skills in one click."
+    },
+    "step1": {
+      "title": "Select Tools",
+      "legend": "Select all the AI coding tools you use",
+      "minSelectError": "Please select at least one tool.",
+      "claudeCodeOnlyToggle": "Use Claude Code only"
+    },
+    "step2": {
+      "title": "Agent Skills",
+      "legend": "Select Agent Skills to include",
+      "selectAll": "Select all",
+      "deselectAll": "Deselect all"
+    },
+    "step3": {
+      "title": "Best Practices",
+      "intro": "Expand a category to pick items. All items are listed regardless of stack.",
+      "additionalNotesLabel": "Additional Notes",
+      "additionalNotesPlaceholder": "Add team conventions or extra instructions. English input recommended (better AI accuracy).",
+      "categories": {
+        "commands": "Commands",
+        "testing": "Testing",
+        "project-structure": "Project Structure",
+        "code-style": "Code Style",
+        "git-workflow": "Git Workflow"
+      },
+      "itemCountSuffix": "",
+      "selectedCountPrefix": "Selected"
+    },
+    "step4": {
+      "title": "Boundaries",
+      "intro": "Define guardrails for the AI in three tiers. Optional — you can also add custom items.",
+      "alwaysDoTitle": "Always do",
+      "askFirstTitle": "Ask first",
+      "neverDoTitle": "Never do",
+      "addCustomItem": "+ Add custom item",
+      "customInputPlaceholder": "English input recommended (better AI accuracy)",
+      "addButton": "Add",
+      "cancelButton": "Cancel",
+      "removeAriaLabel": "Remove custom item"
+    },
+    "output": {
+      "filesCountPrefix": "Files",
+      "filesCountSuffix": "",
+      "downloadZip": "Download all (ZIP)",
+      "downloading": "Downloading…",
+      "copyButton": "Copy",
+      "copiedLabel": "Copied ✓",
+      "emptyTitle": "Select a stack and tools to see generated files here",
+      "emptyHint": "← Complete Step 1 on the left",
+      "infoButtonLabel": "Show hidden-files notice"
+    },
+    "summary": {
+      "selectedPrefix": "Selected"
+    },
+    "claudeCodeOnly": {
+      "modeOnly": {
+        "title": "ⓘ Claude Code only mode",
+        "descriptionBefore": "Since you use only Claude Code, CLAUDE.md is the single source of truth. The AGENTS.md import (",
+        "descriptionAfter": ") is omitted."
+      },
+      "modeMixed": {
+        "title": "ⓘ Claude Code with other tools",
+        "descriptionBefore": "Claude Code does not read AGENTS.md directly, so we auto-insert ",
+        "descriptionAfter": " into CLAUDE.md. One AGENTS.md keeps all four tools in sync."
+      },
+      "modeStandalone": {
+        "title": "ⓘ Claude Code selected",
+        "descriptionBefore": "If you also use other AI tools, leave the \"Claude Code only\" toggle off and select those tools as well.",
+        "descriptionAfter": ""
+      },
+      "docLink": "→ Claude Code docs: Memory guide ↗"
+    },
+    "hiddenFilesNotice": {
+      "title": "📂 Watch out for hidden files",
+      "description": "Folders that start with a dot (`.cursor/`, `.claude/`, `.github/`) are hidden by default in macOS Finder.",
+      "macosFinder": "macOS Finder",
+      "vscode": "VS Code / Cursor",
+      "vscodeNote": "Visible in the sidebar",
+      "terminal": "Terminal"
+    }
   }
 }

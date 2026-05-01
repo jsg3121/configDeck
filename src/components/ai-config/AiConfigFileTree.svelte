@@ -1,16 +1,18 @@
 <script lang="ts">
   import { copyToClipboard } from '@/components/generator/modules/codePreviewLogic'
+  import { getTranslation, type Locale } from '@/i18n'
 
   import type { FileTreeNode, FlatFile } from './modules/aiConfigGeneratorLogic'
 
   interface Props {
+    locale: Locale
     nodes: readonly FileTreeNode[]
     files: readonly FlatFile[]
     activePath: string | null
     onSelectFile: (path: string) => void
   }
 
-  const { nodes, files, activePath, onSelectFile }: Props = $props()
+  const { locale, nodes, files, activePath, onSelectFile }: Props = $props()
 
   let copiedPath = $state<string | null>(null)
 
@@ -27,6 +29,8 @@
   function findContent(path: string): string {
     return files.find((f) => f.path === path)?.content ?? ''
   }
+
+  const t = (key: string) => getTranslation(locale, `aiConfig.output.${key}`)
 </script>
 
 {#snippet treeNode(node: FileTreeNode, depth: number)}
@@ -67,11 +71,11 @@
         </button>
         <button
           type="button"
-          aria-label="{node.path} 복사"
+          aria-label="{node.path}"
           onclick={(e) => handleCopy(node.path, findContent(node.path), e)}
           class="rounded border border-border bg-white px-1.5 py-0.5 text-[11px] text-gray-600 hover:border-primary/50"
         >
-          {isCopied ? '복사됨 ✓' : '복사'}
+          {isCopied ? t('copiedLabel') : t('copyButton')}
         </button>
       </div>
     </li>

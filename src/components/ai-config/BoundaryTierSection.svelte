@@ -1,9 +1,12 @@
 <script lang="ts">
+  import { getTranslation, type Locale } from '@/i18n'
+
   import type { BoundaryItem, BoundaryTier } from '@/types/aiConfig'
 
   import type { CustomBoundaryItem } from './modules/aiConfigGeneratorLogic'
 
   interface Props {
+    locale: Locale
     tier: BoundaryTier
     title: string
     items: readonly BoundaryItem[]
@@ -15,6 +18,7 @@
   }
 
   const {
+    locale,
     tier,
     title,
     items,
@@ -34,7 +38,7 @@
     'ask-first': { bg: 'bg-amber-50', ring: 'ring-amber-200', text: 'text-amber-900', emoji: '⚠️' },
     'never-do': { bg: 'bg-red-50', ring: 'ring-red-200', text: 'text-red-900', emoji: '🚫' },
   }
-  const style = TIER_STYLES[tier]
+  const style = $derived(TIER_STYLES[tier])
 
   let inputOpen = $state(false)
   let inputText = $state('')
@@ -51,6 +55,8 @@
     inputText = ''
     inputOpen = false
   }
+
+  const t = (key: string) => getTranslation(locale, `aiConfig.step4.${key}`)
 </script>
 
 <section class="rounded-lg border border-border {style.bg} ring-1 {style.ring} p-4">
@@ -84,7 +90,7 @@
         <span class="flex-1">{custom.text}</span>
         <button
           type="button"
-          aria-label="직접 입력 항목 삭제"
+          aria-label={t('removeAriaLabel')}
           onclick={() => onRemoveCustom(idx)}
           class="text-gray-400 hover:text-red-600"
         >
@@ -100,7 +106,7 @@
         <input
           type="text"
           bind:value={inputText}
-          placeholder="영문 입력 권장 (AI 정확도 향상)"
+          placeholder={t('customInputPlaceholder')}
           class="flex-1 rounded border border-border bg-white px-2 py-1 text-sm"
           onkeydown={(e) => {
             if (e.key === 'Enter') commitCustom()
@@ -112,14 +118,14 @@
           onclick={commitCustom}
           class="rounded bg-primary px-3 py-1 text-sm text-white hover:bg-primary/90"
         >
-          추가
+          {t('addButton')}
         </button>
         <button
           type="button"
           onclick={cancelCustom}
           class="rounded border border-border bg-white px-3 py-1 text-sm text-gray-700 hover:bg-gray-50"
         >
-          취소
+          {t('cancelButton')}
         </button>
       </div>
     {:else}
@@ -128,7 +134,7 @@
         onclick={() => (inputOpen = true)}
         class="text-xs font-medium text-primary hover:underline"
       >
-        + 항목 직접 추가
+        {t('addCustomItem')}
       </button>
     {/if}
   </div>

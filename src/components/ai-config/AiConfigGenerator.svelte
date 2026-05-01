@@ -1,6 +1,8 @@
 <script lang="ts">
   import { SvelteSet } from 'svelte/reactivity'
 
+  import { getTranslation, type Locale } from '@/i18n'
+
   import { BEST_PRACTICES_CATALOG } from '@/lib/data/aiConfig'
   import type { AiConfigInput, AiToolId, BestPracticeCategory, SkillId } from '@/types/aiConfig'
 
@@ -17,10 +19,12 @@
   import StepAccordion from './StepAccordion.svelte'
 
   interface Props {
-    locale: 'ko' | 'en'
+    locale: Locale
   }
 
   const { locale }: Props = $props()
+
+  const t = (key: string) => getTranslation(locale, `aiConfig.${key}`)
 
   // ---- 상태 ----
   // Step 1: 도구 (초기값 cursor만 미리 체크)
@@ -188,15 +192,18 @@
   }
 
   // ---- 헤더 우측 요약 텍스트 ----
-  const skillsSummary = $derived(selectedSkillIds.size > 0 ? `선택 ${selectedSkillIds.size}` : '')
+  const summaryPrefix = $derived(t('summary.selectedPrefix'))
+  const skillsSummary = $derived(
+    selectedSkillIds.size > 0 ? `${summaryPrefix} ${selectedSkillIds.size}` : ''
+  )
   const bestPracticesSummary = $derived(
-    bestPracticeIds.size > 0 ? `선택 ${bestPracticeIds.size}` : '',
+    bestPracticeIds.size > 0 ? `${summaryPrefix} ${bestPracticeIds.size}` : ''
   )
   const boundariesSummary = $derived(
     (() => {
       const total = boundaryIds.size + customBoundaryItems.length
-      return total > 0 ? `선택 ${total}` : ''
-    })(),
+      return total > 0 ? `${summaryPrefix} ${total}` : ''
+    })()
   )
 </script>
 
@@ -210,9 +217,10 @@
         >
           1
         </span>
-        사용 도구 선택
+        {t('step1.title')}
       </h2>
       <AiConfigTools
+        {locale}
         {enabledTools}
         {claudeCodeOnly}
         onToggleTool={handleToggleTool}
@@ -222,12 +230,13 @@
 
     <StepAccordion
       step={2}
-      title="Agent Skills"
+      title={t('step2.title')}
       open={openStep2}
       summary={skillsSummary}
       onToggle={() => (openStep2 = !openStep2)}
     >
       <AiConfigSkills
+        {locale}
         {selectedSkillIds}
         onToggleSkill={handleToggleSkill}
         onSelectAllSkills={handleSelectAllSkills}
@@ -237,12 +246,13 @@
 
     <StepAccordion
       step={3}
-      title="Best Practices"
+      title={t('step3.title')}
       open={openStep3}
       summary={bestPracticesSummary}
       onToggle={() => (openStep3 = !openStep3)}
     >
       <AiConfigBestPractices
+        {locale}
         selectedIds={bestPracticeIds}
         {additionalNotes}
         onToggleId={handleToggleBestPractice}
@@ -252,12 +262,13 @@
 
     <StepAccordion
       step={4}
-      title="Boundaries"
+      title={t('step4.title')}
       open={openStep4}
       summary={boundariesSummary}
       onToggle={() => (openStep4 = !openStep4)}
     >
       <AiConfigBoundaries
+        {locale}
         selectedIds={boundaryIds}
         customItems={customBoundaryItems}
         onToggleId={handleToggleBoundary}
@@ -269,6 +280,6 @@
 
   <!-- 우측 출력 패널 -->
   <section class="min-h-96 min-w-0 flex-1 lg:sticky lg:top-4">
-    <AiConfigOutputPanel {input} {ready} {focusSignal} />
+    <AiConfigOutputPanel {locale} {input} {ready} {focusSignal} />
   </section>
 </div>

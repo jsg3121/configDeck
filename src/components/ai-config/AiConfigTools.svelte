@@ -1,27 +1,36 @@
 <script lang="ts">
+  import { getTranslation, type Locale } from '@/i18n'
+
   import { AI_TOOLS } from '@/lib/data/aiConfig'
   import type { AiToolId } from '@/types/aiConfig'
 
   import ClaudeCodeOnlyBanner from './ClaudeCodeOnlyBanner.svelte'
 
   interface Props {
+    locale: Locale
     enabledTools: ReadonlySet<AiToolId>
     claudeCodeOnly: boolean
     onToggleTool: (id: AiToolId) => void
     onToggleClaudeCodeOnly: (next: boolean) => void
   }
 
-  const { enabledTools, claudeCodeOnly, onToggleTool, onToggleClaudeCodeOnly }: Props = $props()
+  const {
+    locale,
+    enabledTools,
+    claudeCodeOnly,
+    onToggleTool,
+    onToggleClaudeCodeOnly,
+  }: Props = $props()
 
   const claudeCodeSelected = $derived(enabledTools.has('claude-code'))
   const hasOtherTools = $derived(Array.from(enabledTools).some((id) => id !== 'claude-code'))
+
+  const t = (key: string) => getTranslation(locale, `aiConfig.step1.${key}`)
 </script>
 
 <div class="flex flex-col gap-4">
   <fieldset class="flex flex-col gap-2">
-    <legend class="text-sm font-medium text-gray-800 mb-2"
-      >사용 중인 AI 코딩 도구를 모두 선택하세요</legend
-    >
+    <legend class="text-sm font-medium text-gray-800">{t('legend')}</legend>
     <div class="flex flex-wrap gap-2">
       {#each AI_TOOLS as tool (tool.id)}
         {@const selected = enabledTools.has(tool.id)}
@@ -39,7 +48,7 @@
       {/each}
     </div>
     {#if enabledTools.size === 0}
-      <p class="text-xs text-red-600">최소 1개 이상의 도구를 선택해주세요.</p>
+      <p class="text-xs text-red-600">{t('minSelectError')}</p>
     {/if}
   </fieldset>
 
@@ -51,9 +60,9 @@
           checked={claudeCodeOnly}
           onchange={(e) => onToggleClaudeCodeOnly(e.currentTarget.checked)}
         />
-        Claude Code만 단독으로 사용합니다
+        {t('claudeCodeOnlyToggle')}
       </label>
-      <ClaudeCodeOnlyBanner {claudeCodeSelected} {claudeCodeOnly} {hasOtherTools} />
+      <ClaudeCodeOnlyBanner {locale} {claudeCodeSelected} {claudeCodeOnly} {hasOtherTools} />
     </div>
   {/if}
 </div>

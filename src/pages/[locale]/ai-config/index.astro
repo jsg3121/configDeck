@@ -2,12 +2,10 @@
 /**
  * AI 도구 설정 + Skills 통합 생성기 페이지.
  *
- * SPEC-0005 메인 페이지. 사용자가 스택/베스트 프랙티스/Boundaries/도구/Skills를
+ * SPEC-0005 메인 페이지. 사용자가 도구/Skills/Best Practices/Boundaries를
  * 선택하면 4개 AI 도구의 설정 파일과 Agent Skills SKILL.md를 생성한다.
- *
- * Phase A는 한국어 라벨만 사용한다. 영어 i18n 라벨은 M5에서 추가한다.
  */
-import { SUPPORTED_LOCALES, type Locale } from '@/i18n'
+import { getTranslation, SUPPORTED_LOCALES, type Locale } from '@/i18n'
 
 import Layout from '@/layouts/Layout.astro'
 import AiConfigGenerator from '@/components/ai-config/AiConfigGenerator.svelte'
@@ -20,14 +18,9 @@ const { locale } = Astro.params as { locale: Locale }
 
 const siteUrl = 'https://configdeck.dev'
 
-const title =
-  locale === 'ko'
-    ? 'AI 도구 설정 생성기 — Cursor / Copilot / Claude Code / Codex'
-    : 'AI Tool Config Generator — Cursor / Copilot / Claude Code / Codex'
-const description =
-  locale === 'ko'
-    ? '스택을 선택하면 AGENTS.md, CLAUDE.md, Cursor MDC, Copilot 인스트럭션과 자주 쓰는 Agent Skills를 한 번에 생성합니다.'
-    : 'Pick a stack and generate AGENTS.md, CLAUDE.md, Cursor MDC, Copilot instructions, and popular Agent Skills in one click.'
+const title = getTranslation(locale, 'aiConfig.page.title')
+const heading = getTranslation(locale, 'aiConfig.page.heading')
+const description = getTranslation(locale, 'aiConfig.page.description')
 
 // JSON-LD 구조화 데이터
 const softwareApplicationJsonLd = {
@@ -57,7 +50,7 @@ const softwareApplicationJsonLd = {
 >
   <section class="mx-auto max-w-7xl px-6 pt-12 pb-6">
     <h1 class="text-3xl font-extrabold tracking-tight lg:text-4xl">
-      {locale === 'ko' ? 'AI 도구 설정 + Skills 생성기' : 'AI Tool Config + Skills Generator'}
+      {heading}
     </h1>
     <p class="mt-3 max-w-3xl text-base text-gray-500">
       {description}

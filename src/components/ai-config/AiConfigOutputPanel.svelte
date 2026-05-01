@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { getTranslation, type Locale } from '@/i18n'
+
   import { generateAiConfig } from '@/lib/generators/aiConfig/generateAll'
   import type { AiConfigInput } from '@/types/aiConfig'
 
@@ -12,6 +14,7 @@
   } from './modules/aiConfigGeneratorLogic'
 
   interface Props {
+    locale: Locale
     input: AiConfigInput
     /** 입력이 출력을 만들 수 있는 상태인지 (도구 1개 이상 선택) */
     ready: boolean
@@ -23,7 +26,7 @@
     focusSignal?: { path: string } | null
   }
 
-  const { input, ready, focusSignal = null }: Props = $props()
+  const { locale, input, ready, focusSignal = null }: Props = $props()
 
   const output = $derived(generateAiConfig(input))
   const files = $derived<readonly FlatFile[]>(flattenOutput(output))
@@ -31,7 +34,6 @@
 
   let activePath = $state<string | null>(null)
 
-  // 부모가 focusSignal을 갱신할 때마다 activePath로 동기화 (객체 참조 변경으로 effect 재실행)
   $effect(() => {
     if (!focusSignal) return
     if (files.some((f) => f.path === focusSignal.path)) {
@@ -39,7 +41,6 @@
     }
   })
 
-  // 활성 파일 자동 폴백 — activePath가 더 이상 존재하지 않으면 첫 파일
   const activeFile = $derived(files.find((f) => f.path === activePath) ?? files[0] ?? null)
 
   function handleSelectFile(path: string) {
@@ -53,14 +54,13 @@
     try {
       await downloadAiConfigAsZip(input)
     } finally {
-      // 짧은 시각 피드백 유지
       setTimeout(() => {
         downloading = false
       }, 200)
     }
   }
 
-  // ⓘ 정보 아이콘 popover 상태 (모바일 tap 대응) — 데스크톱 hover 툴팁과 별도 동작
+  // ⓘ 정보 아이콘 popover 상태 (모바일 tap 대응)
   let infoOpen = $state(false)
   let infoContainer = $state<HTMLElement | null>(null)
 
@@ -68,7 +68,6 @@
     infoOpen = !infoOpen
   }
 
-  // 외부 클릭/ESC로 popover 닫기
   $effect(() => {
     if (!infoOpen) return
 
@@ -89,6 +88,8 @@
       document.removeEventListener('keydown', handleKeydown)
     }
   })
+
+  const t = (key: string) => getTranslation(locale, `aiConfig.output.${key}`)
 </script>
 
 {#if !ready}
@@ -96,23 +97,23 @@
     class="flex h-full flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-border bg-gray-50 p-8 text-center"
   >
     <span class="text-2xl" aria-hidden="true">🛠</span>
-    <p class="text-sm font-medium text-gray-700">
-      스택과 도구를 선택하면 생성될 파일이 여기에 표시됩니다
-    </p>
-    <p class="text-xs text-gray-500">← 좌측에서 Step 1과 Step 4를 완료해주세요</p>
+    <p class="text-sm font-medium text-gray-700">{t('emptyTitle')}</p>
+    <p class="text-xs text-gray-500">{t('emptyHint')}</p>
   </div>
 {:else}
   <div class="flex h-full flex-col gap-4">
     <!-- 파일 트리 + ZIP 다운로드 -->
     <section class="flex min-w-0 flex-col gap-2 rounded-lg border border-border bg-white p-3">
       <div class="flex items-center justify-between gap-2">
-        <h3 class="text-sm font-semibold text-gray-900">생성될 파일 ({files.length}개)</h3>
+        <h3 class="text-sm font-semibold text-gray-900">
+          {t('filesCountPrefix')} ({files.length}{t('filesCountSuffix')})
+        </h3>
         <div class="flex items-center gap-1">
           <!-- ⓘ 정보 아이콘 (모바일 tap 대응) -->
           <div bind:this={infoContainer} class="relative">
             <button
               type="button"
-              aria-label="숨김 파일 안내 보기"
+              aria-label={t('infoButtonLabel')}
               aria-expanded={infoOpen}
               onclick={toggleInfo}
               class="flex size-7 items-center justify-center rounded-full border border-border bg-white text-gray-600 hover:border-primary/50 hover:text-primary"
@@ -133,16 +134,11 @@
               </svg>
             </button>
             {#if infoOpen}
-              <!--
-                모바일(<sm): 화면 하단 시트로 표시. fixed inset-x-3 + bottom-3으로
-                  ⓘ 버튼 위치와 무관하게 화면 안에 들어오게 한다 (절단 방지).
-                데스크톱(>=sm): 기존대로 ⓘ 버튼 우측 위쪽에 18rem 폭으로 absolute 정렬.
-              -->
               <div
                 role="dialog"
                 class="fixed inset-x-3 bottom-3 z-20 rounded-lg border border-gray-200 bg-white p-3 shadow-lg sm:absolute sm:inset-x-auto sm:bottom-full sm:right-0 sm:mb-2 sm:w-72"
               >
-                <HiddenFilesNotice />
+                <HiddenFilesNotice {locale} />
               </div>
             {/if}
           </div>
@@ -155,19 +151,19 @@
               disabled={downloading}
               class="rounded bg-primary px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-primary/90 disabled:opacity-50"
             >
-              {downloading ? '다운로드 중...' : '전체 ZIP 다운로드'}
+              {downloading ? t('downloading') : t('downloadZip')}
             </button>
-            <!-- hover 시 버튼 위에 툴팁 -->
             <div
               role="tooltip"
               class="pointer-events-none absolute right-0 bottom-full z-10 mb-2 hidden w-72 rounded-lg border border-gray-200 bg-white p-3 opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100 md:block"
             >
-              <HiddenFilesNotice />
+              <HiddenFilesNotice {locale} />
             </div>
           </div>
         </div>
       </div>
       <AiConfigFileTree
+        {locale}
         nodes={tree}
         {files}
         activePath={activeFile?.path ?? null}
