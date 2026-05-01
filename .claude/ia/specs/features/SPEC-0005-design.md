@@ -22,16 +22,19 @@ related_research:
 
 ### 1.1 URL 맵
 
-| 페이지 역할 | 한국어 URL | 영어 URL | 렌더링 |
-|-----------|-----------|---------|--------|
-| 통합 생성기 허브 | `/ko/ai-config` | `/en/ai-config` | Astro 아일랜드 |
-| Cursor 설정 랜딩 | `/ko/ai-config/cursor` | `/en/ai-config/cursor` | SSG 정적 |
-| AGENTS.md 랜딩 | `/ko/ai-config/agents-md` | `/en/ai-config/agents-md` | SSG 정적 |
-| Copilot 인스트럭션 랜딩 | `/ko/ai-config/copilot` | `/en/ai-config/copilot` | SSG 정적 |
-| Claude Code 랜딩 | `/ko/ai-config/claude-code` | `/en/ai-config/claude-code` | SSG 정적 |
-| Agent Skills 랜딩 | `/ko/ai-config/agent-skills` | `/en/ai-config/agent-skills` | SSG 정적 |
+> **[ADR-0019 반영 — 2026-05-01]** IA 위계 역전 해소를 위해 `/ai-config`를 카탈로그 허브로, `/ai-config/generator`(신규)를 통합 생성기로 분리. 자식 랜딩 CTA는 `/ai-config/generator?tool={slug}` 형식으로 도구 컨텍스트를 전달한다.
 
-> **근거:** 메인 생성기 페이지는 Svelte 아일랜드가 필요하므로 SSR/CSR 혼합. 도구별 랜딩은 인터랙션 없이 SEO용 콘텐츠 + CTA만 포함하므로 정적 HTML로 충분하다 (Astro SSG 원칙, ADR-0002).
+| 페이지 역할 | 한국어 URL | 영어 URL | 렌더링 |
+| --- | --- | --- | --- |
+| 카탈로그 허브 (신규) | `/ko/ai-config` | `/en/ai-config` | SSG 정적 (카드 목록 + CTA) |
+| 통합 생성기 (신규 경로) | `/ko/ai-config/generator` | `/en/ai-config/generator` | Astro 아일랜드 (`?tool` 파라미터 읽기) |
+| Cursor 설정 랜딩 | `/ko/ai-config/cursor` | `/en/ai-config/cursor` | SSG 정적. CTA → `?tool=cursor` |
+| AGENTS.md 랜딩 | `/ko/ai-config/agents-md` | `/en/ai-config/agents-md` | SSG 정적. CTA → `?tool=codex` |
+| Copilot 인스트럭션 랜딩 | `/ko/ai-config/copilot` | `/en/ai-config/copilot` | SSG 정적. CTA → `?tool=copilot` |
+| Claude Code 랜딩 | `/ko/ai-config/claude-code` | `/en/ai-config/claude-code` | SSG 정적. CTA → `?tool=claude-code` |
+| Agent Skills 랜딩 | `/ko/ai-config/agent-skills` | `/en/ai-config/agent-skills` | SSG 정적. CTA → `?tool=agent-skills` |
+
+> **근거:** 통합 생성기는 Svelte 아일랜드가 필요하므로 Astro 아일랜드 방식. 카탈로그와 도구별 랜딩은 인터랙션 없이 콘텐츠 + CTA만 포함하므로 정적 HTML로 충분하다 (Astro SSG 원칙, ADR-0002). IA 위계 역전 해소 근거는 ADR-0019 참조.
 
 ### 1.2 hreflang 구조
 
