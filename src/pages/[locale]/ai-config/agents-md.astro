@@ -1,0 +1,112 @@
+---
+/**
+ * AGENTS.md 도구별 SEO 랜딩 페이지.
+ * SPEC-0005 §9 — 정적 SSG 페이지로 검색 유입 후 메인 생성기로 전환.
+ */
+import { buildLocalizedPath, getTranslation, SUPPORTED_LOCALES, type Locale } from '@/i18n'
+
+import LandingFeatureGrid from '@/components/ai-config/landing/LandingFeatureGrid.astro'
+import LandingHero from '@/components/ai-config/landing/LandingHero.astro'
+import LandingMainCta from '@/components/ai-config/landing/LandingMainCta.astro'
+import LandingOutputExample from '@/components/ai-config/landing/LandingOutputExample.astro'
+import LandingRelatedTools from '@/components/ai-config/landing/LandingRelatedTools.astro'
+import { AI_CONFIG_LANDING_META } from '@/lib/data/aiConfig/landingTools'
+import Layout from '@/layouts/Layout.astro'
+
+export const getStaticPaths = () => {
+  return SUPPORTED_LOCALES.map((locale) => ({ params: { locale } }))
+}
+
+const { locale } = Astro.params as { locale: Locale }
+
+const meta = AI_CONFIG_LANDING_META['agents-md']
+const title = getTranslation(locale, meta.seoTitleKey)
+const description = getTranslation(locale, meta.seoDescriptionKey)
+
+const siteUrl = 'https://configdeck.dev'
+const pagePath = `/ai-config/${meta.slug}`
+const fullUrl = `${siteUrl}/${locale}${pagePath}`
+
+const softwareApplicationJsonLd = {
+  '@type': 'SoftwareApplication',
+  name: getTranslation(locale, `aiConfig.landing.${meta.i18nKey}.h1`),
+  url: fullUrl,
+  description,
+  applicationCategory: 'DeveloperApplication',
+  operatingSystem: 'Any',
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'USD',
+  },
+  inLanguage: ['en', 'ko'],
+}
+
+const breadcrumbJsonLd = {
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: getTranslation(locale, 'aiConfig.landing.common.breadcrumbHome'),
+      item: `${siteUrl}/${locale}`,
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: getTranslation(locale, 'aiConfig.landing.common.breadcrumbHub'),
+      item: `${siteUrl}/${locale}/ai-config`,
+    },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      name: getTranslation(locale, `aiConfig.landing.tools.${meta.i18nKey}`),
+      item: fullUrl,
+    },
+  ],
+}
+---
+
+<Layout
+  {title}
+  {description}
+  {locale}
+  pagePath={pagePath}
+  currentPath={pagePath}
+  jsonLd={[softwareApplicationJsonLd, breadcrumbJsonLd]}
+>
+  <article>
+    <nav aria-label="Breadcrumb" class="mx-auto max-w-4xl px-6 pt-6 text-xs text-gray-500">
+      <ol class="flex items-center gap-2">
+        <li>
+          <a
+            href={buildLocalizedPath(locale, '/')}
+            class="hover:text-gray-900"
+          >
+            {getTranslation(locale, 'aiConfig.landing.common.breadcrumbHome')}
+          </a>
+        </li>
+        <li aria-hidden="true">/</li>
+        <li>
+          <a
+            href={buildLocalizedPath(locale, '/ai-config')}
+            class="hover:text-gray-900"
+          >
+            {getTranslation(locale, 'aiConfig.landing.common.breadcrumbHub')}
+          </a>
+        </li>
+        <li aria-hidden="true">/</li>
+        <li class="font-medium text-gray-900">
+          {getTranslation(locale, `aiConfig.landing.tools.${meta.i18nKey}`)}
+        </li>
+      </ol>
+    </nav>
+
+    <LandingHero {locale} i18nKey={meta.i18nKey} docsUrl={meta.docsUrl} />
+    <LandingFeatureGrid {locale} i18nKey={meta.i18nKey} />
+    <LandingOutputExample {locale} fileName={meta.exampleFileName} code={meta.exampleCode} />
+    <LandingMainCta {locale} />
+  </article>
+
+  <LandingRelatedTools {locale} currentSlug={meta.slug} />
+</Layout>

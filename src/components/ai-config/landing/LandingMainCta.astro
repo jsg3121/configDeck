@@ -1,0 +1,27 @@
+---
+/**
+ * 페이지 하단의 메인 생성기 진입 CTA 박스.
+ */
+import { buildLocalizedPath, getTranslation, type Locale } from '@/i18n'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props as Props
+
+const tCommon = (key: string) => getTranslation(locale, `aiConfig.landing.common.${key}`)
+---
+
+<section class="mx-auto max-w-4xl px-6 py-10">
+  <div class="rounded-xl border border-primary/20 bg-primary/5 p-6 text-center">
+    <h2 class="text-lg font-bold text-gray-900">{tCommon('ctaTitle')}</h2>
+    <p class="mt-2 text-sm text-gray-600">{tCommon('ctaDescription')}</p>
+    <a
+      href={buildLocalizedPath(locale, '/ai-config')}
+      class="mt-4 inline-block rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-hover"
+    >
+      {tCommon('ctaButton')}
+    </a>
+  </div>
+</section>

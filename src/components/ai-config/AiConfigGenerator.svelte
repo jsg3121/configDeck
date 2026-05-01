@@ -1,7 +1,6 @@
 <script lang="ts">
-  import { SvelteSet } from 'svelte/reactivity'
-
   import { getTranslation, type Locale } from '@/i18n'
+  import { SvelteSet } from 'svelte/reactivity'
 
   import { BEST_PRACTICES_CATALOG } from '@/lib/data/aiConfig'
   import type { AiConfigInput, AiToolId, BestPracticeCategory, SkillId } from '@/types/aiConfig'
@@ -194,16 +193,16 @@
   // ---- 헤더 우측 요약 텍스트 ----
   const summaryPrefix = $derived(t('summary.selectedPrefix'))
   const skillsSummary = $derived(
-    selectedSkillIds.size > 0 ? `${summaryPrefix} ${selectedSkillIds.size}` : ''
+    selectedSkillIds.size > 0 ? `${summaryPrefix} ${selectedSkillIds.size}` : '',
   )
   const bestPracticesSummary = $derived(
-    bestPracticeIds.size > 0 ? `${summaryPrefix} ${bestPracticeIds.size}` : ''
+    bestPracticeIds.size > 0 ? `${summaryPrefix} ${bestPracticeIds.size}` : '',
   )
   const boundariesSummary = $derived(
     (() => {
       const total = boundaryIds.size + customBoundaryItems.length
       return total > 0 ? `${summaryPrefix} ${total}` : ''
-    })()
+    })(),
   )
 </script>
 

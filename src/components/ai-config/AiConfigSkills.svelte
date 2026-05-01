@@ -14,13 +14,8 @@
     onDeselectAllSkills: () => void
   }
 
-  const {
-    locale,
-    selectedSkillIds,
-    onToggleSkill,
-    onSelectAllSkills,
-    onDeselectAllSkills,
-  }: Props = $props()
+  const { locale, selectedSkillIds, onToggleSkill, onSelectAllSkills, onDeselectAllSkills }: Props =
+    $props()
 
   const t = (key: string) => getTranslation(locale, `aiConfig.step2.${key}`)
 </script>

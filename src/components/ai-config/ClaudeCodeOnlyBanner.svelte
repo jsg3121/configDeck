@@ -20,11 +20,11 @@
 
   // 모드별 키 결정 — 일관된 텍스트+코드+텍스트 패턴으로 렌더링한다 (XSS 안전)
   const mode = $derived<'only' | 'mixed' | 'standalone'>(
-    claudeCodeOnly ? 'only' : hasOtherTools ? 'mixed' : 'standalone'
+    claudeCodeOnly ? 'only' : hasOtherTools ? 'mixed' : 'standalone',
   )
 
   const modeKey = $derived(
-    mode === 'only' ? 'modeOnly' : mode === 'mixed' ? 'modeMixed' : 'modeStandalone'
+    mode === 'only' ? 'modeOnly' : mode === 'mixed' ? 'modeMixed' : 'modeStandalone',
   )
 
   // 표준 코드 토큰 — i18n 사전과 분리해 관리

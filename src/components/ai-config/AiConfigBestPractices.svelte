@@ -1,7 +1,6 @@
 <script lang="ts">
-  import { SvelteSet } from 'svelte/reactivity'
-
   import { getTranslation, type Locale } from '@/i18n'
+  import { SvelteSet } from 'svelte/reactivity'
 
   import { BEST_PRACTICES_CATALOG } from '@/lib/data/aiConfig'
   import type { BestPracticeCategory, BestPracticeItem } from '@/types/aiConfig'
@@ -40,7 +39,7 @@
         map[item.category] = bucket
       }
       return map as Record<BestPracticeCategory, readonly BestPracticeItem[]>
-    })()
+    })(),
   )
 
   // 아코디언 펼침 상태 — 첫 카테고리(commands)만 기본 펼침

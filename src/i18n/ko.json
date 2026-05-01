@@ -193,7 +193,17 @@
     "blogTitle": "블로그 — ConfigDeck",
     "blogDescription": "개발 도구, 설정 관리, ConfigDeck 기능에 대한 업데이트, 튜토리얼, 인사이트.",
     "articleTitle": "개발 도구 아티클 — ConfigDeck",
-    "articleDescription": "ESLint, Prettier, TypeScript 등 개발 도구의 최신 업데이트와 릴리스 소식을 확인하세요."
+    "articleDescription": "ESLint, Prettier, TypeScript 등 개발 도구의 최신 업데이트와 릴리스 소식을 확인하세요.",
+    "aiConfigAgentsMdTitle": "AGENTS.md 생성기 — 4개 AI 도구를 한 번에 설정 | ConfigDeck",
+    "aiConfigAgentsMdDescription": "AGENTS.md 표준으로 Cursor, GitHub Copilot, Claude Code, OpenAI Codex의 설정을 한 파일로 통합하세요. 60,000+ 오픈소스 프로젝트가 채택한 공식 표준입니다.",
+    "aiConfigCursorTitle": "Cursor Rules 생성기 (MDC 형식) | ConfigDeck",
+    "aiConfigCursorDescription": ".cursor/rules/*.mdc 형식의 Cursor Rules를 스택 기반 프리셋으로 생성하세요. core/stack/boundaries 3파일 자동 분리, frontmatter 자동 작성.",
+    "aiConfigCopilotTitle": "GitHub Copilot 인스트럭션 생성기 | ConfigDeck",
+    "aiConfigCopilotDescription": ".github/copilot-instructions.md를 스택 기반 베스트 프랙티스 + Boundaries로 자동 생성하세요. GitHub Copilot이 저장소 컨텍스트를 정확히 이해합니다.",
+    "aiConfigClaudeCodeTitle": "Claude Code CLAUDE.md 생성기 | ConfigDeck",
+    "aiConfigClaudeCodeDescription": "Claude Code용 CLAUDE.md를 스택 기반으로 생성하세요. AGENTS.md 자동 임포트(@AGENTS.md)로 다른 AI 도구와도 동일 규칙 공유.",
+    "aiConfigAgentSkillsTitle": "Agent Skills 부트스트래퍼 — SKILL.md 8종 | ConfigDeck",
+    "aiConfigAgentSkillsDescription": "agentskills.io 표준의 SKILL.md 8종(commit, pr-create, pr-review, test-writer, debug, refactor, adr-create, readme-update)을 즉시 생성하세요."
   },
   "docs": {
     "title": "문서",
@@ -329,6 +339,91 @@
       "vscode": "VS Code / Cursor",
       "vscodeNote": "사이드바에서 정상 표시",
       "terminal": "터미널"
+    },
+    "landing": {
+      "common": {
+        "breadcrumbHome": "홈",
+        "breadcrumbHub": "AI 문서 생성기",
+        "ctaTitle": "지금 바로 생성해보세요",
+        "ctaDescription": "도구와 옵션을 선택하면 설정 파일을 즉시 다운로드할 수 있습니다.",
+        "ctaButton": "AI 설정 생성기 시작하기 →",
+        "featuresHeading": "주요 특징",
+        "exampleHeading": "생성되는 파일 예시",
+        "relatedHeading": "관련 생성기",
+        "officialDocs": "공식 문서 보기 ↗"
+      },
+      "agentsMd": {
+        "h1": "AGENTS.md 생성기 — 4개 AI 도구 통합",
+        "lead": "AGENTS.md 표준 하나로 Cursor, GitHub Copilot, Claude Code, OpenAI Codex가 같은 규칙을 공유하게 하세요.",
+        "intro": "AGENTS.md는 OpenAI가 Linux Foundation에 기증한 오픈 표준으로, 60,000개 이상의 GitHub 저장소에서 사용되고 있습니다. 한 파일로 4개 AI 도구의 동작을 통일할 수 있습니다.",
+        "feature1Title": "표준 채택",
+        "feature1Body": "60,000+ 저장소가 채택한 사실상의 업계 표준",
+        "feature2Title": "다도구 호환",
+        "feature2Body": "Cursor, Copilot, Codex가 직접 인식. Claude Code는 @AGENTS.md 임포트",
+        "feature3Title": "6대 핵심 섹션",
+        "feature3Body": "Commands / Testing / Project Structure / Code Style / Git Workflow / Boundaries",
+        "feature4Title": "자유 형식 Markdown",
+        "feature4Body": "frontmatter 없는 단순 마크다운으로 누구나 읽고 편집 가능"
+      },
+      "cursor": {
+        "h1": "Cursor Rules 생성기 (MDC 형식)",
+        "lead": ".cursor/rules/*.mdc 형식의 Cursor Rules를 스택 기반 프리셋으로 즉시 생성하세요.",
+        "intro": "Cursor 0.45+의 MDC 형식은 frontmatter로 자동 적용 범위를 제어합니다. core/stack/boundaries 3파일로 자동 분리하여 alwaysApply, globs, description 기반 트리거를 모두 활용합니다.",
+        "feature1Title": "3파일 자동 분리",
+        "feature1Body": "core.mdc(alwaysApply) / stack.mdc(globs) / boundaries.mdc(description)",
+        "feature2Title": "MDC frontmatter 자동 작성",
+        "feature2Body": "alwaysApply, globs, description을 입력에 맞춰 자동 생성",
+        "feature3Title": "Cursor 0.45+ 공식 형식",
+        "feature3Body": "레거시 .cursorrules 대신 현재 권장 형식 사용",
+        "feature4Title": "다국어 지원",
+        "feature4Body": "한국어/영어 UI로 한 번에 영어 출력"
+      },
+      "copilot": {
+        "h1": "GitHub Copilot 인스트럭션 생성기",
+        "lead": ".github/copilot-instructions.md를 스택 기반으로 자동 생성해 Copilot이 저장소 컨텍스트를 정확히 이해하게 하세요.",
+        "intro": "GitHub Copilot은 .github/copilot-instructions.md를 자동으로 인식하여 코드 제안에 반영합니다. 6대 핵심 섹션과 Boundaries 3-tier로 구조화된 인스트럭션을 작성합니다.",
+        "feature1Title": "공식 위치",
+        "feature1Body": ".github/copilot-instructions.md 표준 경로 자동 적용",
+        "feature2Title": "구조화된 섹션",
+        "feature2Body": "Commands, Testing, Code Style, Git Workflow, Boundaries 자동 구성",
+        "feature3Title": "Boundaries 3-tier",
+        "feature3Body": "Always do / Ask first / Never do로 명확한 경계 정의",
+        "feature4Title": "팀 컨벤션 반영",
+        "feature4Body": "Additional Notes로 팀 고유 규칙을 자유롭게 추가"
+      },
+      "claudeCode": {
+        "h1": "Claude Code CLAUDE.md 생성기",
+        "lead": "Claude Code용 CLAUDE.md를 스택 기반으로 생성하고, 다른 AI 도구와도 동일 규칙을 공유하세요.",
+        "intro": "Claude Code는 CLAUDE.md를 메모리로 사용합니다. 다른 AI 도구도 함께 쓴다면 @AGENTS.md 임포트가 자동으로 추가되어 모든 도구가 같은 규칙을 따릅니다.",
+        "feature1Title": "@AGENTS.md 자동 임포트",
+        "feature1Body": "다도구 사용 시 AGENTS.md를 단일 진실원으로 공유",
+        "feature2Title": "Claude Code 단독 모드",
+        "feature2Body": "Claude Code만 쓰는 경우 CLAUDE.md를 단일 파일로 작성",
+        "feature3Title": "공식 메모리 형식",
+        "feature3Body": "Anthropic Claude Code Memory 가이드 준수",
+        "feature4Title": "Skills 통합",
+        "feature4Body": ".claude/skills/ 디렉토리에 SKILL.md 8종 동시 생성"
+      },
+      "agentSkills": {
+        "h1": "Agent Skills 부트스트래퍼 (SKILL.md)",
+        "lead": "agentskills.io 표준의 SKILL.md 8종을 한 번에 생성해 워크플로우를 즉시 부트스트랩하세요.",
+        "intro": "Agent Skills는 Anthropic이 표준화한 오픈 형식으로, Claude Code, Cursor, OpenAI Codex 등 여러 AI 도구에서 호환됩니다. 8개의 검증된 워크플로우(commit, pr-create, pr-review, test-writer, debug, refactor, adr-create, readme-update)를 즉시 사용할 수 있습니다.",
+        "feature1Title": "표준 호환",
+        "feature1Body": "agentskills.io 공식 표준, Claude Code/Cursor/Codex 동시 지원",
+        "feature2Title": "P0 8종 카탈로그",
+        "feature2Body": "commit, pr-create, pr-review, test-writer, debug, refactor, adr-create, readme-update",
+        "feature3Title": "단일 진실원",
+        "feature3Body": ".claude/skills/{name}/SKILL.md 표준 경로 자동 생성",
+        "feature4Title": "GitHub Blog 검증 패턴",
+        "feature4Body": "GitHub Blog가 분석한 실전 베스트 프랙티스 반영"
+      },
+      "tools": {
+        "agentsMd": "AGENTS.md",
+        "cursor": "Cursor Rules",
+        "copilot": "GitHub Copilot",
+        "claudeCode": "Claude Code",
+        "agentSkills": "Agent Skills"
+      }
     }
   }
 }

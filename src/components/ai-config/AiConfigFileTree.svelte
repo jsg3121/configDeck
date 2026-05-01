@@ -1,6 +1,7 @@
 <script lang="ts">
-  import { copyToClipboard } from '@/components/generator/modules/codePreviewLogic'
   import { getTranslation, type Locale } from '@/i18n'
+
+  import { copyToClipboard } from '@/components/generator/modules/codePreviewLogic'
 
   import type { FileTreeNode, FlatFile } from './modules/aiConfigGeneratorLogic'
 
@@ -71,7 +72,7 @@
         </button>
         <button
           type="button"
-          aria-label="{node.path}"
+          aria-label={node.path}
           onclick={(e) => handleCopy(node.path, findContent(node.path), e)}
           class="rounded border border-border bg-white px-1.5 py-0.5 text-[11px] text-gray-600 hover:border-primary/50"
         >

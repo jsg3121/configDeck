@@ -1,0 +1,36 @@
+---
+/**
+ * 도구 특징 카드 4개 그리드.
+ * i18n 키: aiConfig.landing.{i18nKey}.feature{1..4}{Title,Body}
+ */
+import { getTranslation, type Locale } from '@/i18n'
+
+interface Props {
+  locale: Locale
+  /** aiConfig.landing.{i18nKey} */
+  i18nKey: string
+}
+
+const { locale, i18nKey } = Astro.props as Props
+
+const t = (key: string) => getTranslation(locale, `aiConfig.landing.${i18nKey}.${key}`)
+const tCommon = (key: string) => getTranslation(locale, `aiConfig.landing.common.${key}`)
+
+const features = [1, 2, 3, 4] as const
+---
+
+<section class="mx-auto max-w-4xl px-6 py-10">
+  <h2 class="text-xs font-semibold uppercase tracking-wider text-gray-400">
+    {tCommon('featuresHeading')}
+  </h2>
+  <div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+    {
+      features.map((n) => (
+        <div class="rounded-lg border border-border bg-white p-5">
+          <h3 class="text-sm font-semibold text-gray-900">{t(`feature${n}Title`)}</h3>
+          <p class="mt-2 text-sm text-gray-600 leading-relaxed">{t(`feature${n}Body`)}</p>
+        </div>
+      ))
+    }
+  </div>
+</section>

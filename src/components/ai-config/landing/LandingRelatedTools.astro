@@ -1,0 +1,56 @@
+---
+/**
+ * 관련 도구 내부 링크 — 5개 랜딩 중 현재 페이지를 제외한 4개로 SEO 링크 빌딩.
+ */
+import { buildLocalizedPath, getTranslation, type Locale } from '@/i18n'
+
+import {
+  AI_CONFIG_LANDING_ORDER,
+  type AiConfigLandingSlug,
+} from '@/lib/data/aiConfig/landingTools'
+
+interface Props {
+  locale: Locale
+  /** 현재 페이지 slug — 자기 자신은 링크에서 제외 */
+  currentSlug: AiConfigLandingSlug
+}
+
+const { locale, currentSlug } = Astro.props as Props
+
+const tCommon = (key: string) => getTranslation(locale, `aiConfig.landing.common.${key}`)
+const tToolName = (slug: AiConfigLandingSlug) => {
+  // i18n 키 매핑
+  const keyMap: Record<AiConfigLandingSlug, string> = {
+    'agents-md': 'agentsMd',
+    cursor: 'cursor',
+    copilot: 'copilot',
+    'claude-code': 'claudeCode',
+    'agent-skills': 'agentSkills',
+  }
+  return getTranslation(locale, `aiConfig.landing.tools.${keyMap[slug]}`)
+}
+
+const others = AI_CONFIG_LANDING_ORDER.filter((slug) => slug !== currentSlug)
+---
+
+<aside class="mx-auto max-w-4xl px-6 pb-16">
+  <h2 class="text-xs font-semibold uppercase tracking-wider text-gray-400">
+    {tCommon('relatedHeading')}
+  </h2>
+  <nav aria-label={tCommon('relatedHeading')} class="mt-4">
+    <ul class="grid grid-cols-2 gap-3 md:grid-cols-4">
+      {
+        others.map((slug) => (
+          <li>
+            <a
+              href={buildLocalizedPath(locale, `/ai-config/${slug}`)}
+              class="block rounded-lg border border-border bg-white px-4 py-3 text-sm font-medium text-gray-800 transition-colors hover:border-primary/50 hover:text-primary"
+            >
+              {tToolName(slug)}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</aside>

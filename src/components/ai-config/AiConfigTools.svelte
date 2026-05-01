@@ -14,13 +14,8 @@
     onToggleClaudeCodeOnly: (next: boolean) => void
   }
 
-  const {
-    locale,
-    enabledTools,
-    claudeCodeOnly,
-    onToggleTool,
-    onToggleClaudeCodeOnly,
-  }: Props = $props()
+  const { locale, enabledTools, claudeCodeOnly, onToggleTool, onToggleClaudeCodeOnly }: Props =
+    $props()
 
   const claudeCodeSelected = $derived(enabledTools.has('claude-code'))
   const hasOtherTools = $derived(Array.from(enabledTools).some((id) => id !== 'claude-code'))
