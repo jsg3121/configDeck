@@ -202,8 +202,10 @@
     "aiConfigCopilotDescription": ".github/copilot-instructions.md를 스택 기반 베스트 프랙티스 + Boundaries로 자동 생성하세요. GitHub Copilot이 저장소 컨텍스트를 정확히 이해합니다.",
     "aiConfigClaudeCodeTitle": "Claude Code CLAUDE.md 생성기 | ConfigDeck",
     "aiConfigClaudeCodeDescription": "Claude Code용 CLAUDE.md를 스택 기반으로 생성하세요. AGENTS.md 자동 임포트(@AGENTS.md)로 다른 AI 도구와도 동일 규칙 공유.",
-    "aiConfigAgentSkillsTitle": "Agent Skills 부트스트래퍼 — SKILL.md 8종 | ConfigDeck",
-    "aiConfigAgentSkillsDescription": "agentskills.io 표준의 SKILL.md 8종(commit, pr-create, pr-review, test-writer, debug, refactor, adr-create, readme-update)을 즉시 생성하세요."
+    "aiConfigAgentSkillsTitle": "Agent Skills 생성기 — SKILL.md 8종 | ConfigDeck",
+    "aiConfigAgentSkillsDescription": "agentskills.io 표준의 SKILL.md 8종(commit, pr-create, pr-review, test-writer, debug, refactor, adr-create, readme-update)을 즉시 생성하세요.",
+    "aiConfigHubTitle": "AI 도구 설정 생성기 — Cursor, Copilot, Claude Code | ConfigDeck",
+    "aiConfigHubDescription": "AGENTS.md, Cursor Rules, GitHub Copilot, Claude Code 설정 파일과 Agent Skills를 스택 기반 프리셋 한 번에 생성합니다."
   },
   "docs": {
     "title": "문서",
@@ -405,8 +407,8 @@
         "feature4Body": ".claude/skills/ 디렉토리에 SKILL.md 8종 동시 생성"
       },
       "agentSkills": {
-        "h1": "Agent Skills 부트스트래퍼 (SKILL.md)",
-        "lead": "agentskills.io 표준의 SKILL.md 8종을 한 번에 생성해 워크플로우를 즉시 부트스트랩하세요.",
+        "h1": "Agent Skills 생성기 (SKILL.md)",
+        "lead": "agentskills.io 표준의 SKILL.md 8종을 한 번에 생성하세요.",
         "intro": "Agent Skills는 Anthropic이 표준화한 오픈 형식으로, Claude Code, Cursor, OpenAI Codex 등 여러 AI 도구에서 호환됩니다. 8개의 검증된 워크플로우(commit, pr-create, pr-review, test-writer, debug, refactor, adr-create, readme-update)를 즉시 사용할 수 있습니다.",
         "feature1Title": "표준 호환",
         "feature1Body": "agentskills.io 공식 표준, Claude Code/Cursor/Codex 동시 지원",

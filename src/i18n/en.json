@@ -194,7 +194,7 @@
     "blogDescription": "Updates, tutorials, and insights about developer tooling, config management, and ConfigDeck features.",
     "articleTitle": "Dev Tool Articles — ConfigDeck",
     "articleDescription": "Stay up to date with the latest updates and releases from ESLint, Prettier, TypeScript, and more.",
-    "aiConfigAgentsMdTitle": "AGENTS.md Generator — One File for Cursor, Copilot, Claude Code, Codex | ConfigDeck",
+    "aiConfigAgentsMdTitle": "AGENTS.md Generator for 4 AI Coding Tools | ConfigDeck",
     "aiConfigAgentsMdDescription": "Generate AGENTS.md to unify Cursor, GitHub Copilot, Claude Code, and OpenAI Codex with one file. The open standard adopted by 60,000+ open-source projects.",
     "aiConfigCursorTitle": "Cursor Rules Generator — MDC Format | ConfigDeck",
     "aiConfigCursorDescription": "Generate .cursor/rules/*.mdc Cursor Rules from stack-aware presets. Auto-split into core / stack / boundaries with frontmatter.",
@@ -202,8 +202,10 @@
     "aiConfigCopilotDescription": "Generate .github/copilot-instructions.md from best practices and boundaries so GitHub Copilot understands your repository context.",
     "aiConfigClaudeCodeTitle": "Claude Code CLAUDE.md Generator | ConfigDeck",
     "aiConfigClaudeCodeDescription": "Generate CLAUDE.md for Claude Code and share the same rules across other AI tools via @AGENTS.md import.",
-    "aiConfigAgentSkillsTitle": "Agent Skills Bootstrapper — 8 SKILL.md Templates | ConfigDeck",
-    "aiConfigAgentSkillsDescription": "Bootstrap eight battle-tested SKILL.md workflows (commit, pr-create, pr-review, test-writer, debug, refactor, adr-create, readme-update) following the agentskills.io standard."
+    "aiConfigAgentSkillsTitle": "Agent Skills Generator — 8 SKILL.md Templates | ConfigDeck",
+    "aiConfigAgentSkillsDescription": "Generate 8 SKILL.md workflows (commit, pr-create, pr-review, test-writer, debug, refactor, adr-create, readme-update) for Claude Code, Cursor, and Codex.",
+    "aiConfigHubTitle": "AI Tool Config Generator — 4 Tools + Skills | ConfigDeck",
+    "aiConfigHubDescription": "Generate config files for AGENTS.md, Cursor Rules, GitHub Copilot, Claude Code, and Agent Skills — all from one stack-aware preset."
   },
   "docs": {
     "title": "Documentation",
@@ -405,8 +407,8 @@
         "feature4Body": "Generates 8 SKILL.md files under .claude/skills/ at the same time"
       },
       "agentSkills": {
-        "h1": "Agent Skills Bootstrapper (SKILL.md)",
-        "lead": "Bootstrap eight battle-tested SKILL.md workflows in one click.",
+        "h1": "Agent Skills Generator (SKILL.md)",
+        "lead": "Generate eight battle-tested SKILL.md workflows in one click.",
         "intro": "Agent Skills is an open format standardized by Anthropic and supported across Claude Code, Cursor, OpenAI Codex, and more. Eight proven workflows (commit, pr-create, pr-review, test-writer, debug, refactor, adr-create, readme-update) are ready to use.",
         "feature1Title": "Standard-compliant",
         "feature1Body": "Follows the agentskills.io standard, runs on Claude Code/Cursor/Codex",
