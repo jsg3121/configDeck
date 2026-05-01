@@ -5,13 +5,13 @@
  */
 import { buildLocalizedPath, getTranslation, SUPPORTED_LOCALES, type Locale } from '@/i18n'
 
+import Layout from '@/layouts/Layout.astro'
 import LandingFeatureGrid from '@/components/ai-config/landing/LandingFeatureGrid.astro'
 import LandingHero from '@/components/ai-config/landing/LandingHero.astro'
 import LandingMainCta from '@/components/ai-config/landing/LandingMainCta.astro'
 import LandingOutputExample from '@/components/ai-config/landing/LandingOutputExample.astro'
 import LandingRelatedTools from '@/components/ai-config/landing/LandingRelatedTools.astro'
 import { AI_CONFIG_LANDING_META } from '@/lib/data/aiConfig/landingTools'
-import Layout from '@/layouts/Layout.astro'
 
 export const getStaticPaths = () => {
   return SUPPORTED_LOCALES.map((locale) => ({ params: { locale } }))
@@ -79,19 +79,13 @@ const breadcrumbJsonLd = {
     <nav aria-label="Breadcrumb" class="mx-auto max-w-4xl px-6 pt-6 text-xs text-gray-500">
       <ol class="flex items-center gap-2">
         <li>
-          <a
-            href={buildLocalizedPath(locale, '/')}
-            class="hover:text-gray-900"
-          >
+          <a href={buildLocalizedPath(locale, '/')} class="hover:text-gray-900">
             {getTranslation(locale, 'aiConfig.landing.common.breadcrumbHome')}
           </a>
         </li>
         <li aria-hidden="true">/</li>
         <li>
-          <a
-            href={buildLocalizedPath(locale, '/ai-config')}
-            class="hover:text-gray-900"
-          >
+          <a href={buildLocalizedPath(locale, '/ai-config')} class="hover:text-gray-900">
             {getTranslation(locale, 'aiConfig.landing.common.breadcrumbHub')}
           </a>
         </li>
