@@ -204,8 +204,10 @@
     "aiConfigClaudeCodeDescription": "Generate CLAUDE.md for Claude Code and share the same rules across other AI tools via @AGENTS.md import.",
     "aiConfigAgentSkillsTitle": "Agent Skills Generator — 8 SKILL.md Templates | ConfigDeck",
     "aiConfigAgentSkillsDescription": "Generate 8 SKILL.md workflows (commit, pr-create, pr-review, test-writer, debug, refactor, adr-create, readme-update) for Claude Code, Cursor, and Codex.",
-    "aiConfigHubTitle": "AI Tool Config Generator — 4 Tools + Skills | ConfigDeck",
-    "aiConfigHubDescription": "Generate config files for AGENTS.md, Cursor Rules, GitHub Copilot, Claude Code, and Agent Skills — all from one stack-aware preset."
+    "aiConfigHubTitle": "AI Coding Tool Config Catalog | ConfigDeck",
+    "aiConfigHubDescription": "Browse 5 AI tool config files — AGENTS.md, Cursor Rules, Copilot Instructions, CLAUDE.md, Agent Skills — and generate them together.",
+    "aiConfigGeneratorTitle": "AI Tool Config Generator — 4 Tools + Skills | ConfigDeck",
+    "aiConfigGeneratorDescription": "Generate config files for AGENTS.md, Cursor Rules, GitHub Copilot, Claude Code, and Agent Skills — all from one stack-aware preset."
   },
   "docs": {
     "title": "Documentation",
@@ -262,6 +264,46 @@
       "title": "AI Tool Config + Skills Generator",
       "heading": "AI Tool Config + Skills Generator",
       "description": "Pick a stack and generate AGENTS.md, CLAUDE.md, Cursor MDC, Copilot instructions, and popular Agent Skills in one click."
+    },
+    "catalog": {
+      "h1": "AI Coding Tool Config Catalog",
+      "lead": "Choose your AI tools and generate config files and Skills together.",
+      "unifiedHeading": "Generate all at once",
+      "unifiedTitle": "Generate config for 4 AI tools in one go",
+      "unifiedDescription": "Output AGENTS.md + Cursor + Copilot + CLAUDE.md + Skills simultaneously. One setup so your team's AI tools share the same rules.",
+      "unifiedCta": "Start unified generator",
+      "unifiedBadge": "Recommended workflow",
+      "toolsHeading": "Browse by tool",
+      "toolsLead": "Learn each tool's file format, location, and differences before entering the generator.",
+      "openLink": "Open overview",
+      "tools": {
+        "agentsMd": {
+          "title": "AGENTS.md",
+          "path": "/AGENTS.md",
+          "summary": "Common standard file shared across 4 AI tools. One file covers Cursor, Copilot, Claude Code, and Codex.",
+          "badge": "Common standard"
+        },
+        "cursor": {
+          "title": "Cursor Rules",
+          "path": ".cursor/rules/*.mdc",
+          "summary": "Cursor-only rules. 3 files (core / stack / boundaries) auto-split with frontmatter."
+        },
+        "copilot": {
+          "title": "Copilot Instructions",
+          "path": ".github/copilot-instructions.md",
+          "summary": "GitHub Copilot reads this so it understands your repository context accurately."
+        },
+        "claudeCode": {
+          "title": "CLAUDE.md",
+          "path": "/CLAUDE.md",
+          "summary": "Claude Code memory file. Imports @AGENTS.md to share rules with other tools."
+        },
+        "agentSkills": {
+          "title": "Agent Skills",
+          "path": ".claude/skills/{name}/SKILL.md",
+          "summary": "8 SKILL.md (commit, pr-create, pr-review, test-writer, debug, refactor, adr-create, readme-update). agentskills.io standard."
+        }
+      }
     },
     "step1": {
       "title": "Select Tools",

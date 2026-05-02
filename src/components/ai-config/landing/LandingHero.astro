@@ -11,12 +11,15 @@ interface Props {
   i18nKey: string
   /** 외부 공식 문서 URL */
   docsUrl: string
+  /** ?focus 파라미터에 사용할 slug (ADR-0019) */
+  focusSlug: 'agents-md' | 'cursor' | 'copilot' | 'claude-code' | 'agent-skills'
 }
 
-const { locale, i18nKey, docsUrl } = Astro.props as Props
+const { locale, i18nKey, docsUrl, focusSlug } = Astro.props as Props
 
 const t = (key: string) => getTranslation(locale, `aiConfig.landing.${key}`)
 const tCommon = (key: string) => getTranslation(locale, `aiConfig.landing.common.${key}`)
+const generatorHref = `${buildLocalizedPath(locale, '/ai-config/generator')}?focus=${focusSlug}`
 ---
 
 <header class="mx-auto max-w-4xl px-6 pt-12 pb-8">
@@ -31,7 +34,7 @@ const tCommon = (key: string) => getTranslation(locale, `aiConfig.landing.common
   </p>
   <div class="mt-6 flex flex-wrap items-center gap-3">
     <a
-      href={buildLocalizedPath(locale, '/ai-config')}
+      href={generatorHref}
       class="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover"
     >
       {tCommon('ctaButton')}

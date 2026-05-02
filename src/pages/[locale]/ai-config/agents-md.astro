@@ -96,10 +96,10 @@ const breadcrumbJsonLd = {
       </ol>
     </nav>
 
-    <LandingHero {locale} i18nKey={meta.i18nKey} docsUrl={meta.docsUrl} />
+    <LandingHero {locale} i18nKey={meta.i18nKey} docsUrl={meta.docsUrl} focusSlug={meta.slug} />
     <LandingFeatureGrid {locale} i18nKey={meta.i18nKey} />
     <LandingOutputExample {locale} fileName={meta.exampleFileName} code={meta.exampleCode} />
-    <LandingMainCta {locale} />
+    <LandingMainCta {locale} focusSlug={meta.slug} />
   </article>
 
   <LandingRelatedTools {locale} currentSlug={meta.slug} />

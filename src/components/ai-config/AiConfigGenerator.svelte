@@ -25,9 +25,73 @@
 
   const t = (key: string) => getTranslation(locale, `aiConfig.${key}`)
 
+  // ---- ?focus 파라미터 슬러그 (ADR-0019) ----
+  // 자식 랜딩 → /ai-config/generator?focus={slug} 진입 시 컨텍스트 초기화에 사용.
+  // 유효 값: agents-md / cursor / copilot / claude-code / agent-skills.
+  // 유효하지 않으면 기본 상태(Cursor 단일 선택)로 폴백한다.
+  type FocusSlug = 'agents-md' | 'cursor' | 'copilot' | 'claude-code' | 'agent-skills'
+  const VALID_FOCUS: ReadonlySet<FocusSlug> = new Set([
+    'agents-md',
+    'cursor',
+    'copilot',
+    'claude-code',
+    'agent-skills',
+  ])
+
+  function readFocusFromUrl(): FocusSlug | null {
+    if (typeof window === 'undefined') return null
+    const raw = new URLSearchParams(window.location.search).get('focus')
+    if (raw && (VALID_FOCUS as ReadonlySet<string>).has(raw)) {
+      return raw as FocusSlug
+    }
+    return null
+  }
+
+  // ?focus 슬러그별 초기 도구 선택 매핑 (ADR-0019).
+  // - agents-md: 4개 도구 모두 선택 (AGENTS.md는 공통 표준)
+  // - cursor / copilot: 단일 도구 선택
+  // - claude-code: Claude Code 단일 선택 (다른 도구도 사용 시 AGENTS.md 임포트 옵션은 사용자 선택)
+  // - agent-skills: 도구 선택은 기본값 유지(cursor)
+  function initialToolsForFocus(focus: FocusSlug | null): AiToolId[] {
+    switch (focus) {
+      case 'agents-md':
+        return ['cursor', 'copilot', 'claude-code', 'codex']
+      case 'cursor':
+        return ['cursor']
+      case 'copilot':
+        return ['copilot']
+      case 'claude-code':
+        return ['claude-code']
+      case 'agent-skills':
+      case null:
+      default:
+        return ['cursor']
+    }
+  }
+
+  // ?focus 슬러그별 미리보기 탭 초기 활성화 파일 (ADR-0019).
+  function initialFocusPathForSlug(focus: FocusSlug | null): string | null {
+    switch (focus) {
+      case 'agents-md':
+        return 'AGENTS.md'
+      case 'cursor':
+        return '.cursor/rules/core.mdc'
+      case 'copilot':
+        return '.github/copilot-instructions.md'
+      case 'claude-code':
+        return 'CLAUDE.md'
+      case 'agent-skills':
+        return '.claude/skills/commit/SKILL.md'
+      default:
+        return null
+    }
+  }
+
+  const initialFocus = readFocusFromUrl()
+
   // ---- 상태 ----
-  // Step 1: 도구 (초기값 cursor만 미리 체크)
-  const enabledTools = new SvelteSet<AiToolId>(['cursor'])
+  // Step 1: 도구 (초기값은 ?focus 파라미터 매핑을 따름. 없으면 cursor 단일)
+  const enabledTools = new SvelteSet<AiToolId>(initialToolsForFocus(initialFocus))
   let claudeCodeOnly = $state<boolean>(false)
   // Step 2: Skills
   const selectedSkillIds = new SvelteSet<SkillId>()
@@ -39,13 +103,18 @@
   let customBoundaryItems = $state<CustomBoundaryItem[]>([])
 
   // ---- Step 2/3/4 외부 아코디언 펼침 상태 (Step 1은 항상 펼침, 기본 모두 닫힘) ----
-  let openStep2 = $state<boolean>(false)
+  // ?focus=agent-skills로 진입 시 Step 2(Skills)를 펼친 상태로 시작 (ADR-0019).
+  let openStep2 = $state<boolean>(initialFocus === 'agent-skills')
   let openStep3 = $state<boolean>(false)
   let openStep4 = $state<boolean>(false)
 
   // ---- 옵션 토글 시 우측 미리보기를 영향 파일로 자동 이동시키기 위한 시그널 ----
   // 객체 래핑으로 같은 경로 연속 토글에도 effect가 트리거되도록 한다.
-  let focusSignal = $state<{ path: string } | null>(null)
+  // ?focus 파라미터로 진입 시 해당 도구의 대표 파일을 미리 활성화한다 (ADR-0019).
+  const initialFocusPath = initialFocusPathForSlug(initialFocus)
+  let focusSignal = $state<{ path: string } | null>(
+    initialFocusPath ? { path: initialFocusPath } : null,
+  )
   function focusFile(path: string) {
     focusSignal = { path }
   }

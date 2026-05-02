@@ -1,14 +1,20 @@
 ---
 /**
- * AI 도구 설정 + Skills 통합 생성기 페이지.
+ * AI 코딩 도구 설정 카탈로그 허브 (ADR-0019).
  *
- * SPEC-0005 메인 페이지. 사용자가 도구/Skills/Best Practices/Boundaries를
- * 선택하면 4개 AI 도구의 설정 파일과 Agent Skills SKILL.md를 생성한다.
+ * 5개 도구 카드 + 통합 생성기 진입 CTA를 제공하는 카탈로그 페이지.
+ * 부모-자식 IA 위계 정상화 — 카탈로그(부모)가 개요/카테고리, 자식들이 상세(생성기/도구별 가이드).
  */
-import { getTranslation, SUPPORTED_LOCALES, type Locale } from '@/i18n'
+import { buildLocalizedPath, getTranslation, SUPPORTED_LOCALES, type Locale } from '@/i18n'
 
 import Layout from '@/layouts/Layout.astro'
-import AiConfigGenerator from '@/components/ai-config/AiConfigGenerator.svelte'
+import CatalogToolCard from '@/components/ai-config/catalog/CatalogToolCard.astro'
+import { CATALOG_TOOLS } from '@/lib/data/aiConfig/catalogTools'
+
+import agentMdSvg from '@/assets/agent-md.svg?raw'
+import claudeSvg from '@/assets/claude.svg?raw'
+import copilotSvg from '@/assets/copilot.svg?raw'
+import cursorSvg from '@/assets/cursor.svg?raw'
 
 export const getStaticPaths = () => {
   return SUPPORTED_LOCALES.map((locale) => ({ params: { locale } }))
@@ -20,24 +26,54 @@ const siteUrl = 'https://configdeck.dev'
 
 const title = getTranslation(locale, 'seo.aiConfigHubTitle')
 const description = getTranslation(locale, 'seo.aiConfigHubDescription')
-const heading = getTranslation(locale, 'aiConfig.page.heading')
-const bodyDescription = getTranslation(locale, 'aiConfig.page.description')
+const t = (key: string) => getTranslation(locale, `aiConfig.catalog.${key}`)
 
-// JSON-LD 구조화 데이터
-const softwareApplicationJsonLd = {
-  '@type': 'SoftwareApplication',
-  name: 'ConfigDeck — AI Tool Config Generator',
+const generatorHref = buildLocalizedPath(locale, '/ai-config/generator')
+
+// 도구 키별 SVG 인라인 (currentColor 적용된 src/assets 파일을 ?raw로 import)
+const TOOL_SVG: Readonly<Record<string, string>> = {
+  agentsMd: agentMdSvg,
+  cursor: cursorSvg,
+  copilot: copilotSvg,
+  claudeCode: claudeSvg,
+  // Agent Skills은 공식 로고 없음 — Lucide sparkles 패턴 차용
+  agentSkills: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.582a.5.5 0 0 1 0 .962L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg>`,
+}
+
+// JSON-LD: 카탈로그 페이지는 CollectionPage + ItemList 구조
+const collectionPageJsonLd = {
+  '@type': 'CollectionPage',
+  name: title,
   url: `${siteUrl}/${locale}/ai-config`,
   description,
-  applicationCategory: 'DeveloperApplication',
-  operatingSystem: 'Any',
-  offers: {
-    '@type': 'Offer',
-    price: '0',
-    priceCurrency: 'USD',
-  },
-  browserRequirements: 'Requires JavaScript',
   inLanguage: locale,
+  mainEntity: {
+    '@type': 'ItemList',
+    itemListElement: CATALOG_TOOLS.map((tool, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      url: `${siteUrl}/${locale}/ai-config/${tool.slug}`,
+      name: getTranslation(locale, `aiConfig.catalog.tools.${tool.key}.title`),
+    })),
+  },
+}
+
+const breadcrumbJsonLd = {
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: getTranslation(locale, 'aiConfig.landing.common.breadcrumbHome'),
+      item: `${siteUrl}/${locale}`,
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: getTranslation(locale, 'aiConfig.landing.common.breadcrumbHub'),
+      item: `${siteUrl}/${locale}/ai-config`,
+    },
+  ],
 }
 ---
 
@@ -47,18 +83,123 @@ const softwareApplicationJsonLd = {
   {locale}
   pagePath="/ai-config"
   currentPath="/ai-config"
-  jsonLd={[softwareApplicationJsonLd]}
+  jsonLd={[collectionPageJsonLd, breadcrumbJsonLd]}
 >
-  <section class="mx-auto max-w-7xl px-6 pt-12 pb-6">
-    <h1 class="text-3xl font-extrabold tracking-tight lg:text-4xl">
-      {heading}
-    </h1>
-    <p class="mt-3 max-w-3xl text-base text-gray-500">
-      {bodyDescription}
-    </p>
-  </section>
+  <article>
+    <nav aria-label="Breadcrumb" class="mx-auto max-w-7xl px-6 pt-6 text-xs text-gray-500">
+      <ol class="flex items-center gap-2">
+        <li>
+          <a href={buildLocalizedPath(locale, '/')} class="hover:text-gray-900">
+            {getTranslation(locale, 'aiConfig.landing.common.breadcrumbHome')}
+          </a>
+        </li>
+        <li aria-hidden="true">/</li>
+        <li class="font-medium text-gray-900">
+          {getTranslation(locale, 'aiConfig.landing.common.breadcrumbHub')}
+        </li>
+      </ol>
+    </nav>
 
-  <section class="mx-auto max-w-7xl px-6 pb-20">
-    <AiConfigGenerator client:load locale={locale} />
-  </section>
+    <header class="mx-auto max-w-7xl px-6 pt-8 pb-6">
+      <h1 class="text-3xl font-extrabold tracking-tight text-gray-900 lg:text-4xl">
+        {t('h1')}
+      </h1>
+      <p class="mt-3 max-w-3xl text-base text-gray-500">
+        {t('lead')}
+      </p>
+    </header>
+
+    <section class="mx-auto max-w-7xl px-6 py-6">
+      <h2 class="text-xs font-semibold uppercase tracking-wider text-gray-400">
+        {t('unifiedHeading')}
+      </h2>
+      <a
+        href={generatorHref}
+        class="group relative mt-3 block overflow-hidden rounded-2xl border border-primary/30 bg-linear-to-br from-primary/10 via-accent/5 to-primary/5 p-7 shadow-sm transition-all hover:border-primary hover:shadow-md"
+      >
+        <div
+          class="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-primary/10 blur-3xl"
+          aria-hidden="true"
+        >
+        </div>
+        <div class="relative flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div class="flex-1">
+            <span
+              class="inline-flex items-center rounded-full bg-primary/15 px-2.5 py-0.5 text-[11px] font-semibold text-primary"
+            >
+              {t('unifiedBadge')}
+            </span>
+            <h3 class="mt-2 text-xl font-bold text-gray-900">
+              {t('unifiedTitle')}
+            </h3>
+            <p class="mt-2 max-w-2xl text-sm leading-relaxed text-gray-600">
+              {t('unifiedDescription')}
+            </p>
+          </div>
+          <div
+            class="inline-flex shrink-0 items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white transition-colors group-hover:bg-primary-hover"
+          >
+            <span>{t('unifiedCta')}</span>
+            <span class="transition-transform group-hover:translate-x-0.5" aria-hidden="true"
+              >→</span
+            >
+          </div>
+        </div>
+      </a>
+    </section>
+
+    <section class="mx-auto max-w-7xl px-6 pt-6 pb-20">
+      <h2 class="text-xs font-semibold uppercase tracking-wider text-gray-400">
+        {t('toolsHeading')}
+      </h2>
+      <p class="mt-2 max-w-3xl text-sm text-gray-500">
+        {t('toolsLead')}
+      </p>
+      <ul class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          CATALOG_TOOLS.map((tool) => (
+            <li>
+              <CatalogToolCard
+                locale={locale}
+                toolKey={tool.key}
+                slug={tool.slug}
+                colorClass={tool.colorClass}
+              >
+                <Fragment slot="icon" set:html={TOOL_SVG[tool.key]} />
+              </CatalogToolCard>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </article>
 </Layout>
+
+<style>
+  /* 인라인 SVG의 크기/색상은 부모 컨테이너의 색상 토큰을 따른다.
+     CatalogToolCard의 아이콘 박스가 tool-{name}-bg-soft + tool-{name}-text를 적용하므로,
+     SVG는 currentColor로 자동 색상 매핑된다. */
+  :global(.tool-agents-bg-soft svg),
+  :global(.tool-cursor-bg-soft svg),
+  :global(.tool-copilot-bg-soft svg),
+  :global(.tool-claude-bg-soft svg),
+  :global(.tool-skills-bg-soft svg) {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+  :global(.tool-agents-bg-soft svg) {
+    color: #475569;
+  }
+  :global(.tool-cursor-bg-soft svg) {
+    color: #0f172a;
+  }
+  :global(.tool-copilot-bg-soft svg) {
+    color: #0969da;
+  }
+  :global(.tool-claude-bg-soft svg) {
+    color: #d97757;
+  }
+  :global(.tool-skills-bg-soft svg) {
+    color: #7c3aed;
+  }
+</style>

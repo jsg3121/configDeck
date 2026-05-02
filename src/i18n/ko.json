@@ -204,8 +204,10 @@
     "aiConfigClaudeCodeDescription": "Claude Code용 CLAUDE.md를 스택 기반으로 생성하세요. AGENTS.md 자동 임포트(@AGENTS.md)로 다른 AI 도구와도 동일 규칙 공유.",
     "aiConfigAgentSkillsTitle": "Agent Skills 생성기 — SKILL.md 8종 | ConfigDeck",
     "aiConfigAgentSkillsDescription": "agentskills.io 표준의 SKILL.md 8종(commit, pr-create, pr-review, test-writer, debug, refactor, adr-create, readme-update)을 즉시 생성하세요.",
-    "aiConfigHubTitle": "AI 도구 설정 생성기 — Cursor, Copilot, Claude Code | ConfigDeck",
-    "aiConfigHubDescription": "AGENTS.md, Cursor Rules, GitHub Copilot, Claude Code 설정 파일과 Agent Skills를 스택 기반 프리셋 한 번에 생성합니다."
+    "aiConfigHubTitle": "AI 코딩 도구 설정 카탈로그 | ConfigDeck",
+    "aiConfigHubDescription": "AGENTS.md, Cursor Rules, Copilot Instructions, CLAUDE.md, Agent Skills 5종을 한 곳에서 비교하고 통합 생성기로 진입하세요.",
+    "aiConfigGeneratorTitle": "AI 도구 설정 생성기 — Cursor, Copilot, Claude Code | ConfigDeck",
+    "aiConfigGeneratorDescription": "AGENTS.md, Cursor Rules, GitHub Copilot, Claude Code 설정 파일과 Agent Skills를 스택 기반 프리셋 한 번에 생성합니다."
   },
   "docs": {
     "title": "문서",
@@ -262,6 +264,46 @@
       "title": "AI 도구 설정 + Skills 생성기",
       "heading": "AI 도구 설정 + Skills 생성기",
       "description": "스택을 선택하면 AGENTS.md, CLAUDE.md, Cursor MDC, Copilot 인스트럭션과 자주 쓰는 Agent Skills를 한 번에 생성합니다."
+    },
+    "catalog": {
+      "h1": "AI 코딩 도구 설정 카탈로그",
+      "lead": "사용하는 AI 도구를 선택하고 설정 파일과 Skills를 함께 생성하세요.",
+      "unifiedHeading": "한 번에 모두 생성",
+      "unifiedTitle": "4개 AI 도구 설정을 한 번에 통합 생성",
+      "unifiedDescription": "AGENTS.md + Cursor + Copilot + CLAUDE.md + Skills를 동시에 출력합니다. 한 번의 설정으로 팀의 모든 AI 도구가 동일한 규칙을 공유합니다.",
+      "unifiedCta": "통합 생성기 시작하기",
+      "unifiedBadge": "추천 워크플로우",
+      "toolsHeading": "도구별로 알아보기",
+      "toolsLead": "각 도구의 파일 형식, 사용 위치, 차이점을 먼저 알아보고 생성기로 진입할 수 있습니다.",
+      "openLink": "개요 보기",
+      "tools": {
+        "agentsMd": {
+          "title": "AGENTS.md",
+          "path": "/AGENTS.md",
+          "summary": "4개 AI 도구가 공유하는 공통 표준 파일. 한 파일로 Cursor, Copilot, Claude Code, Codex 모두 커버합니다.",
+          "badge": "공통 표준"
+        },
+        "cursor": {
+          "title": "Cursor Rules",
+          "path": ".cursor/rules/*.mdc",
+          "summary": "Cursor 전용 규칙. 3파일(core / stack / boundaries)로 자동 분리됩니다."
+        },
+        "copilot": {
+          "title": "Copilot Instructions",
+          "path": ".github/copilot-instructions.md",
+          "summary": "GitHub Copilot이 저장소 컨텍스트를 정확히 이해하도록 합니다."
+        },
+        "claudeCode": {
+          "title": "CLAUDE.md",
+          "path": "/CLAUDE.md",
+          "summary": "Claude Code 메모리 파일. @AGENTS.md 임포트로 다른 도구와 동일 규칙을 공유합니다."
+        },
+        "agentSkills": {
+          "title": "Agent Skills",
+          "path": ".claude/skills/{name}/SKILL.md",
+          "summary": "SKILL.md 8종(commit, pr-create, pr-review, test-writer, debug, refactor, adr-create, readme-update). agentskills.io 표준."
+        }
+      }
     },
     "step1": {
       "title": "사용 도구 선택",

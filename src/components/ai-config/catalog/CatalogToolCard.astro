@@ -1,0 +1,82 @@
+---
+/**
+ * 카탈로그 페이지의 도구 카드.
+ * 도구별 브랜드 색상으로 아이콘 영역에 색상 토큰 적용 + 호버 시 테두리 색상 전환.
+ */
+import { buildLocalizedPath, getTranslation, type Locale } from '@/i18n'
+
+import type { CatalogToolKey } from '@/lib/data/aiConfig/catalogTools'
+
+interface Props {
+  locale: Locale
+  toolKey: CatalogToolKey
+  /** href 슬러그 (랜딩 URL) */
+  slug: string
+  /** 색상 클래스 prefix (예: tool-agents) */
+  colorClass: 'tool-agents' | 'tool-cursor' | 'tool-copilot' | 'tool-claude' | 'tool-skills'
+}
+
+const { locale, toolKey, slug, colorClass } = Astro.props as Props
+
+const t = (key: string) => getTranslation(locale, `aiConfig.catalog.tools.${toolKey}.${key}`)
+const tCommon = (key: string) => getTranslation(locale, `aiConfig.catalog.${key}`)
+
+const title = t('title')
+const path = t('path')
+const summary = t('summary')
+const badge = toolKey === 'agentsMd' ? t('badge') : null
+---
+
+<a
+  href={buildLocalizedPath(locale, `/ai-config/${slug}`)}
+  class:list={[
+    'group relative flex h-full flex-col rounded-xl border border-border bg-surface p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md',
+    `${colorClass}-hover-border`,
+  ]}
+>
+  <div class="flex items-start justify-between gap-3">
+    <div class="flex items-center gap-3">
+      <div
+        class:list={[
+          'flex h-10 w-10 items-center justify-center rounded-lg',
+          `${colorClass}-bg-soft`,
+        ]}
+        aria-hidden="true"
+      >
+        <slot name="icon" />
+      </div>
+      <div>
+        <h3 class="text-base font-semibold text-gray-900">{title}</h3>
+        <p class="mt-0.5 font-mono text-xs text-gray-400">{path}</p>
+      </div>
+    </div>
+    {
+      badge && (
+        <span
+          class:list={[
+            'inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[11px] font-semibold',
+            `${colorClass}-bg-soft-15`,
+            `${colorClass}-text`,
+          ]}
+        >
+          {badge}
+        </span>
+      )
+    }
+  </div>
+  <p class="mt-4 flex-1 text-sm leading-relaxed text-gray-600">
+    {summary}
+  </p>
+  <div class="mt-5 flex items-center justify-between">
+    <span class="text-xs font-medium text-gray-400">{tCommon('openLink')}</span>
+    <span
+      class:list={[
+        'text-sm font-medium transition-transform group-hover:translate-x-0.5',
+        `${colorClass}-text`,
+      ]}
+      aria-hidden="true"
+    >
+      →
+    </span>
+  </div>
+</a>
