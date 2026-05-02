@@ -75,7 +75,7 @@
             checked={selectedIds.has(item.id)}
             onchange={() => onToggle(item.id)}
           />
-          <span>{item.label}</span>
+          <span>{getTranslation(locale, `aiConfig.boundaries.${item.id}`)}</span>
         </label>
       </li>
     {/each}

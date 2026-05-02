@@ -31,9 +31,7 @@
   const t = (key: string) => getTranslation(locale, `aiConfig.step2.${key}`)
 
   // Copilot/Codex는 .claude/skills/*/SKILL.md를 직접 읽지 않으므로 호환성 안내 표시.
-  const showCompatibilityNotice = $derived(
-    enabledTools.has('copilot') || enabledTools.has('codex'),
-  )
+  const showCompatibilityNotice = $derived(enabledTools.has('copilot') || enabledTools.has('codex'))
 </script>
 
 <fieldset class="flex flex-col gap-2">
@@ -71,9 +69,8 @@
   <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
     {#each SKILLS_CATALOG as skill (skill.id)}
       <SkillCard
+        {locale}
         id={skill.id}
-        displayName={skill.displayName}
-        summary={skill.summary}
         selected={selectedSkillIds.has(skill.id)}
         onToggle={onToggleSkill}
       />

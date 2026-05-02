@@ -360,6 +360,85 @@
     "summary": {
       "selectedPrefix": "선택"
     },
+    "skills": {
+      "commit": {
+        "displayName": "커밋 메시지 자동 작성",
+        "summary": "Conventional Commits 형식에 맞춰 커밋 메시지를 작성하고 git commit을 실행한다."
+      },
+      "pr-create": {
+        "displayName": "PR 생성 + 본문 작성",
+        "summary": "현재 브랜치를 푸시하고 변경사항을 요약한 PR 본문을 작성해 PR을 생성한다."
+      },
+      "pr-review": {
+        "displayName": "PR 리뷰",
+        "summary": "diff를 분석해 버그·회귀·위험한 변경을 짚어낸다."
+      },
+      "test-writer": {
+        "displayName": "테스트 작성",
+        "summary": "프로젝트 테스트 컨벤션에 맞는 단위/통합 테스트를 생성한다."
+      },
+      "debug": {
+        "displayName": "버그 진단 및 수정",
+        "summary": "이슈를 재현하고 근본 원인을 좁힌 뒤 최소 변경으로 수정한다."
+      },
+      "refactor": {
+        "displayName": "안전한 리팩터링",
+        "summary": "동작을 바꾸지 않으면서 코드 품질을 개선하고 테스트로 검증한다."
+      },
+      "adr-create": {
+        "displayName": "ADR 작성",
+        "summary": "기술 의사결정을 표준 ADR 형식으로 기록한다."
+      },
+      "readme-update": {
+        "displayName": "README 갱신",
+        "summary": "코드 변경에 맞춰 README의 설치/사용/개발 섹션을 정확하게 갱신한다."
+      }
+    },
+    "bestPractices": {
+      "use-conventional-commands": "빌드/테스트 명령어를 항상 명시한다",
+      "tests-must-pass-before-merge": "머지 전 모든 테스트 통과 필수",
+      "add-tests-for-new-code": "신규 기능에는 테스트를 함께 추가한다",
+      "follow-existing-folder-structure": "기존 폴더 구조와 네이밍을 따른다",
+      "no-typescript-any": "TypeScript any 금지",
+      "avoid-type-assertions": "TypeScript as 단언 지양",
+      "function-line-limit": "함수당 50줄 제한",
+      "meaningful-naming": "명확한 변수/함수 이름 사용",
+      "no-magic-numbers": "매직 넘버 사용 금지",
+      "minimal-comments": "필요한 곳에만 주석 작성",
+      "conventional-commits": "Conventional Commits 형식 준수",
+      "small-focused-prs": "PR은 작고 단일 목적으로 유지",
+      "no-secrets-in-code": "코드에 시크릿/API 키 직접 작성 금지",
+      "ask-before-deps": "신규 의존성 추가 전 사용자에게 확인",
+      "no-destructive-git": "파괴적 git 명령은 사용자 승인 필요",
+      "react-functional-components-only": "함수형 컴포넌트만 사용 (class 컴포넌트 금지)",
+      "react-explicit-effect-deps": "useEffect 의존성 배열 명시 필수",
+      "react-no-default-export-components": "컴포넌트는 named export 사용",
+      "nextjs-app-router-preferred": "App Router (app/) 사용 — Pages Router 지양",
+      "nextjs-server-components-default": "Server Component 기본, Client Component는 명시적으로",
+      "astro-zero-js-default": "기본은 정적 — 인터랙션 필요 시에만 island 사용",
+      "astro-prefer-content-collections": "Markdown/MDX는 Content Collections로 관리",
+      "nodejs-async-await-only": "async/await 사용, 콜백 지양",
+      "nodejs-validate-inputs": "외부 입력은 항상 스키마로 검증",
+      "tailwind-utility-first": "유틸리티 우선 사용, @apply 지양",
+      "tailwind-no-arbitrary-values": "임의 값(arbitrary values) 사용 최소화"
+    },
+    "boundaries": {
+      "always-run-tests": "변경 후 항상 테스트 실행",
+      "always-typecheck": "변경 후 타입 체크 실행",
+      "always-lint": "커밋 전 린트 실행",
+      "always-explain-failures": "실패 시 원인을 명확히 설명",
+      "always-prefer-existing-utilities": "신규 작성보다 기존 유틸 재사용 우선",
+      "ask-before-deps": "신규 npm 패키지 추가 전 확인",
+      "ask-before-arch-change": "아키텍처 변경 전 확인",
+      "ask-before-bulk-edits": "대규모 파일 수정 전 확인",
+      "ask-before-public-api-change": "공개 API 변경 전 확인",
+      "never-commit-secrets": "시크릿/API 키 커밋 금지",
+      "never-force-push": "force push, reset --hard 금지",
+      "never-skip-hooks": "--no-verify 등 훅 우회 금지",
+      "never-disable-typescript": "@ts-ignore, @ts-nocheck 금지",
+      "never-eslint-disable": "eslint-disable 광범위 사용 금지",
+      "never-modify-lockfile": "수동으로 lockfile 편집 금지"
+    },
     "claudeCodeOnly": {
       "modeOnly": {
         "title": "ⓘ Claude Code 단독 사용 모드",

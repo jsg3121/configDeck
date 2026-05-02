@@ -19,28 +19,60 @@
    각 도구의 시그니처 색상으로 카드 아이콘/호버 강조. */
 @layer utilities {
   /* AGENTS.md — slate-600 (공통 표준) */
-  .tool-agents-text { color: #475569; }
-  .tool-agents-bg-soft { background-color: rgba(71, 85, 105, 0.10); }
-  .tool-agents-bg-soft-15 { background-color: rgba(71, 85, 105, 0.15); }
-  .tool-agents-hover-border:hover { border-color: #475569; }
+  .tool-agents-text {
+    color: #475569;
+  }
+  .tool-agents-bg-soft {
+    background-color: rgba(71, 85, 105, 0.1);
+  }
+  .tool-agents-bg-soft-15 {
+    background-color: rgba(71, 85, 105, 0.15);
+  }
+  .tool-agents-hover-border:hover {
+    border-color: #475569;
+  }
 
   /* Cursor — slate-900 (Cursor 모노크롬) */
-  .tool-cursor-text { color: #0f172a; }
-  .tool-cursor-bg-soft { background-color: rgba(15, 23, 42, 0.08); }
-  .tool-cursor-hover-border:hover { border-color: #0f172a; }
+  .tool-cursor-text {
+    color: #0f172a;
+  }
+  .tool-cursor-bg-soft {
+    background-color: rgba(15, 23, 42, 0.08);
+  }
+  .tool-cursor-hover-border:hover {
+    border-color: #0f172a;
+  }
 
   /* Copilot — GitHub blue #0969da */
-  .tool-copilot-text { color: #0969da; }
-  .tool-copilot-bg-soft { background-color: rgba(9, 105, 218, 0.10); }
-  .tool-copilot-hover-border:hover { border-color: #0969da; }
+  .tool-copilot-text {
+    color: #0969da;
+  }
+  .tool-copilot-bg-soft {
+    background-color: rgba(9, 105, 218, 0.1);
+  }
+  .tool-copilot-hover-border:hover {
+    border-color: #0969da;
+  }
 
   /* Claude Code — Anthropic amber #d97757 */
-  .tool-claude-text { color: #d97757; }
-  .tool-claude-bg-soft { background-color: rgba(217, 119, 87, 0.10); }
-  .tool-claude-hover-border:hover { border-color: #d97757; }
+  .tool-claude-text {
+    color: #d97757;
+  }
+  .tool-claude-bg-soft {
+    background-color: rgba(217, 119, 87, 0.1);
+  }
+  .tool-claude-hover-border:hover {
+    border-color: #d97757;
+  }
 
   /* Agent Skills — violet-600 (agentskills.io 톤) */
-  .tool-skills-text { color: #7c3aed; }
-  .tool-skills-bg-soft { background-color: rgba(124, 58, 237, 0.10); }
-  .tool-skills-hover-border:hover { border-color: #7c3aed; }
+  .tool-skills-text {
+    color: #7c3aed;
+  }
+  .tool-skills-bg-soft {
+    background-color: rgba(124, 58, 237, 0.1);
+  }
+  .tool-skills-hover-border:hover {
+    border-color: #7c3aed;
+  }
 }

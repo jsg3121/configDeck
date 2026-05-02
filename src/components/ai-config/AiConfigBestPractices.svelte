@@ -110,7 +110,9 @@
                     onchange={() => onToggleId(item.id)}
                   />
                   <span class="flex flex-col gap-0.5">
-                    <span class="font-medium">{item.label}</span>
+                    <span class="font-medium"
+                      >{getTranslation(locale, `aiConfig.bestPractices.${item.id}`)}</span
+                    >
                     <span class="font-mono text-[11px] leading-relaxed text-gray-500">
                       {item.outputText}
                     </span>

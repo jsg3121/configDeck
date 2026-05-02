@@ -1,15 +1,20 @@
 <script lang="ts">
+  import { getTranslation, type Locale } from '@/i18n'
+
   import type { SkillId } from '@/types/aiConfig'
 
   interface Props {
+    locale: Locale
     id: SkillId
-    displayName: string
-    summary: string
     selected: boolean
     onToggle: (id: SkillId) => void
   }
 
-  const { id, displayName, summary, selected, onToggle }: Props = $props()
+  const { locale, id, selected, onToggle }: Props = $props()
+
+  // i18n 키: aiConfig.skills.{id}.{displayName|summary}
+  const displayName = $derived(getTranslation(locale, `aiConfig.skills.${id}.displayName`))
+  const summary = $derived(getTranslation(locale, `aiConfig.skills.${id}.summary`))
 </script>
 
 <button

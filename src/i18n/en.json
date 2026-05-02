@@ -360,6 +360,85 @@
     "summary": {
       "selectedPrefix": "Selected"
     },
+    "skills": {
+      "commit": {
+        "displayName": "Auto-write commit message",
+        "summary": "Draft a Conventional Commits message and run git commit."
+      },
+      "pr-create": {
+        "displayName": "Create PR with body",
+        "summary": "Push the current branch and open a pull request with a summary of changes."
+      },
+      "pr-review": {
+        "displayName": "Review pull request",
+        "summary": "Inspect the diff and surface bugs, regressions, and risky changes."
+      },
+      "test-writer": {
+        "displayName": "Generate tests",
+        "summary": "Generate unit or integration tests aligned with the project's test conventions."
+      },
+      "debug": {
+        "displayName": "Diagnose & fix bugs",
+        "summary": "Reproduce the issue, isolate the root cause, and propose a minimal fix."
+      },
+      "refactor": {
+        "displayName": "Safe refactor",
+        "summary": "Improve code quality without changing behavior, validated by tests."
+      },
+      "adr-create": {
+        "displayName": "Write ADR",
+        "summary": "Record a technical decision in the standard ADR format."
+      },
+      "readme-update": {
+        "displayName": "Update README",
+        "summary": "Keep the README's install/usage/development sections in sync with code changes."
+      }
+    },
+    "bestPractices": {
+      "use-conventional-commands": "Always specify build/test commands",
+      "tests-must-pass-before-merge": "All tests must pass before merge",
+      "add-tests-for-new-code": "Add tests with new features",
+      "follow-existing-folder-structure": "Follow existing folder structure and naming",
+      "no-typescript-any": "No TypeScript any",
+      "avoid-type-assertions": "Avoid TypeScript as assertions",
+      "function-line-limit": "Keep functions under 50 lines",
+      "meaningful-naming": "Use descriptive variable/function names",
+      "no-magic-numbers": "No magic numbers or strings",
+      "minimal-comments": "Comment only when necessary",
+      "conventional-commits": "Follow Conventional Commits",
+      "small-focused-prs": "Keep PRs small and single-purpose",
+      "no-secrets-in-code": "Never commit secrets or API keys",
+      "ask-before-deps": "Ask before adding new dependencies",
+      "no-destructive-git": "Destructive git commands need approval",
+      "react-functional-components-only": "Functional components only (no class components)",
+      "react-explicit-effect-deps": "Explicit useEffect dependency arrays required",
+      "react-no-default-export-components": "Use named exports for components",
+      "nextjs-app-router-preferred": "Prefer App Router (app/) — avoid Pages Router",
+      "nextjs-server-components-default": "Server Components by default, mark Client Components explicitly",
+      "astro-zero-js-default": "Static by default — use islands only when needed",
+      "astro-prefer-content-collections": "Manage Markdown/MDX via Content Collections",
+      "nodejs-async-await-only": "Use async/await, avoid callbacks",
+      "nodejs-validate-inputs": "Always validate external inputs with a schema",
+      "tailwind-utility-first": "Utility-first, avoid @apply",
+      "tailwind-no-arbitrary-values": "Minimize arbitrary value usage"
+    },
+    "boundaries": {
+      "always-run-tests": "Always run tests after changes",
+      "always-typecheck": "Run type-check after changes",
+      "always-lint": "Run linter before commit",
+      "always-explain-failures": "Explain failures clearly",
+      "always-prefer-existing-utilities": "Reuse existing utilities before writing new ones",
+      "ask-before-deps": "Ask before adding new npm packages",
+      "ask-before-arch-change": "Ask before architectural changes",
+      "ask-before-bulk-edits": "Ask before bulk file edits",
+      "ask-before-public-api-change": "Ask before public API changes",
+      "never-commit-secrets": "Never commit secrets or API keys",
+      "never-force-push": "No force push or reset --hard",
+      "never-skip-hooks": "Don't bypass hooks (--no-verify)",
+      "never-disable-typescript": "No @ts-ignore or @ts-nocheck",
+      "never-eslint-disable": "No broad eslint-disable",
+      "never-modify-lockfile": "No manual lockfile edits"
+    },
     "claudeCodeOnly": {
       "modeOnly": {
         "title": "ⓘ Claude Code only mode",

@@ -5,16 +5,15 @@
  * 5개 도구 카드 + 통합 생성기 진입 CTA를 제공하는 카탈로그 페이지.
  * 부모-자식 IA 위계 정상화 — 카탈로그(부모)가 개요/카테고리, 자식들이 상세(생성기/도구별 가이드).
  */
+import agentMdSvg from '@/assets/agent-md.svg?raw'
+import claudeSvg from '@/assets/claude.svg?raw'
+import copilotSvg from '@/assets/copilot.svg?raw'
+import cursorSvg from '@/assets/cursor.svg?raw'
 import { buildLocalizedPath, getTranslation, SUPPORTED_LOCALES, type Locale } from '@/i18n'
 
 import Layout from '@/layouts/Layout.astro'
 import CatalogToolCard from '@/components/ai-config/catalog/CatalogToolCard.astro'
 import { CATALOG_TOOLS } from '@/lib/data/aiConfig/catalogTools'
-
-import agentMdSvg from '@/assets/agent-md.svg?raw'
-import claudeSvg from '@/assets/claude.svg?raw'
-import copilotSvg from '@/assets/copilot.svg?raw'
-import cursorSvg from '@/assets/cursor.svg?raw'
 
 export const getStaticPaths = () => {
   return SUPPORTED_LOCALES.map((locale) => ({ params: { locale } }))
