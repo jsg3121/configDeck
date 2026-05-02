@@ -22,17 +22,17 @@ related_research:
 
 ### 1.1 URL 맵
 
-> **[ADR-0019 반영 — 2026-05-01]** IA 위계 역전 해소를 위해 `/ai-config`를 카탈로그 허브로, `/ai-config/generator`(신규)를 통합 생성기로 분리. 자식 랜딩 CTA는 `/ai-config/generator?tool={slug}` 형식으로 도구 컨텍스트를 전달한다.
+> **[ADR-0019 반영 — 2026-05-01]** IA 위계 역전 해소를 위해 `/ai-config`를 카탈로그 허브로, `/ai-config/generator`(신규)를 통합 생성기로 분리. 자식 랜딩 CTA는 `/ai-config/generator?focus={slug}` 형식으로 랜딩 컨텍스트를 전달한다. 파라미터 이름이 `?tool`이 아닌 `?focus`인 이유와 각 슬러그별 생성기 초기 상태(비대칭 매핑)는 ADR-0019 §URL 파라미터 컨텍스트 전달 및 SPEC-0005 §3.3 참조.
 
 | 페이지 역할 | 한국어 URL | 영어 URL | 렌더링 |
 | --- | --- | --- | --- |
 | 카탈로그 허브 (신규) | `/ko/ai-config` | `/en/ai-config` | SSG 정적 (카드 목록 + CTA) |
-| 통합 생성기 (신규 경로) | `/ko/ai-config/generator` | `/en/ai-config/generator` | Astro 아일랜드 (`?tool` 파라미터 읽기) |
-| Cursor 설정 랜딩 | `/ko/ai-config/cursor` | `/en/ai-config/cursor` | SSG 정적. CTA → `?tool=cursor` |
-| AGENTS.md 랜딩 | `/ko/ai-config/agents-md` | `/en/ai-config/agents-md` | SSG 정적. CTA → `?tool=codex` |
-| Copilot 인스트럭션 랜딩 | `/ko/ai-config/copilot` | `/en/ai-config/copilot` | SSG 정적. CTA → `?tool=copilot` |
-| Claude Code 랜딩 | `/ko/ai-config/claude-code` | `/en/ai-config/claude-code` | SSG 정적. CTA → `?tool=claude-code` |
-| Agent Skills 랜딩 | `/ko/ai-config/agent-skills` | `/en/ai-config/agent-skills` | SSG 정적. CTA → `?tool=agent-skills` |
+| 통합 생성기 (신규 경로) | `/ko/ai-config/generator` | `/en/ai-config/generator` | Astro 아일랜드 (`?focus` 파라미터 읽기) |
+| Cursor 설정 랜딩 | `/ko/ai-config/cursor` | `/en/ai-config/cursor` | SSG 정적. CTA → `?focus=cursor` |
+| AGENTS.md 랜딩 | `/ko/ai-config/agents-md` | `/en/ai-config/agents-md` | SSG 정적. CTA → `?focus=agents-md` |
+| Copilot 인스트럭션 랜딩 | `/ko/ai-config/copilot` | `/en/ai-config/copilot` | SSG 정적. CTA → `?focus=copilot` |
+| Claude Code 랜딩 | `/ko/ai-config/claude-code` | `/en/ai-config/claude-code` | SSG 정적. CTA → `?focus=claude-code` |
+| Agent Skills 랜딩 | `/ko/ai-config/agent-skills` | `/en/ai-config/agent-skills` | SSG 정적. CTA → `?focus=agent-skills` |
 
 > **근거:** 통합 생성기는 Svelte 아일랜드가 필요하므로 Astro 아일랜드 방식. 카탈로그와 도구별 랜딩은 인터랙션 없이 콘텐츠 + CTA만 포함하므로 정적 HTML로 충분하다 (Astro SSG 원칙, ADR-0002). IA 위계 역전 해소 근거는 ADR-0019 참조.
 
