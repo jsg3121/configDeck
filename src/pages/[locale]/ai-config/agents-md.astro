@@ -65,6 +65,15 @@ const breadcrumbJsonLd = {
     },
   ],
 }
+
+// 출력 예시 코드의 SoftwareSourceCode 구조화 데이터
+const softwareSourceCodeJsonLd = {
+  '@type': 'SoftwareSourceCode',
+  name: meta.exampleFileName,
+  text: meta.exampleCode,
+  programmingLanguage: 'Markdown',
+  codeSampleType: 'snippet',
+}
 ---
 
 <Layout
@@ -73,7 +82,7 @@ const breadcrumbJsonLd = {
   {locale}
   pagePath={pagePath}
   currentPath={pagePath}
-  jsonLd={[softwareApplicationJsonLd, breadcrumbJsonLd]}
+  jsonLd={[softwareApplicationJsonLd, breadcrumbJsonLd, softwareSourceCodeJsonLd]}
 >
   <article>
     <nav aria-label="Breadcrumb" class="mx-auto max-w-4xl px-6 pt-6 text-xs text-gray-500">
@@ -90,7 +99,7 @@ const breadcrumbJsonLd = {
           </a>
         </li>
         <li aria-hidden="true">/</li>
-        <li class="font-medium text-gray-900">
+        <li class="font-medium text-gray-900" aria-current="page">
           {getTranslation(locale, `aiConfig.landing.tools.${meta.i18nKey}`)}
         </li>
       </ol>

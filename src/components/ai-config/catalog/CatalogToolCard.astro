@@ -2,6 +2,12 @@
 /**
  * 카탈로그 페이지의 도구 카드.
  * 도구별 브랜드 색상으로 아이콘 영역에 색상 토큰 적용 + 호버 시 테두리 색상 전환.
+ *
+ * 접근성/SEO: stretched-link 패턴으로 카드 전체 클릭 영역을 유지하면서도
+ * 스크린 리더 라벨은 도구 이름만 읽도록 한다 (P1-5).
+ * - <article aria-labelledby={titleId}> 로 카드 식별
+ * - <h3 id={titleId}><a class="stretched-link">{title}</a></h3>
+ * - .stretched-link::after { position: absolute; inset: 0 } 으로 카드 전체 클릭
  */
 import { buildLocalizedPath, getTranslation, type Locale } from '@/i18n'
 
@@ -25,10 +31,12 @@ const title = t('title')
 const path = t('path')
 const summary = t('summary')
 const badge = toolKey === 'agentsMd' ? t('badge') : null
+const titleId = `catalog-tool-${toolKey}`
+const href = buildLocalizedPath(locale, `/ai-config/${slug}`)
 ---
 
-<a
-  href={buildLocalizedPath(locale, `/ai-config/${slug}`)}
+<article
+  aria-labelledby={titleId}
   class:list={[
     'group relative flex h-full flex-col rounded-xl border border-border bg-surface p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md',
     `${colorClass}-hover-border`,
@@ -46,7 +54,9 @@ const badge = toolKey === 'agentsMd' ? t('badge') : null
         <slot name="icon" />
       </div>
       <div>
-        <h3 class="text-base font-semibold text-gray-900">{title}</h3>
+        <h3 id={titleId} class="text-base font-semibold text-gray-900">
+          <a href={href} class="stretched-link focus-visible:outline-none">{title}</a>
+        </h3>
         <p class="mt-0.5 font-mono text-xs text-gray-400">{path}</p>
       </div>
     </div>
@@ -79,4 +89,22 @@ const badge = toolKey === 'agentsMd' ? t('badge') : null
       →
     </span>
   </div>
-</a>
+</article>
+
+<style>
+  /* stretched-link: heading 내부 <a>가 카드 전체 클릭 영역을 가지도록 ::after 확장.
+     스크린 리더는 <a> 텍스트(도구 이름)만 link로 인식, 카드 전체 텍스트가 한 번에
+     읽히지 않아 접근성 향상 (Bootstrap stretched-link 패턴).
+     focus 시각 표현은 카드 자체에 적용. */
+  .stretched-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+  }
+  article:has(.stretched-link:focus-visible) {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+</style>

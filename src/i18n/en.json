@@ -204,7 +204,7 @@
     "aiConfigClaudeCodeDescription": "Generate CLAUDE.md for Claude Code and share the same rules across other AI tools via @AGENTS.md import.",
     "aiConfigAgentSkillsTitle": "Agent Skills Generator — 8 SKILL.md Templates | ConfigDeck",
     "aiConfigAgentSkillsDescription": "Generate 8 SKILL.md workflows (commit, pr-create, pr-review, test-writer, debug, refactor, adr-create, readme-update) for Claude Code, Cursor, and Codex.",
-    "aiConfigHubTitle": "AI Coding Tool Config Catalog | ConfigDeck",
+    "aiConfigHubTitle": "AI Coding Tool Config Files — Generator Hub | ConfigDeck",
     "aiConfigHubDescription": "Browse 5 AI tool config files — AGENTS.md, Cursor Rules, Copilot Instructions, CLAUDE.md, Agent Skills — and generate them together.",
     "aiConfigGeneratorTitle": "AI Tool Config Generator — 4 Tools + Skills | ConfigDeck",
     "aiConfigGeneratorDescription": "Generate config files for AGENTS.md, Cursor Rules, GitHub Copilot, Claude Code, and Agent Skills — all from one stack-aware preset."
