@@ -469,6 +469,7 @@
       "common": {
         "breadcrumbHome": "Home",
         "breadcrumbHub": "AI Config Files",
+        "breadcrumbGenerator": "Generator",
         "ctaTitle": "Generate it now",
         "ctaDescription": "Pick your tools and options to download config files instantly.",
         "ctaButton": "Open AI Config Generator →",
