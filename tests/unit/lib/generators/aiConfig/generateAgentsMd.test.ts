@@ -40,7 +40,7 @@ describe('generateAgentsMd', () => {
             selectedIds: ['no-typescript-any', 'conventional-commits'],
             additionalNotes: '',
           },
-        })
+        }),
       )
 
       expect(result.body).toContain('## Code Style')
@@ -56,7 +56,7 @@ describe('generateAgentsMd', () => {
             selectedIds: ['no-typescript-any'],
             additionalNotes: '',
           },
-        })
+        }),
       )
 
       expect(result.body).not.toContain('## Testing')
@@ -70,7 +70,7 @@ describe('generateAgentsMd', () => {
             selectedIds: ['no-secrets-in-code'],
             additionalNotes: '',
           },
-        })
+        }),
       )
 
       expect(result.body).toContain('## Boundaries')
@@ -84,7 +84,7 @@ describe('generateAgentsMd', () => {
             selectedIds: ['no-typescript-any', 'non-existent-id'],
             additionalNotes: '',
           },
-        })
+        }),
       )
 
       expect(result.body).toContain('Never use the `any` type')
@@ -101,7 +101,7 @@ describe('generateAgentsMd', () => {
             askFirstIds: [],
             neverDoIds: [],
           },
-        })
+        }),
       )
 
       expect(result.body).toContain('## Boundaries')
@@ -117,7 +117,7 @@ describe('generateAgentsMd', () => {
             askFirstIds: ['ask-before-deps'],
             neverDoIds: ['never-commit-secrets'],
           },
-        })
+        }),
       )
 
       const alwaysIdx = result.body.indexOf('Always do')
@@ -137,7 +137,7 @@ describe('generateAgentsMd', () => {
             askFirstIds: [],
             neverDoIds: [],
           },
-        })
+        }),
       )
 
       expect(result.body).toContain('### ✅ Always do')
@@ -154,7 +154,7 @@ describe('generateAgentsMd', () => {
             selectedIds: [],
             additionalNotes: 'Use Bun instead of Node when possible.',
           },
-        })
+        }),
       )
 
       expect(result.body).toContain('## Additional Notes')
@@ -171,7 +171,7 @@ describe('generateAgentsMd', () => {
       const result = generateAgentsMd(
         makeInput({
           bestPractices: { selectedIds: [], additionalNotes: '   \n  ' },
-        })
+        }),
       )
 
       expect(result.body).not.toContain('## Additional Notes')

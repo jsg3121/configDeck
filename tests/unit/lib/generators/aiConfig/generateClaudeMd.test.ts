@@ -30,7 +30,7 @@ describe('generateClaudeMd', () => {
       const result = generateClaudeMd(
         makeInput({
           tools: { enabledTools: ['claude-code'], claudeCodeOnly: true },
-        })
+        }),
       )
 
       expect(result.importAgentsMd).toBe(false)
@@ -45,7 +45,7 @@ describe('generateClaudeMd', () => {
             selectedIds: ['no-typescript-any'],
             additionalNotes: '',
           },
-        })
+        }),
       )
 
       expect(result.body).toContain('# Project Instructions')
@@ -61,7 +61,7 @@ describe('generateClaudeMd', () => {
             askFirstIds: [],
             neverDoIds: [],
           },
-        })
+        }),
       )
 
       expect(result.body).toContain('## Boundaries')
@@ -78,7 +78,7 @@ describe('generateClaudeMd', () => {
             enabledTools: ['claude-code', 'cursor'],
             claudeCodeOnly: false,
           },
-        })
+        }),
       )
 
       expect(result.importAgentsMd).toBe(true)
@@ -92,7 +92,7 @@ describe('generateClaudeMd', () => {
             enabledTools: ['claude-code', 'codex'],
             claudeCodeOnly: false,
           },
-        })
+        }),
       )
 
       expect(result.body).toContain('# Claude Code Notes')
@@ -109,7 +109,7 @@ describe('generateClaudeMd', () => {
             selectedIds: ['no-typescript-any'],
             additionalNotes: '',
           },
-        })
+        }),
       )
 
       // 본문에는 임포트만 들어가고, AGENTS.md의 실제 컨텐츠는 들어가지 않는다 (DRY)

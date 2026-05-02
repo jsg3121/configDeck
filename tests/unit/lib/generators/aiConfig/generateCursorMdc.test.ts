@@ -81,7 +81,7 @@ describe('generateCursorMdc', () => {
       const result = generateCursorMdc(
         makeInput({
           bestPractices: { selectedIds: ['no-typescript-any'], additionalNotes: '' },
-        })
+        }),
       )
 
       expect(result.core.body).toContain('## Code Style')
@@ -97,7 +97,7 @@ describe('generateCursorMdc', () => {
             selectedIds: ['astro-prefer-content-collections'],
             additionalNotes: '',
           },
-        })
+        }),
       )
 
       expect(result.stack.body).toContain('## Project Structure')
@@ -109,7 +109,7 @@ describe('generateCursorMdc', () => {
       const result = generateCursorMdc(
         makeInput({
           bestPractices: { selectedIds: ['no-secrets-in-code'], additionalNotes: '' },
-        })
+        }),
       )
 
       expect(result.boundaries.body).toContain('## Boundaries')
@@ -125,7 +125,7 @@ describe('generateCursorMdc', () => {
             askFirstIds: ['ask-before-deps'],
             neverDoIds: ['never-commit-secrets'],
           },
-        })
+        }),
       )
 
       expect(result.boundaries.body).toContain('### ✅ Always do')
@@ -137,7 +137,7 @@ describe('generateCursorMdc', () => {
       const result = generateCursorMdc(
         makeInput({
           bestPractices: { selectedIds: [], additionalNotes: 'Use Bun.' },
-        })
+        }),
       )
 
       expect(result.boundaries.body).toContain('## Additional Notes')
@@ -150,7 +150,7 @@ describe('generateCursorMdc', () => {
       const result = generateCursorMdc(
         makeInput({
           bestPractices: { selectedIds: ['no-typescript-any'], additionalNotes: '' },
-        })
+        }),
       )
 
       const serialized = serializeCursorMdcFile(result.core)

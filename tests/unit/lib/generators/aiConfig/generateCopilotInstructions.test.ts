@@ -39,7 +39,7 @@ describe('generateCopilotInstructions', () => {
             selectedIds: ['no-typescript-any', 'conventional-commits'],
             additionalNotes: '',
           },
-        })
+        }),
       )
 
       expect(result.body).toContain('Never use the `any` type')
@@ -56,7 +56,7 @@ describe('generateCopilotInstructions', () => {
             askFirstIds: [],
             neverDoIds: ['never-commit-secrets'],
           },
-        })
+        }),
       )
 
       expect(result.body).toContain('### ✅ Always do')

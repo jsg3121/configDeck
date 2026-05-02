@@ -32,7 +32,7 @@ describe('generateSkills', () => {
 
     it('여러 스킬 ID는 입력 순서를 보존한다', () => {
       const result = generateSkills(
-        makeInput({ selectedSkillIds: ['debug', 'commit', 'pr-review'] })
+        makeInput({ selectedSkillIds: ['debug', 'commit', 'pr-review'] }),
       )
 
       expect(result.map((f) => f.id)).toEqual(['debug', 'commit', 'pr-review'])

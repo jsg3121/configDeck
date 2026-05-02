@@ -28,7 +28,7 @@ describe('generateAiConfig', () => {
   describe('도구별 조건부 출력', () => {
     it('claude-code가 enabledTools에 없으면 claudeMd는 undefined', () => {
       const result = generateAiConfig(
-        makeInput({ tools: { enabledTools: ['cursor'], claudeCodeOnly: false } })
+        makeInput({ tools: { enabledTools: ['cursor'], claudeCodeOnly: false } }),
       )
 
       expect(result.claudeMd).toBeUndefined()
@@ -36,7 +36,7 @@ describe('generateAiConfig', () => {
 
     it('claude-code가 enabledTools에 있으면 claudeMd가 생성된다', () => {
       const result = generateAiConfig(
-        makeInput({ tools: { enabledTools: ['claude-code'], claudeCodeOnly: true } })
+        makeInput({ tools: { enabledTools: ['claude-code'], claudeCodeOnly: true } }),
       )
 
       expect(result.claudeMd).toBeDefined()
@@ -44,7 +44,7 @@ describe('generateAiConfig', () => {
 
     it('cursor가 없으면 cursorMdc는 undefined', () => {
       const result = generateAiConfig(
-        makeInput({ tools: { enabledTools: ['copilot'], claudeCodeOnly: false } })
+        makeInput({ tools: { enabledTools: ['copilot'], claudeCodeOnly: false } }),
       )
 
       expect(result.cursorMdc).toBeUndefined()
@@ -52,7 +52,7 @@ describe('generateAiConfig', () => {
 
     it('cursor가 있으면 cursorMdc 3파일이 생성된다', () => {
       const result = generateAiConfig(
-        makeInput({ tools: { enabledTools: ['cursor'], claudeCodeOnly: false } })
+        makeInput({ tools: { enabledTools: ['cursor'], claudeCodeOnly: false } }),
       )
 
       expect(result.cursorMdc).toBeDefined()
@@ -63,7 +63,7 @@ describe('generateAiConfig', () => {
 
     it('copilot이 없으면 copilotInstructions는 undefined', () => {
       const result = generateAiConfig(
-        makeInput({ tools: { enabledTools: ['cursor'], claudeCodeOnly: false } })
+        makeInput({ tools: { enabledTools: ['cursor'], claudeCodeOnly: false } }),
       )
 
       expect(result.copilotInstructions).toBeUndefined()
@@ -71,7 +71,7 @@ describe('generateAiConfig', () => {
 
     it('copilot이 있으면 copilotInstructions가 생성된다', () => {
       const result = generateAiConfig(
-        makeInput({ tools: { enabledTools: ['copilot'], claudeCodeOnly: false } })
+        makeInput({ tools: { enabledTools: ['copilot'], claudeCodeOnly: false } }),
       )
 
       expect(result.copilotInstructions).toBeDefined()
@@ -79,7 +79,7 @@ describe('generateAiConfig', () => {
 
     it('codex가 있어도 별도 산출물은 추가되지 않는다 (AGENTS.md로 충분)', () => {
       const result = generateAiConfig(
-        makeInput({ tools: { enabledTools: ['codex'], claudeCodeOnly: false } })
+        makeInput({ tools: { enabledTools: ['codex'], claudeCodeOnly: false } }),
       )
 
       expect(result.agentsMd).toBeDefined()
@@ -95,7 +95,7 @@ describe('generateAiConfig', () => {
             enabledTools: ['cursor', 'copilot', 'claude-code', 'codex'],
             claudeCodeOnly: false,
           },
-        })
+        }),
       )
 
       expect(result.agentsMd).toBeDefined()
@@ -107,9 +107,7 @@ describe('generateAiConfig', () => {
 
   describe('Skills 통합', () => {
     it('selectedSkillIds 기반으로 SKILL.md 목록이 포함된다', () => {
-      const result = generateAiConfig(
-        makeInput({ selectedSkillIds: ['commit', 'pr-review'] })
-      )
+      const result = generateAiConfig(makeInput({ selectedSkillIds: ['commit', 'pr-review'] }))
 
       expect(result.skills).toHaveLength(2)
       expect(result.skills[0].id).toBe('commit')
