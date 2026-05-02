@@ -23,21 +23,24 @@
 
 ## ADR 목록
 
-| 번호                                                      | 제목                                              | 상태   | 날짜       |
-|-----------------------------------------------------------|---------------------------------------------------|--------|------------|
-| [0001](records/ADR-0001-adr-adoption.md)                  | ADR 도입                                          | 승인됨 | 2026-04-06 |
-| [0002](records/ADR-0002-framework.md)                     | 프레임워크 선택 (Astro + Svelte)                  | 승인됨 | 2026-04-06 |
-| [0003](records/ADR-0003-package-manager.md)               | 패키지 매니저 선택 (pnpm)                         | 승인됨 | 2026-04-06 |
-| [0004](records/ADR-0004-deployment.md)                    | 배포 환경 선택 (Cloudflare Pages)                 | 승인됨 | 2026-04-06 |
-| [0005](records/ADR-0005-share-link.md)                    | 공유 링크 (URL 기반 옵션 인코딩)                  | 승인됨 | 2026-04-06 |
-| [0006](records/ADR-0006-generator-centric-ia.md)          | 생성기 중심 IA 재설계                             | 승인됨 | 2026-04-06 |
-| [0007](records/ADR-0007-page-structure-redesign.md)       | 페이지 구조 재설계 (파일/스택별 생성기 통합)      | 승인됨 | 2026-04-06 |
-| [0008](records/ADR-0008-option-schema-redesign.md)        | 옵션 스키마 재설계 (입력 타입/옵션 정의 분리)     | 승인됨 | 2026-04-09 |
-| [0009](records/ADR-0009-stack-generator-ux-pattern.md)    | 스택 생성기 UX 패턴 선정 (아코디언 인라인 옵션)   | 승인됨 | 2026-04-13 |
-| [0010](records/ADR-0010-article-content-strategy.md)      | 아티클 콘텐츠 수집 및 갱신 전략                   | 승인됨 | 2026-04-13 |
-| [0011](records/ADR-0011-article-ai-summarization.md)      | 아티클 AI 요약 자동화 전략 (Gemini API)           | 승인됨 | 2026-04-13 |
-| [0012](records/ADR-0012-create-pr-validation-optional.md) | create-pr 스킬 검증 단계 선택적 실행              | 승인됨 | 2026-04-14 |
-| [0013](records/ADR-0013-article-ai-tool-evaluation.md)    | 아티클 AI 요약 도구 평가 및 전환 검토             | 제안됨 | 2026-04-15 |
-| [0014](records/ADR-0014-growth-strategy-roadmap.md)       | 서비스 성장 전략 및 통합 로드맵                   | 승인됨 | 2026-04-24 |
-| [0015](records/ADR-0015-article-source-diversity.md)      | 아티클 소스 다양성 확보 전략 (디우선순위)         | 승인됨 | 2026-04-26 |
-| [0016](records/ADR-0016-e2e-validation-strategy.md)       | E2E 테스트 검증 전략 (디버깅 선별 + 머지 전 전체) | 승인됨 | 2026-04-28 |
+| 번호                                                       | 제목                                              | 상태   | 날짜       |
+|------------------------------------------------------------|---------------------------------------------------|--------|------------|
+| [0001](records/ADR-0001-adr-adoption.md)                   | ADR 도입                                          | 승인됨 | 2026-04-06 |
+| [0002](records/ADR-0002-framework.md)                      | 프레임워크 선택 (Astro + Svelte)                  | 승인됨 | 2026-04-06 |
+| [0003](records/ADR-0003-package-manager.md)                | 패키지 매니저 선택 (pnpm)                         | 승인됨 | 2026-04-06 |
+| [0004](records/ADR-0004-deployment.md)                     | 배포 환경 선택 (Cloudflare Pages)                 | 승인됨 | 2026-04-06 |
+| [0005](records/ADR-0005-share-link.md)                     | 공유 링크 (URL 기반 옵션 인코딩)                  | 승인됨 | 2026-04-06 |
+| [0006](records/ADR-0006-generator-centric-ia.md)           | 생성기 중심 IA 재설계                             | 승인됨 | 2026-04-06 |
+| [0007](records/ADR-0007-page-structure-redesign.md)        | 페이지 구조 재설계 (파일/스택별 생성기 통합)      | 승인됨 | 2026-04-06 |
+| [0008](records/ADR-0008-option-schema-redesign.md)         | 옵션 스키마 재설계 (입력 타입/옵션 정의 분리)     | 승인됨 | 2026-04-09 |
+| [0009](records/ADR-0009-stack-generator-ux-pattern.md)     | 스택 생성기 UX 패턴 선정 (아코디언 인라인 옵션)   | 승인됨 | 2026-04-13 |
+| [0010](records/ADR-0010-article-content-strategy.md)       | 아티클 콘텐츠 수집 및 갱신 전략                   | 승인됨 | 2026-04-13 |
+| [0011](records/ADR-0011-article-ai-summarization.md)       | 아티클 AI 요약 자동화 전략 (Gemini API)           | 승인됨 | 2026-04-13 |
+| [0012](records/ADR-0012-create-pr-validation-optional.md)  | create-pr 스킬 검증 단계 선택적 실행              | 승인됨 | 2026-04-14 |
+| [0013](records/ADR-0013-article-ai-tool-evaluation.md)     | 아티클 AI 요약 도구 평가 및 전환 검토             | 제안됨 | 2026-04-15 |
+| [0014](records/ADR-0014-growth-strategy-roadmap.md)        | 서비스 성장 전략 및 통합 로드맵                   | 승인됨 | 2026-04-24 |
+| [0015](records/ADR-0015-article-source-diversity.md)       | 아티클 소스 다양성 확보 전략 (디우선순위)         | 승인됨 | 2026-04-26 |
+| [0016](records/ADR-0016-e2e-validation-strategy.md)        | E2E 테스트 검증 전략 (디버깅 선별 + 머지 전 전체) | 승인됨 | 2026-04-28 |
+| [0017](records/ADR-0017-ai-config-file-format-priority.md) | AI 도구 설정 파일 형식 우선순위 (AGENTS.md 1순위) | 승인됨 | 2026-04-30 |
+| [0018](records/ADR-0018-agent-skills-catalog.md)           | Agent Skills 카탈로그 채택 및 P0 8종 범위         | 승인됨 | 2026-04-30 |
+| [0019](records/ADR-0019-ai-config-ia-redesign.md)          | AI Config IA 재설계: 카탈로그 + 통합 생성기 분리  | 승인됨 | 2026-05-01 |

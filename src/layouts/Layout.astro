@@ -111,6 +111,18 @@ const ogImageUrl = ogImage ?? defaultOgImage
     <meta name="twitter:image" content={ogImageUrl} />
 
     <!-- JSON-LD 구조화 데이터 -->
+    <!-- 사이트 공통 Organization (E-E-A-T 출처 신뢰도 신호) -->
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Organization',
+        name: 'ConfigDeck',
+        url: siteUrl.href,
+        logo: new URL('/favicon.svg', siteUrl).href,
+      })}
+    />
     {
       jsonLd.map((data) => (
         <script
@@ -121,13 +133,13 @@ const ogImageUrl = ogImage ?? defaultOgImage
       ))
     }
   </head>
-  <body class="bg-surface-alt font-sans text-gray-900">
+  <body class="flex min-h-screen flex-col bg-surface-alt font-sans text-gray-900">
     {!bare && <Header locale={locale} currentPath={currentPath ?? pagePath} />}
     {
       bare ? (
         <slot />
       ) : (
-        <main>
+        <main class="flex-1">
           <slot />
         </main>
       )

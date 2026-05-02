@@ -37,12 +37,13 @@
 
 ## 기획서 목록
 
-| 문서                                                   | 제목                              | 상태    | 관련 ADR           |
-|--------------------------------------------------------|-----------------------------------|---------|--------------------|
-| [SPEC-0001](SPEC-0001-option-generator-enhancement.md) | 파일 옵션 생성기 기능 보강        | 승인됨  | ADR-0008           |
-| [SPEC-0002](SPEC-0002-dev-tools-article-page.md)       | 개발 도구 아티클 페이지           | 승인됨  | ADR-0010, ADR-0011 |
-| [SPEC-0003](SPEC-0003-shareable-url.md)                | Shareable URL — 옵션 상태 공유    | 완료    | ADR-0005, ADR-0014 |
-| [SPEC-0004](SPEC-0004-import-and-audit.md)             | Import & Audit — 설정 분석/진단   | 구현 중 | ADR-0014           |
+| 문서                                                   | 제목                                          | 상태    | 관련 ADR                      |
+|--------------------------------------------------------|-----------------------------------------------|---------|-------------------------------|
+| [SPEC-0001](SPEC-0001-option-generator-enhancement.md) | 파일 옵션 생성기 기능 보강                    | 승인됨  | ADR-0008                      |
+| [SPEC-0002](SPEC-0002-dev-tools-article-page.md)       | 개발 도구 아티클 페이지                       | 승인됨  | ADR-0010, ADR-0011            |
+| [SPEC-0003](SPEC-0003-shareable-url.md)                | Shareable URL — 옵션 상태 공유                | 완료    | ADR-0005, ADR-0014            |
+| [SPEC-0004](SPEC-0004-import-and-audit.md)             | Import & Audit — 설정 분석/진단               | 구현 중 | ADR-0014                      |
+| [SPEC-0005](SPEC-0005-ai-tool-config-and-skills.md)    | AI 코딩 도구 설정 파일 + Agent Skills 생성기  | 검토 중 | ADR-0014, ADR-XXXX (2개 후속) |
 
 ## 관리 에이전트
 

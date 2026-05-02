@@ -61,11 +61,20 @@
 ├─ /generator                     # 생성기 허브
 │  ├─ /{file-name}               # 파일별 생성기 (SEO 랜딩 겸용)
 │  └─ /{stack-name}              # 스택별 생성기 (SEO 랜딩 겸용)
+├─ /ai-config                     # AI 코딩 도구 설정 카탈로그 허브 (SPEC-0005, ADR-0019)
+│  ├─ /generator                 # AI 도구 통합 설정 생성기 (AiConfigGenerator.svelte)
+│  ├─ /agents-md                 # AGENTS.md 도구별 상세 가이드 (SEO 랜딩)
+│  ├─ /cursor                    # Cursor Rules 도구별 상세 가이드 (SEO 랜딩)
+│  ├─ /copilot                   # Copilot Instructions 도구별 상세 가이드 (SEO 랜딩)
+│  ├─ /claude-code               # CLAUDE.md 도구별 상세 가이드 (SEO 랜딩)
+│  └─ /agent-skills              # Agent Skills 도구별 상세 가이드 (SEO 랜딩)
 ├─ /article                       # 개발 도구 아티클 (SPEC-0002)
 │  └─ /{tool}                    # 도구별 필터 (eslint, prettier, typescript 등)
 ├─ /docs                          # 문서/가이드
 └─ /blog                          # 블로그 (미구현, 추후 /article과 통합 검토)
 ```
+
+> **AI Config 영역 IA 원칙 (ADR-0019):** `/ai-config`는 카탈로그 허브(개요/진입점), `/ai-config/generator`는 실제 기능, 나머지 자식들은 도구별 SEO 랜딩. 자식 랜딩 CTA는 `/ai-config/generator?tool={slug}` 형식으로 도구 컨텍스트를 전달한다.
 
 페이지 구조 상세 → `references/page-structure.md`
 

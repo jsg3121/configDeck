@@ -21,3 +21,4 @@
 - [linting.md](guides/linting.md) — Prettier, ESLint 설정, import 정렬 규칙
 - [workflow.md](guides/workflow.md) — 브랜치 전략, 버전 관리, 커밋 메시지, PR 규칙
 - [rendering.md](guides/rendering.md) — SSG/SSR 렌더링 전략, 페이지별 렌더링 모드, SEO 영향
+- [ui-publishing.md](guides/ui-publishing.md) — UI 퍼블리싱 워크플로우 (HTML 시안 → 사용자 검토 → 코드 적용 2단계)

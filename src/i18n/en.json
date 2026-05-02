@@ -9,6 +9,7 @@
   },
   "nav": {
     "generator": "Generator",
+    "aiConfig": "AI Config Files",
     "migration": "Migrate & Audit",
     "docs": "Docs",
     "blog": "Blog",
@@ -192,7 +193,21 @@
     "blogTitle": "Blog — ConfigDeck",
     "blogDescription": "Updates, tutorials, and insights about developer tooling, config management, and ConfigDeck features.",
     "articleTitle": "Dev Tool Articles — ConfigDeck",
-    "articleDescription": "Stay up to date with the latest updates and releases from ESLint, Prettier, TypeScript, and more."
+    "articleDescription": "Stay up to date with the latest updates and releases from ESLint, Prettier, TypeScript, and more.",
+    "aiConfigAgentsMdTitle": "AGENTS.md Generator for 4 AI Coding Tools | ConfigDeck",
+    "aiConfigAgentsMdDescription": "Generate AGENTS.md to unify Cursor, GitHub Copilot, Claude Code, and OpenAI Codex with one file. The open standard adopted by 60,000+ open-source projects.",
+    "aiConfigCursorTitle": "Cursor Rules Generator — MDC Format | ConfigDeck",
+    "aiConfigCursorDescription": "Generate .cursor/rules/*.mdc Cursor Rules from stack-aware presets. Auto-split into core / stack / boundaries with frontmatter.",
+    "aiConfigCopilotTitle": "GitHub Copilot Instructions Generator | ConfigDeck",
+    "aiConfigCopilotDescription": "Generate .github/copilot-instructions.md from best practices and boundaries so GitHub Copilot understands your repository context.",
+    "aiConfigClaudeCodeTitle": "Claude Code CLAUDE.md Generator | ConfigDeck",
+    "aiConfigClaudeCodeDescription": "Generate CLAUDE.md for Claude Code and share the same rules across other AI tools via @AGENTS.md import.",
+    "aiConfigAgentSkillsTitle": "Agent Skills Generator — 8 SKILL.md Templates | ConfigDeck",
+    "aiConfigAgentSkillsDescription": "Generate 8 SKILL.md workflows (commit, pr-create, pr-review, test-writer, debug, refactor, adr-create, readme-update) for Claude Code, Cursor, and Codex.",
+    "aiConfigHubTitle": "AI Coding Tool Config Files — Generator Hub | ConfigDeck",
+    "aiConfigHubDescription": "Browse 5 AI tool config files — AGENTS.md, Cursor Rules, Copilot Instructions, CLAUDE.md, Agent Skills — and generate them together.",
+    "aiConfigGeneratorTitle": "AI Tool Config Generator — 4 Tools + Skills | ConfigDeck",
+    "aiConfigGeneratorDescription": "Generate config files for AGENTS.md, Cursor Rules, GitHub Copilot, Claude Code, and Agent Skills — all from one stack-aware preset."
   },
   "docs": {
     "title": "Documentation",
@@ -242,6 +257,299 @@
       "searchenginejournal": "Search Engine Journal",
       "googlesearchcentral": "Google Search Central",
       "javascriptweekly": "JavaScript Weekly"
+    }
+  },
+  "aiConfig": {
+    "page": {
+      "title": "AI Tool Config + Skills Generator",
+      "heading": "AI Tool Config + Skills Generator",
+      "description": "Pick a stack and generate AGENTS.md, CLAUDE.md, Cursor MDC, Copilot instructions, and popular Agent Skills in one click."
+    },
+    "catalog": {
+      "h1": "AI Coding Tool Config Catalog",
+      "lead": "Choose your AI tools and generate config files and Skills together.",
+      "unifiedHeading": "Generate all at once",
+      "unifiedTitle": "Generate config for 4 AI tools in one go",
+      "unifiedDescription": "Output AGENTS.md + Cursor + Copilot + CLAUDE.md + Skills simultaneously. One setup so your team's AI tools share the same rules.",
+      "unifiedCta": "Start unified generator",
+      "unifiedBadge": "Recommended workflow",
+      "toolsHeading": "Browse by tool",
+      "toolsLead": "Learn each tool's file format, location, and differences before entering the generator.",
+      "openLink": "Open overview",
+      "tools": {
+        "agentsMd": {
+          "title": "AGENTS.md",
+          "path": "/AGENTS.md",
+          "summary": "Common standard file shared across 4 AI tools. One file covers Cursor, Copilot, Claude Code, and Codex.",
+          "badge": "Common standard"
+        },
+        "cursor": {
+          "title": "Cursor Rules",
+          "path": ".cursor/rules/*.mdc",
+          "summary": "Cursor-only rules. 3 files (core / stack / boundaries) auto-split with frontmatter."
+        },
+        "copilot": {
+          "title": "Copilot Instructions",
+          "path": ".github/copilot-instructions.md",
+          "summary": "GitHub Copilot reads this so it understands your repository context accurately."
+        },
+        "claudeCode": {
+          "title": "CLAUDE.md",
+          "path": "/CLAUDE.md",
+          "summary": "Claude Code memory file. Imports @AGENTS.md to share rules with other tools."
+        },
+        "agentSkills": {
+          "title": "Agent Skills",
+          "path": ".claude/skills/{name}/SKILL.md",
+          "summary": "8 SKILL.md (commit, pr-create, pr-review, test-writer, debug, refactor, adr-create, readme-update). agentskills.io standard."
+        }
+      }
+    },
+    "step1": {
+      "title": "Select Tools",
+      "legend": "Select all the AI coding tools you use",
+      "minSelectError": "Please select at least one tool.",
+      "claudeCodeOnlyToggle": "Use Claude Code only"
+    },
+    "step2": {
+      "title": "Agent Skills",
+      "legend": "Select Agent Skills to include",
+      "selectAll": "Select all",
+      "deselectAll": "Deselect all",
+      "compatibilityNoticeTitle": "About SKILL.md compatibility",
+      "compatibilityNoticeBody": "Copilot and Codex don't directly read .claude/skills/*/SKILL.md. Cursor and Claude Code auto-detect them. To use these skills with Copilot, copy the skill content into .github/copilot-instructions.md or reference them manually."
+    },
+    "step3": {
+      "title": "Best Practices",
+      "intro": "Expand a category to pick items. All items are listed regardless of stack.",
+      "additionalNotesLabel": "Additional Notes",
+      "additionalNotesPlaceholder": "Add team conventions or extra instructions. English input recommended (better AI accuracy).",
+      "categories": {
+        "commands": "Commands",
+        "testing": "Testing",
+        "project-structure": "Project Structure",
+        "code-style": "Code Style",
+        "git-workflow": "Git Workflow"
+      },
+      "itemCountSuffix": "",
+      "selectedCountPrefix": "Selected"
+    },
+    "step4": {
+      "title": "Boundaries",
+      "intro": "Define guardrails for the AI in three tiers. Optional — you can also add custom items.",
+      "alwaysDoTitle": "Always do",
+      "askFirstTitle": "Ask first",
+      "neverDoTitle": "Never do",
+      "addCustomItem": "+ Add custom item",
+      "customInputPlaceholder": "English input recommended (better AI accuracy)",
+      "addButton": "Add",
+      "cancelButton": "Cancel",
+      "removeAriaLabel": "Remove custom item"
+    },
+    "output": {
+      "filesCountPrefix": "Files",
+      "filesCountSuffix": "",
+      "downloadZip": "Download all (ZIP)",
+      "downloading": "Downloading…",
+      "copyButton": "Copy",
+      "copiedLabel": "Copied ✓",
+      "emptyTitle": "Select a stack and tools to see generated files here",
+      "emptyHint": "← Complete Step 1 on the left",
+      "infoButtonLabel": "Show hidden-files notice"
+    },
+    "summary": {
+      "selectedPrefix": "Selected"
+    },
+    "skills": {
+      "commit": {
+        "displayName": "Auto-write commit message",
+        "summary": "Draft a Conventional Commits message and run git commit."
+      },
+      "pr-create": {
+        "displayName": "Create PR with body",
+        "summary": "Push the current branch and open a pull request with a summary of changes."
+      },
+      "pr-review": {
+        "displayName": "Review pull request",
+        "summary": "Inspect the diff and surface bugs, regressions, and risky changes."
+      },
+      "test-writer": {
+        "displayName": "Generate tests",
+        "summary": "Generate unit or integration tests aligned with the project's test conventions."
+      },
+      "debug": {
+        "displayName": "Diagnose & fix bugs",
+        "summary": "Reproduce the issue, isolate the root cause, and propose a minimal fix."
+      },
+      "refactor": {
+        "displayName": "Safe refactor",
+        "summary": "Improve code quality without changing behavior, validated by tests."
+      },
+      "adr-create": {
+        "displayName": "Write ADR",
+        "summary": "Record a technical decision in the standard ADR format."
+      },
+      "readme-update": {
+        "displayName": "Update README",
+        "summary": "Keep the README's install/usage/development sections in sync with code changes."
+      }
+    },
+    "bestPractices": {
+      "use-conventional-commands": "Always specify build/test commands",
+      "tests-must-pass-before-merge": "All tests must pass before merge",
+      "add-tests-for-new-code": "Add tests with new features",
+      "follow-existing-folder-structure": "Follow existing folder structure and naming",
+      "no-typescript-any": "No TypeScript any",
+      "avoid-type-assertions": "Avoid TypeScript as assertions",
+      "function-line-limit": "Keep functions under 50 lines",
+      "meaningful-naming": "Use descriptive variable/function names",
+      "no-magic-numbers": "No magic numbers or strings",
+      "minimal-comments": "Comment only when necessary",
+      "conventional-commits": "Follow Conventional Commits",
+      "small-focused-prs": "Keep PRs small and single-purpose",
+      "no-secrets-in-code": "Never commit secrets or API keys",
+      "ask-before-deps": "Ask before adding new dependencies",
+      "no-destructive-git": "Destructive git commands need approval",
+      "react-functional-components-only": "Functional components only (no class components)",
+      "react-explicit-effect-deps": "Explicit useEffect dependency arrays required",
+      "react-no-default-export-components": "Use named exports for components",
+      "nextjs-app-router-preferred": "Prefer App Router (app/) — avoid Pages Router",
+      "nextjs-server-components-default": "Server Components by default, mark Client Components explicitly",
+      "astro-zero-js-default": "Static by default — use islands only when needed",
+      "astro-prefer-content-collections": "Manage Markdown/MDX via Content Collections",
+      "nodejs-async-await-only": "Use async/await, avoid callbacks",
+      "nodejs-validate-inputs": "Always validate external inputs with a schema",
+      "tailwind-utility-first": "Utility-first, avoid @apply",
+      "tailwind-no-arbitrary-values": "Minimize arbitrary value usage"
+    },
+    "boundaries": {
+      "always-run-tests": "Always run tests after changes",
+      "always-typecheck": "Run type-check after changes",
+      "always-lint": "Run linter before commit",
+      "always-explain-failures": "Explain failures clearly",
+      "always-prefer-existing-utilities": "Reuse existing utilities before writing new ones",
+      "ask-before-deps": "Ask before adding new npm packages",
+      "ask-before-arch-change": "Ask before architectural changes",
+      "ask-before-bulk-edits": "Ask before bulk file edits",
+      "ask-before-public-api-change": "Ask before public API changes",
+      "never-commit-secrets": "Never commit secrets or API keys",
+      "never-force-push": "No force push or reset --hard",
+      "never-skip-hooks": "Don't bypass hooks (--no-verify)",
+      "never-disable-typescript": "No @ts-ignore or @ts-nocheck",
+      "never-eslint-disable": "No broad eslint-disable",
+      "never-modify-lockfile": "No manual lockfile edits"
+    },
+    "claudeCodeOnly": {
+      "modeOnly": {
+        "title": "ⓘ Claude Code only mode",
+        "descriptionBefore": "Since you use only Claude Code, CLAUDE.md is the single source of truth. The AGENTS.md import (",
+        "descriptionAfter": ") is omitted."
+      },
+      "modeMixed": {
+        "title": "ⓘ Claude Code with other tools",
+        "descriptionBefore": "Claude Code does not read AGENTS.md directly, so we auto-insert ",
+        "descriptionAfter": " into CLAUDE.md. One AGENTS.md keeps all four tools in sync."
+      },
+      "modeStandalone": {
+        "title": "ⓘ Claude Code selected",
+        "descriptionBefore": "If you also use other AI tools, leave the \"Claude Code only\" toggle off and select those tools as well.",
+        "descriptionAfter": ""
+      },
+      "docLink": "→ Claude Code docs: Memory guide ↗"
+    },
+    "hiddenFilesNotice": {
+      "title": "📂 Watch out for hidden files",
+      "description": "Folders that start with a dot (`.cursor/`, `.claude/`, `.github/`) are hidden by default in macOS Finder.",
+      "macosFinder": "macOS Finder",
+      "vscode": "VS Code / Cursor",
+      "vscodeNote": "Visible in the sidebar",
+      "terminal": "Terminal"
+    },
+    "landing": {
+      "common": {
+        "breadcrumbHome": "Home",
+        "breadcrumbHub": "AI Config Files",
+        "breadcrumbGenerator": "Generator",
+        "ctaTitle": "Generate it now",
+        "ctaDescription": "Pick your tools and options to download config files instantly.",
+        "ctaButton": "Open AI Config Generator →",
+        "featuresHeading": "Highlights",
+        "exampleHeading": "Example output",
+        "relatedHeading": "Related generators",
+        "officialDocs": "Read the official docs ↗"
+      },
+      "agentsMd": {
+        "h1": "AGENTS.md Generator — One File for Four AI Tools",
+        "lead": "Unify Cursor, GitHub Copilot, Claude Code, and OpenAI Codex with a single AGENTS.md.",
+        "intro": "AGENTS.md is an open standard donated by OpenAI to the Linux Foundation, used in 60,000+ GitHub repositories. One file aligns the behavior of all four major AI coding tools.",
+        "feature1Title": "Standard adoption",
+        "feature1Body": "60,000+ repositories — the de-facto industry standard",
+        "feature2Title": "Cross-tool compatibility",
+        "feature2Body": "Native for Cursor, Copilot, Codex; Claude Code via @AGENTS.md import",
+        "feature3Title": "Six core sections",
+        "feature3Body": "Commands / Testing / Project Structure / Code Style / Git Workflow / Boundaries",
+        "feature4Title": "Plain Markdown",
+        "feature4Body": "No frontmatter — readable and editable by anyone"
+      },
+      "cursor": {
+        "h1": "Cursor Rules Generator (MDC Format)",
+        "lead": "Generate .cursor/rules/*.mdc Cursor Rules from stack-aware presets in seconds.",
+        "intro": "Cursor 0.45+ uses MDC format with frontmatter to control rule scope. We auto-split into core/stack/boundaries to leverage alwaysApply, globs, and description-based triggers.",
+        "feature1Title": "Three-file auto-split",
+        "feature1Body": "core.mdc (alwaysApply) / stack.mdc (globs) / boundaries.mdc (description)",
+        "feature2Title": "Auto-written frontmatter",
+        "feature2Body": "alwaysApply, globs, description filled based on your selections",
+        "feature3Title": "Cursor 0.45+ official format",
+        "feature3Body": "Uses the current recommended format, not legacy .cursorrules",
+        "feature4Title": "Bilingual UI",
+        "feature4Body": "Korean/English UI with English output for AI accuracy"
+      },
+      "copilot": {
+        "h1": "GitHub Copilot Instructions Generator",
+        "lead": "Generate .github/copilot-instructions.md so Copilot understands your repository context.",
+        "intro": "GitHub Copilot automatically picks up .github/copilot-instructions.md when proposing code. We structure it across the six core sections plus a three-tier boundaries block.",
+        "feature1Title": "Standard location",
+        "feature1Body": ".github/copilot-instructions.md — auto-recognized by Copilot",
+        "feature2Title": "Structured sections",
+        "feature2Body": "Commands, Testing, Code Style, Git Workflow, Boundaries auto-composed",
+        "feature3Title": "Three-tier Boundaries",
+        "feature3Body": "Always do / Ask first / Never do for clear guardrails",
+        "feature4Title": "Team conventions",
+        "feature4Body": "Add team-specific rules via Additional Notes"
+      },
+      "claudeCode": {
+        "h1": "Claude Code CLAUDE.md Generator",
+        "lead": "Generate CLAUDE.md for Claude Code and keep your rules in sync with other AI tools.",
+        "intro": "Claude Code reads CLAUDE.md as memory. If you also use other AI tools, @AGENTS.md is auto-imported so all tools follow the same rules.",
+        "feature1Title": "@AGENTS.md auto-import",
+        "feature1Body": "Multi-tool mode shares one AGENTS.md as the source of truth",
+        "feature2Title": "Claude Code only mode",
+        "feature2Body": "Solo mode keeps everything in CLAUDE.md without imports",
+        "feature3Title": "Official memory format",
+        "feature3Body": "Follows the Anthropic Claude Code Memory guide",
+        "feature4Title": "Skills integration",
+        "feature4Body": "Generates 8 SKILL.md files under .claude/skills/ at the same time"
+      },
+      "agentSkills": {
+        "h1": "Agent Skills Generator (SKILL.md)",
+        "lead": "Generate eight battle-tested SKILL.md workflows in one click.",
+        "intro": "Agent Skills is an open format standardized by Anthropic and supported across Claude Code, Cursor, OpenAI Codex, and more. Eight proven workflows (commit, pr-create, pr-review, test-writer, debug, refactor, adr-create, readme-update) are ready to use.",
+        "feature1Title": "Standard-compliant",
+        "feature1Body": "Follows the agentskills.io standard, runs on Claude Code/Cursor/Codex",
+        "feature2Title": "P0 catalog of 8",
+        "feature2Body": "commit, pr-create, pr-review, test-writer, debug, refactor, adr-create, readme-update",
+        "feature3Title": "Single source of truth",
+        "feature3Body": "Auto-generates .claude/skills/{name}/SKILL.md at the standard path",
+        "feature4Title": "GitHub Blog patterns",
+        "feature4Body": "Backed by best practices analyzed by the GitHub Engineering Blog"
+      },
+      "tools": {
+        "agentsMd": "AGENTS.md",
+        "cursor": "Cursor Rules",
+        "copilot": "GitHub Copilot",
+        "claudeCode": "Claude Code",
+        "agentSkills": "Agent Skills"
+      }
     }
   }
 }
