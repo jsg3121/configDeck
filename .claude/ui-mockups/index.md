@@ -45,4 +45,4 @@ UI 시안(HTML 모킹) 보관 폴더이다. ui-publisher 에이전트가 코드 
 
 (작업이 추가되면 이 섹션에 시안 폴더 링크를 추가한다)
 
-- 아직 없음
+- [spec-0005-ai-config-catalog/](spec-0005-ai-config-catalog/README.md) — `/ai-config` 카탈로그 허브 시안 (ADR-0019, SPEC-0005). 검토 대기 중.

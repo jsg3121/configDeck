@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI 코딩 도구 설정 카탈로그 — ConfigDeck (시안)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      // 실제 프로젝트의 @theme 토큰을 시안에서 동일하게 표현
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                DEFAULT: '#3b82f6',
+                hover: '#2563eb',
+              },
+              secondary: '#64748b',
+              accent: '#8b5cf6',
+              surface: {
+                DEFAULT: '#ffffff',
+                alt: '#f8fafc',
+              },
+              border: '#e2e8f0',
+              // v2: 도구별 브랜드 색상 (옵션 B — 공식 영감 + 식별성 우선)
+              tool: {
+                agents: '#475569', // slate-600 — 공통 표준
+                cursor: '#0f172a', // slate-900 — Cursor 모노크롬
+                copilot: '#0969da', // GitHub 시그니처 블루
+                claude: '#d97757', // Anthropic 시그니처 앰버
+                skills: '#7c3aed', // violet-600 — agentskills.io 톤
+              },
+            },
+            fontFamily: {
+              sans: ['Inter', 'system-ui', 'sans-serif'],
+              mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+            },
+          },
+        },
+      }
+    </script>
+    <style>
+      /* CDN Tailwind에서 hover:bg-primary-hover 같은 합성 토큰 보강 */
+      .bg-primary {
+        background-color: #3b82f6;
+      }
+      .hover\:bg-primary-hover:hover {
+        background-color: #2563eb;
+      }
+      .text-primary {
+        color: #3b82f6;
+      }
+      .border-primary {
+        border-color: #3b82f6;
+      }
+      .border-border {
+        border-color: #e2e8f0;
+      }
+      .bg-surface {
+        background-color: #ffffff;
+      }
+      .bg-surface-alt {
+        background-color: #f8fafc;
+      }
+      .hover\:border-primary\/50:hover {
+        border-color: rgba(59, 130, 246, 0.5);
+      }
+      body {
+        font-family: 'Inter', system-ui, sans-serif;
+      }
+
+      /* v2: 도구별 색상 토큰 (CDN Tailwind 보강) */
+      /* AGENTS.md — slate-600 */
+      .tool-agents-text { color: #475569; }
+      .tool-agents-bg-soft { background-color: rgba(71, 85, 105, 0.10); }
+      .tool-agents-bg-soft-15 { background-color: rgba(71, 85, 105, 0.15); }
+      .tool-agents-hover-border:hover { border-color: #475569; }
+
+      /* Cursor — slate-900 */
+      .tool-cursor-text { color: #0f172a; }
+      .tool-cursor-bg-soft { background-color: rgba(15, 23, 42, 0.08); }
+      .tool-cursor-hover-border:hover { border-color: #0f172a; }
+
+      /* Copilot — GitHub blue #0969da */
+      .tool-copilot-text { color: #0969da; }
+      .tool-copilot-bg-soft { background-color: rgba(9, 105, 218, 0.10); }
+      .tool-copilot-hover-border:hover { border-color: #0969da; }
+
+      /* Claude Code — Anthropic amber #d97757 */
+      .tool-claude-text { color: #d97757; }
+      .tool-claude-bg-soft { background-color: rgba(217, 119, 87, 0.12); }
+      .tool-claude-hover-border:hover { border-color: #d97757; }
+
+      /* Agent Skills — violet-600 #7c3aed */
+      .tool-skills-text { color: #7c3aed; }
+      .tool-skills-bg-soft { background-color: rgba(124, 58, 237, 0.10); }
+      .tool-skills-bg-soft-15 { background-color: rgba(124, 58, 237, 0.15); }
+      .tool-skills-hover-border:hover { border-color: #7c3aed; }
+    </style>
+  </head>
+  <body class="flex min-h-screen flex-col bg-surface-alt text-gray-900">
+    <!-- ============================================== -->
+    <!-- Header (기존 Header.astro의 시각을 재현)         -->
+    <!-- ============================================== -->
+    <header class="bg-surface border-b border-border">
+      <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+        <!-- 로고 -->
+        <a href="#" class="text-xl font-bold tracking-tight">
+          <span class="text-primary">Config</span>Deck
+        </a>
+
+        <!-- 데스크톱 네비게이션 -->
+        <nav class="hidden items-center gap-8 md:flex">
+          <a
+            href="#"
+            class="border-b-2 border-transparent pb-0.5 text-sm font-medium text-gray-500 transition-colors hover:border-gray-300 hover:text-gray-900"
+            >생성기</a
+          >
+          <a
+            href="#"
+            class="border-b-2 border-primary pb-0.5 text-sm font-medium text-gray-900 transition-colors"
+            aria-current="page"
+            >AI Config</a
+          >
+          <a
+            href="#"
+            class="border-b-2 border-transparent pb-0.5 text-sm font-medium text-gray-500 transition-colors hover:border-gray-300 hover:text-gray-900"
+            >마이그레이션</a
+          >
+          <a
+            href="#"
+            class="border-b-2 border-transparent pb-0.5 text-sm font-medium text-gray-500 transition-colors hover:border-gray-300 hover:text-gray-900"
+            >아티클</a
+          >
+        </nav>
+
+        <!-- 유틸리티 영역 -->
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-1 text-sm">
+            <span class="border-b-2 border-primary pb-0.5 font-semibold text-gray-900">KO</span>
+            <span class="text-gray-300">/</span>
+            <a href="#" class="pb-0.5 text-gray-400 transition-colors hover:text-gray-900">EN</a>
+          </div>
+          <a
+            href="#"
+            class="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-hover"
+            >시작하기</a
+          >
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-1">
+      <!-- ============================================== -->
+      <!-- Breadcrumb                                       -->
+      <!-- ============================================== -->
+      <nav aria-label="Breadcrumb" class="mx-auto max-w-7xl px-6 pt-6">
+        <ol class="flex items-center gap-2 text-sm text-gray-500">
+          <li><a href="#" class="hover:text-gray-900">홈</a></li>
+          <li aria-hidden="true" class="text-gray-300">/</li>
+          <li class="font-medium text-gray-900" aria-current="page">AI Config Files</li>
+        </ol>
+      </nav>
+
+      <!-- ============================================== -->
+      <!-- 페이지 헤딩                                      -->
+      <!-- ============================================== -->
+      <section class="mx-auto max-w-7xl px-6 pt-8 pb-10">
+        <h1 class="text-3xl font-extrabold tracking-tight text-gray-900 lg:text-4xl">
+          AI 코딩 도구 설정 카탈로그
+        </h1>
+        <p class="mt-3 max-w-3xl text-base text-gray-500">
+          4개 AI 도구의 설정 파일과 Skills를 선택해서 생성하세요. 한 번에 통합 생성하거나, 도구별로
+          따로 알아볼 수 있습니다.
+        </p>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- 통합 생성기 진입 카드 (강조)                      -->
+      <!-- ============================================== -->
+      <section aria-labelledby="generate-all-heading" class="mx-auto max-w-7xl px-6 pb-12">
+        <h2 id="generate-all-heading" class="sr-only">한 번에 모두 생성</h2>
+        <div
+          class="relative overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 via-surface to-accent/5 p-8 shadow-sm md:p-10"
+        >
+          <!-- 배경 장식 (시각적 위계 강조용) -->
+          <div
+            aria-hidden="true"
+            class="pointer-events-none absolute -right-20 -top-20 h-60 w-60 rounded-full bg-primary/10 blur-3xl"
+          ></div>
+          <div
+            aria-hidden="true"
+            class="pointer-events-none absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-accent/10 blur-3xl"
+          ></div>
+
+          <div class="relative grid gap-8 md:grid-cols-[1fr_auto] md:items-center">
+            <div>
+              <span
+                class="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary"
+              >
+                <span aria-hidden="true">★</span>
+                추천 워크플로우
+              </span>
+              <h3 class="mt-3 text-2xl font-bold tracking-tight text-gray-900 md:text-3xl">
+                4개 AI 도구를 한 번에 통합 생성
+              </h3>
+              <p class="mt-2 max-w-2xl text-base text-gray-600">
+                AGENTS.md · Cursor Rules · Copilot Instructions · CLAUDE.md · Agent Skills를 동시에
+                출력합니다. 한 번의 설정으로 팀의 모든 AI 도구가 동일한 규칙을 공유합니다.
+              </p>
+
+              <!-- 출력 파일 표식 -->
+              <ul
+                class="mt-5 flex flex-wrap items-center gap-2 text-xs font-medium text-gray-600"
+                aria-label="동시 출력 파일"
+              >
+                <li
+                  class="rounded-md border border-border bg-surface px-2.5 py-1 font-mono text-gray-700"
+                >
+                  AGENTS.md
+                </li>
+                <li class="text-gray-300" aria-hidden="true">+</li>
+                <li
+                  class="rounded-md border border-border bg-surface px-2.5 py-1 font-mono text-gray-700"
+                >
+                  .cursor/rules/
+                </li>
+                <li class="text-gray-300" aria-hidden="true">+</li>
+                <li
+                  class="rounded-md border border-border bg-surface px-2.5 py-1 font-mono text-gray-700"
+                >
+                  copilot-instructions.md
+                </li>
+                <li class="text-gray-300" aria-hidden="true">+</li>
+                <li
+                  class="rounded-md border border-border bg-surface px-2.5 py-1 font-mono text-gray-700"
+                >
+                  CLAUDE.md
+                </li>
+                <li class="text-gray-300" aria-hidden="true">+</li>
+                <li
+                  class="rounded-md border border-border bg-surface px-2.5 py-1 font-mono text-gray-700"
+                >
+                  .claude/skills/
+                </li>
+              </ul>
+            </div>
+
+            <div class="flex flex-col gap-3 md:items-end">
+              <a
+                href="#"
+                data-mockup-note="클릭 시 /ai-config/generator 로 이동 (focus 파라미터 없음)"
+                class="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3.5 text-base font-semibold text-white shadow-sm transition-colors hover:bg-primary-hover"
+              >
+                통합 생성기 시작하기
+                <span aria-hidden="true">→</span>
+              </a>
+              <p class="text-xs text-gray-500">소요 시간 약 1분 · 가입 불필요</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- 도구별 카탈로그 (3-2 레이아웃 데스크톱)            -->
+      <!-- ============================================== -->
+      <section aria-labelledby="catalog-heading" class="mx-auto max-w-7xl px-6 pb-20">
+        <div class="mb-6 flex items-end justify-between gap-4">
+          <div>
+            <h2 id="catalog-heading" class="text-2xl font-bold tracking-tight text-gray-900">
+              도구별로 알아보기
+            </h2>
+            <p class="mt-1 text-sm text-gray-500">
+              각 도구의 파일 형식, 사용 위치, 차이점을 먼저 알아보고 생성기로 진입할 수 있습니다.
+            </p>
+          </div>
+        </div>
+
+        <!--
+          그리드 레이아웃:
+          - 모바일 (default):  1열
+          - 태블릿 (md):       2열
+          - 데스크톱 (lg):     3열 (3-2 분할 — 첫 줄 3개, 두 번째 줄 2개)
+
+          데스크톱에서 5번째 카드(Agent Skills)가 외로이 1열로 떨어지는 4-1 레이아웃 대신
+          3-2 분할을 선택. AGENTS.md(공통 표준)는 다른 4개 도구를 포괄하는 위계가 있으므로
+          1행 첫 번째에 배치하여 시각적 우선순위를 부여한다.
+        -->
+        <ul class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <!-- ① AGENTS.md — 공통 표준 (slate-600) -->
+          <li>
+            <a
+              href="#"
+              data-mockup-note="클릭 시 /ai-config/agents-md 랜딩 페이지로 이동"
+              class="group tool-agents-hover-border relative flex h-full flex-col rounded-xl border border-border bg-surface p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
+            >
+              <div class="flex items-start justify-between gap-3">
+                <div class="flex items-center gap-3">
+                  <!--
+                    AGENTS.md 아이콘 — agents.md 공식 favicon 재구성 (v6, 2026-05-02).
+                    정삼각형 분해 형태(옵션 Y): 가상의 정삼각형 세 꼭짓점 (12,4) / (4,18) / (20,18)에서
+                    각 변(좌/우 사선 + 하단 가로 바)을 안쪽으로 1~2단위씩 들여 분해 배치.
+                    좌우 완전 대칭(viewBox 중심 x=12 미러) + 상단 간격 4단위(stroke-width 2.5보다 1.5 큼)로
+                    cap이 겹치지 않으면서 세 stroke가 모이면 정삼각형 윤곽으로 인지된다.
+                    좌표 결정 근거는 README §3.4 SVG 출처 표 참조.
+                    참고 이미지: _reference-agents-md-favicon.png
+                  -->
+                  <div
+                    class="tool-agents-bg-soft flex h-10 w-10 items-center justify-center rounded-lg"
+                    aria-hidden="true"
+                  >
+                    <svg
+                      class="tool-agents-text h-5 w-5"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <!-- 좌 사선 (정삼각형 좌변): 위 꼭짓점 안쪽(10,5) → 좌하 꼭짓점 안쪽(5,16) -->
+                      <path d="M10 5 L5 16" />
+                      <!-- 우 사선 (정삼각형 우변): 위 꼭짓점 안쪽(14,5) → 우하 꼭짓점 안쪽(19,16). 좌 사선과 정확한 좌우 대칭 -->
+                      <path d="M14 5 L19 16" />
+                      <!-- 하단 가로 바 (정삼각형 밑변): 좌하-우하 꼭짓점 안쪽(8,19)→(16,19), 중앙 정렬 -->
+                      <path d="M8 19 L16 19" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 class="text-base font-semibold text-gray-900">AGENTS.md</h3>
+                    <p class="mt-0.5 font-mono text-xs text-gray-400">/AGENTS.md</p>
+                  </div>
+                </div>
+                <span
+                  class="tool-agents-bg-soft-15 tool-agents-text inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[11px] font-semibold"
+                >
+                  공통 표준
+                </span>
+              </div>
+              <p class="mt-4 flex-1 text-sm leading-relaxed text-gray-600">
+                4개 AI 도구가 공유하는 공통 표준 파일. 한 파일로 Cursor, Copilot, Claude Code, Codex
+                모두 커버합니다.
+              </p>
+              <div class="mt-5 flex items-center justify-between">
+                <span class="text-xs font-medium text-gray-400">개요 보기</span>
+                <span
+                  class="tool-agents-text text-sm font-medium transition-transform group-hover:translate-x-0.5"
+                  aria-hidden="true"
+                >
+                  →
+                </span>
+              </div>
+            </a>
+          </li>
+
+          <!-- ② Cursor Rules — slate-900 (Cursor 모노크롬) -->
+          <li>
+            <a
+              href="#"
+              data-mockup-note="클릭 시 /ai-config/cursor 랜딩 페이지로 이동"
+              class="group tool-cursor-hover-border relative flex h-full flex-col rounded-xl border border-border bg-surface p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
+            >
+              <div class="flex items-start justify-between gap-3">
+                <div class="flex items-center gap-3">
+                  <!--
+                    Cursor 아이콘 — 사용자 제공 SVG (v3, 2026-05-02).
+                    사용자가 단색화한 Cursor 공식 마크. viewBox 0 0 680 720 (path 좌표계 유지).
+                    fill="black" → fill="currentColor"로 변환하여 색상 토큰과 동기화.
+                    transform group은 path 좌표 보존을 위해 그대로 유지.
+                  -->
+                  <div
+                    class="tool-cursor-bg-soft flex h-10 w-10 items-center justify-center rounded-lg"
+                    aria-hidden="true"
+                  >
+                    <svg
+                      class="tool-cursor-text h-5 w-5"
+                      viewBox="0 0 680 720"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <g transform="translate(106.635, 93.955)">
+                        <path
+                          fill="currentColor"
+                          d="M457.43,125.94L244.42,2.96c-6.84-3.95-15.28-3.95-22.12,0L9.3,125.94c-5.75,3.32-9.3,9.46-9.3,16.11v247.99c0,6.65,3.55,12.79,9.3,16.11l213.01,122.98c6.84,3.95,15.28,3.95,22.12,0l213.01-122.98c5.75-3.32,9.3-9.46,9.3-16.11v-247.99c0-6.65-3.55-12.79-9.3-16.11h-.01ZM444.05,151.99l-205.63,356.16c-1.39,2.4-5.06,1.42-5.06-1.36v-233.21c0-4.66-2.49-8.97-6.53-11.31L24.87,145.67c-2.4-1.39-1.42-5.06,1.36-5.06h411.26c5.84,0,9.49,6.33,6.57,11.39h-.01Z"
+                        />
+                      </g>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 class="text-base font-semibold text-gray-900">Cursor Rules</h3>
+                    <p class="mt-0.5 font-mono text-xs text-gray-400">.cursor/rules/*.mdc</p>
+                  </div>
+                </div>
+              </div>
+              <p class="mt-4 flex-1 text-sm leading-relaxed text-gray-600">
+                <span class="font-mono text-xs text-gray-700">.cursor/rules/*.mdc</span> 형식의
+                Cursor 전용 규칙. 3파일(core / stack / boundaries)로 자동 분리됩니다.
+              </p>
+              <div class="mt-5 flex items-center justify-between">
+                <span class="text-xs font-medium text-gray-400">개요 보기</span>
+                <span
+                  class="tool-cursor-text text-sm font-medium transition-transform group-hover:translate-x-0.5"
+                  aria-hidden="true"
+                >
+                  →
+                </span>
+              </div>
+            </a>
+          </li>
+
+          <!-- ③ Copilot Instructions — GitHub blue #0969da -->
+          <li>
+            <a
+              href="#"
+              data-mockup-note="클릭 시 /ai-config/copilot 랜딩 페이지로 이동"
+              class="group tool-copilot-hover-border relative flex h-full flex-col rounded-xl border border-border bg-surface p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
+            >
+              <div class="flex items-start justify-between gap-3">
+                <div class="flex items-center gap-3">
+                  <!--
+                    GitHub Copilot 아이콘 — 사용자 제공 SVG (v3, 2026-05-02).
+                    공식 Copilot 헤드폰 캐릭터 (헤드 외곽 + 두 눈 path 3개).
+                    viewBox 0 0 96 96 (path 좌표계 유지).
+                    fill="black" → fill="currentColor"로 변환하여 tool-copilot-text 토큰과 동기화.
+                  -->
+                  <div
+                    class="tool-copilot-bg-soft flex h-10 w-10 items-center justify-center rounded-lg"
+                    aria-hidden="true"
+                  >
+                    <svg
+                      class="tool-copilot-text h-5 w-5"
+                      viewBox="0 0 96 96"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        clip-rule="evenodd"
+                        fill="currentColor"
+                        d="M95.6877 67.9677C92.2446 73.9488 72.2522 88.0617 48 88.0617C23.7478 88.0617 3.75535 73.9488 0.312312 67.9677C0.0605215 67.5303 -0.0207525 67.031 -0.0207525 66.5263L-0.0207524 55.8787C-0.0207524 55.4373 0.0473833 54.9986 0.210699 54.5885C1.69959 50.8499 5.59895 45.4192 10.6313 43.9621C11.2985 42.2494 12.2867 39.7456 13.2087 37.8974C13.0543 36.4833 13 35.0248 13 33.5512C13 28.2274 14.1285 23.5576 17.5288 20.0801C19.117 18.4559 21.0876 17.21 23.4246 16.2735C29.0217 11.7264 36.992 7.90112 47.9136 7.90112C58.8352 7.90112 66.9783 11.7264 72.5754 16.2735C74.9124 17.21 76.883 18.4559 78.4712 20.0801C81.8715 23.5576 83 28.2274 83 33.5512C83 35.0248 82.9457 36.4833 82.7913 37.8974C83.7133 39.7456 84.7015 42.2494 85.3687 43.9621C90.401 45.4192 94.3004 50.8499 95.7893 54.5885C95.9526 54.9986 96.0208 55.4373 96.0208 55.8787L96.0208 66.5263C96.0208 67.031 95.9395 67.5303 95.6877 67.9677ZM51.253 32.2606C51.0828 30.9345 51.0018 29.747 50.9995 28.686L50.9995 28.6021C51.0048 25.5242 51.6776 23.5215 52.7524 22.2914C54.1172 20.7295 56.9379 19.5328 62.8829 20.1762C68.9059 20.828 72.2725 22.3229 74.1812 24.2749C76.0291 26.1648 76.9999 28.9922 76.9999 33.5512C76.9999 38.3951 76.3018 41.2568 74.767 42.9977C73.3075 44.6531 70.4335 46 64.1386 46C59.2994 46 56.5326 44.4261 54.7637 42.2493C52.8644 39.912 51.7955 36.4878 51.253 32.2606ZM44.747 32.2606C44.9172 30.9344 44.9982 29.747 45.0005 28.686L45.0005 28.6021C44.9952 25.5242 44.3224 23.5214 43.2476 22.2914C41.8828 20.7295 39.0621 19.5328 33.1171 20.1762C27.0941 20.828 23.7275 22.3229 21.8188 24.2749C19.9709 26.1647 19.0001 28.9922 19.0001 33.5512C19.0001 38.3951 19.6982 41.2568 21.233 42.9977C22.6925 44.6531 25.5665 46 31.8614 46C36.7006 46 39.4674 44.4261 41.2363 42.2493C43.1356 39.9119 44.2045 36.4878 44.747 32.2606ZM48.6889 43.9983C48.4592 43.9995 48.9185 43.9983 48.6889 43.9983C48.4594 43.9983 47.5408 43.9995 47.3111 43.9983C46.8877 44.7075 46.4168 45.3882 45.8926 46.0332C42.8139 49.8219 38.2182 52 31.8613 52C24.9615 52 19.9049 50.564 16.7324 46.9657C16.552 46.7611 16.3906 46.5469 16.3906 46.5469L16 46.9657L16 73.3023C21.7392 76.4213 34.0576 82.0184 48 82.0184C61.9424 82.0184 74.2608 76.4213 80 73.3023L80 46.9657L79.6094 46.5469C79.6094 46.5469 79.4772 46.728 79.2676 46.9657C76.0951 50.564 71.0385 52 64.1387 52C57.7818 52 53.1861 49.8219 50.1074 46.0332C49.5832 45.3882 49.1123 44.7075 48.6889 43.9983Z"
+                      />
+                      <path
+                        fill-rule="evenodd"
+                        clip-rule="evenodd"
+                        fill="currentColor"
+                        d="M58 57C60.2091 57 62 58.7909 62 61L62 69C62 71.2092 60.2091 73 58 73C55.7909 73 54 71.2092 54 69L54 61C54 58.7909 55.7909 57 58 57Z"
+                      />
+                      <path
+                        fill-rule="evenodd"
+                        clip-rule="evenodd"
+                        fill="currentColor"
+                        d="M38 57C40.2091 57 42 58.7909 42 61L42 69C42 71.2092 40.2091 73 38 73C35.7909 73 34 71.2092 34 69L34 61C34 58.7909 35.7909 57 38 57Z"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 class="text-base font-semibold text-gray-900">Copilot Instructions</h3>
+                    <p class="mt-0.5 font-mono text-xs text-gray-400">
+                      .github/copilot-instructions.md
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <p class="mt-4 flex-1 text-sm leading-relaxed text-gray-600">
+                <span class="font-mono text-xs text-gray-700">.github/copilot-instructions.md</span
+                >. GitHub Copilot이 저장소 컨텍스트를 정확히 이해하도록 합니다.
+              </p>
+              <div class="mt-5 flex items-center justify-between">
+                <span class="text-xs font-medium text-gray-400">개요 보기</span>
+                <span
+                  class="tool-copilot-text text-sm font-medium transition-transform group-hover:translate-x-0.5"
+                  aria-hidden="true"
+                >
+                  →
+                </span>
+              </div>
+            </a>
+          </li>
+
+          <!-- ④ CLAUDE.md — Anthropic amber #d97757 -->
+          <li>
+            <a
+              href="#"
+              data-mockup-note="클릭 시 /ai-config/claude-code 랜딩 페이지로 이동"
+              class="group tool-claude-hover-border relative flex h-full flex-col rounded-xl border border-border bg-surface p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
+            >
+              <div class="flex items-start justify-between gap-3">
+                <div class="flex items-center gap-3">
+                  <!--
+                    Claude 아이콘 — Simple Icons (claude) CC0 path 인라인.
+                    Anthropic의 "스파클/별" 형태. currentColor로 통일.
+                    출처: https://simpleicons.org/icons/claude
+                  -->
+                  <div
+                    class="tool-claude-bg-soft flex h-10 w-10 items-center justify-center rounded-lg"
+                    aria-hidden="true"
+                  >
+                    <svg
+                      class="tool-claude-text h-5 w-5"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path d="M4.709 15.955l4.72-2.647.08-.23-.08-.128H9.2l-.79-.048-2.698-.073-2.339-.097-2.266-.122-.571-.121L0 11.784l.055-.352.48-.321.686.06 1.52.103 2.278.158 1.652.097 2.448.255h.389l.055-.157-.134-.098-.103-.097-2.358-1.596-2.552-1.688-1.336-.972-.724-.491-.364-.462-.158-1.008.656-.722.881.06.225.061.893.686 1.908 1.476 2.491 1.833.365.304.145-.103.019-.073-.164-.274-1.355-2.446-1.446-2.49-.644-1.032-.17-.619a2.97 2.97 0 01-.104-.729L6.283.134 6.696 0l.996.134.42.364.62 1.414 1.002 2.229 1.555 3.03.456.898.243.832.091.255h.158V9.01l.128-1.706.237-2.095.23-2.695.08-.76.376-.91.747-.492.584.28.48.685-.067.444-.286 1.851-.559 2.903-.364 1.942h.212l.243-.242.985-1.306 1.652-2.064.73-.82.85-.904.547-.431h1.033l.76 1.129-.34 1.166-1.064 1.347-.881 1.142-1.264 1.7-.79 1.36.073.11.188-.02 2.856-.606 1.543-.28 1.841-.315.833.388.091.395-.328.807-1.969.486-2.309.462-3.439.813-.042.03.049.061 1.549.146.662.036h1.622l3.02.225.79.522.474.638-.079.485-1.215.62-1.64-.389-3.829-.91-1.312-.329h-.182v.11l1.093 1.068 2.006 1.81 2.509 2.33.127.578-.322.455-.34-.049-2.205-1.657-.851-.747-1.926-1.62h-.128v.17l.444.649 2.345 3.521.122 1.08-.17.353-.608.213-.668-.122-1.374-1.925-1.415-2.167-1.143-1.943-.14.08-.674 7.254-.316.37-.729.28-.607-.461-.322-.747.322-1.476.389-1.924.315-1.53.286-1.9.17-.632-.012-.042-.14.018-1.434 1.967-2.18 2.945-1.726 1.845-.414.164-.717-.37.067-.662.401-.589 2.388-3.036 1.44-1.882.93-1.086-.006-.158h-.055L4.132 18.56l-1.13.146-.487-.456.061-.746.231-.243 1.908-1.312-.006.006z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 class="text-base font-semibold text-gray-900">CLAUDE.md</h3>
+                    <p class="mt-0.5 font-mono text-xs text-gray-400">/CLAUDE.md</p>
+                  </div>
+                </div>
+              </div>
+              <p class="mt-4 flex-1 text-sm leading-relaxed text-gray-600">
+                Claude Code 메모리 파일.
+                <span class="rounded bg-gray-100 px-1.5 py-0.5 font-mono text-xs text-gray-700"
+                  >@AGENTS.md</span
+                >
+                임포트로 다른 도구와 동일 규칙을 공유합니다.
+              </p>
+              <div class="mt-5 flex items-center justify-between">
+                <span class="text-xs font-medium text-gray-400">개요 보기</span>
+                <span
+                  class="tool-claude-text text-sm font-medium transition-transform group-hover:translate-x-0.5"
+                  aria-hidden="true"
+                >
+                  →
+                </span>
+              </div>
+            </a>
+          </li>
+
+          <!-- ⑤ Agent Skills — violet-600 #7c3aed -->
+          <li>
+            <a
+              href="#"
+              data-mockup-note="클릭 시 /ai-config/agent-skills 랜딩 페이지로 이동"
+              class="group tool-skills-hover-border relative flex h-full flex-col rounded-xl border border-border bg-surface p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
+            >
+              <div class="flex items-start justify-between gap-3">
+                <div class="flex items-center gap-3">
+                  <!--
+                    Agent Skills 아이콘 — 공식 로고 없음 → "스파클 + 박스" 추상 디자인.
+                    번개 형태의 sparkle로 "8종 도구 패키지" 의미 전달.
+                    Lucide의 sparkles 패턴(MIT) 기반 단순 path.
+                  -->
+                  <div
+                    class="tool-skills-bg-soft flex h-10 w-10 items-center justify-center rounded-lg"
+                    aria-hidden="true"
+                  >
+                    <svg
+                      class="tool-skills-text h-5 w-5"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" />
+                      <path d="M20 3v4" />
+                      <path d="M22 5h-4" />
+                      <path d="M4 17v2" />
+                      <path d="M5 18H3" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 class="text-base font-semibold text-gray-900">Agent Skills</h3>
+                    <p class="mt-0.5 font-mono text-xs text-gray-400">.claude/skills/*/SKILL.md</p>
+                  </div>
+                </div>
+                <span
+                  class="tool-skills-bg-soft-15 tool-skills-text inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[11px] font-semibold"
+                >
+                  8종 제공
+                </span>
+              </div>
+              <p class="mt-4 flex-1 text-sm leading-relaxed text-gray-600">
+                SKILL.md 8종(commit · pr-create · pr-review · test-writer · debug · refactor ·
+                adr-create · readme-update). agentskills.io 표준을 따릅니다.
+              </p>
+              <div class="mt-5 flex items-center justify-between">
+                <span class="text-xs font-medium text-gray-400">개요 보기</span>
+                <span
+                  class="tool-skills-text text-sm font-medium transition-transform group-hover:translate-x-0.5"
+                  aria-hidden="true"
+                >
+                  →
+                </span>
+              </div>
+            </a>
+          </li>
+        </ul>
+
+        <!--
+          인터랙션 메모 (v2):
+          - 카드 전체가 <a> 클릭 영역. 호버 시 0.5px 위로 부상 + shadow-md 강조
+          - v2 변경: 호버 시 테두리는 primary가 아니라 "도구별 색상"으로 변경
+              · AGENTS.md → slate-600 (#475569)
+              · Cursor   → slate-900 (#0f172a)
+              · Copilot  → GitHub blue (#0969da)
+              · Claude   → Anthropic amber (#d97757)
+              · Skills   → violet-600 (#7c3aed)
+          - 화살표(→)도 도구별 색상으로 통일하여 호버 시 0.5 단위 우측 이동
+          - 정적 상태에서 카드 본체는 흰색/투명 유지(bg-surface). 좌상단 아이콘 박스만
+            도구 색상 톤 10~15% 배경 + 도구 색상의 SVG.
+          - 통합 생성기 카드의 "통합 생성기 시작하기" 버튼은 /ai-config/generator 로 이동 (focus 없음)
+          - 카드 5개 클릭은 각각의 /ai-config/{slug} 랜딩 페이지로 이동.
+            랜딩 페이지의 "통합 생성기 시작" CTA에서 ?focus={slug} 파라미터가 부여됨
+            (이 페이지에서 직접 /generator?focus=... 로 보내지 않음 — 카탈로그는 둘러보기 허브)
+        -->
+      </section>
+    </main>
+
+    <!-- ============================================== -->
+    <!-- Footer (기존 Footer.astro 재현)                  -->
+    <!-- ============================================== -->
+    <footer class="border-t border-border">
+      <div class="mx-auto max-w-7xl px-6 py-10 text-center text-sm text-gray-400">
+        <div class="mt-3 flex justify-center gap-4">
+          <a href="#" class="transition-colors hover:text-gray-600">GitHub</a>
+          <a href="#" class="transition-colors hover:text-gray-600">Developer</a>
+          <a href="#" class="transition-colors hover:text-gray-600">Contact</a>
+        </div>
+        <p class="mt-4">&copy; 2026 ConfigDeck. All rights reserved.</p>
+      </div>
+    </footer>
+  </body>
+</html>
