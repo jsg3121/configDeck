@@ -315,7 +315,9 @@
       "title": "Agent Skills",
       "legend": "포함할 Agent Skills를 선택하세요",
       "selectAll": "전체 선택",
-      "deselectAll": "전체 해제"
+      "deselectAll": "전체 해제",
+      "compatibilityNoticeTitle": "SKILL.md 호환성 안내",
+      "compatibilityNoticeBody": "Copilot과 Codex는 .claude/skills/*/SKILL.md를 직접 읽지 않습니다. Cursor와 Claude Code는 자동 인식합니다. Copilot에서 활용하려면 SKILL.md 내용을 .github/copilot-instructions.md에 일부 포함시키거나 별도 참조해야 합니다."
     },
     "step3": {
       "title": "Best Practices",

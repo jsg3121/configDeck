@@ -306,6 +306,7 @@
       <AiConfigSkills
         {locale}
         {selectedSkillIds}
+        {enabledTools}
         onToggleSkill={handleToggleSkill}
         onSelectAllSkills={handleSelectAllSkills}
         onDeselectAllSkills={handleDeselectAllSkills}

@@ -315,7 +315,9 @@
       "title": "Agent Skills",
       "legend": "Select Agent Skills to include",
       "selectAll": "Select all",
-      "deselectAll": "Deselect all"
+      "deselectAll": "Deselect all",
+      "compatibilityNoticeTitle": "About SKILL.md compatibility",
+      "compatibilityNoticeBody": "Copilot and Codex don't directly read .claude/skills/*/SKILL.md. Cursor and Claude Code auto-detect them. To use these skills with Copilot, copy the skill content into .github/copilot-instructions.md or reference them manually."
     },
     "step3": {
       "title": "Best Practices",
