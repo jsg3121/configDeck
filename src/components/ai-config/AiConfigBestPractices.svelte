@@ -109,14 +109,9 @@
                     checked={selectedIds.has(item.id)}
                     onchange={() => onToggleId(item.id)}
                   />
-                  <span class="flex flex-col gap-0.5">
-                    <span class="font-medium"
-                      >{getTranslation(locale, `aiConfig.bestPractices.${item.id}`)}</span
-                    >
-                    <span class="font-mono text-[11px] leading-relaxed text-gray-500">
-                      {item.outputText}
-                    </span>
-                  </span>
+                  <span class="font-medium"
+                    >{getTranslation(locale, `aiConfig.bestPractices.${item.id}`)}</span
+                  >
                 </label>
               </li>
             {/each}
