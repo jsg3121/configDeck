@@ -78,6 +78,8 @@ const softwareSourceCodeJsonLd = {
 }
 
 const faqPageJsonLd = buildFaqPageJsonLd(getLandingFaqItems(locale, meta.i18nKey))
+
+const ogImage = `${siteUrl}/og/ai-config-${meta.slug}.png`
 ---
 
 <Layout
@@ -86,6 +88,7 @@ const faqPageJsonLd = buildFaqPageJsonLd(getLandingFaqItems(locale, meta.i18nKey
   {locale}
   pagePath={pagePath}
   currentPath={pagePath}
+  ogImage={ogImage}
   jsonLd={[softwareApplicationJsonLd, breadcrumbJsonLd, softwareSourceCodeJsonLd, faqPageJsonLd]}
 >
   <article>

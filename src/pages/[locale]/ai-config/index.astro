@@ -79,6 +79,8 @@ const breadcrumbJsonLd = {
 }
 
 const howToJsonLd = buildHowToJsonLd(getCatalogHowTo(locale))
+
+const ogImage = `${siteUrl}/og/ai-config-hub.png`
 ---
 
 <Layout
@@ -87,6 +89,7 @@ const howToJsonLd = buildHowToJsonLd(getCatalogHowTo(locale))
   {locale}
   pagePath="/ai-config"
   currentPath="/ai-config"
+  ogImage={ogImage}
   jsonLd={[collectionPageJsonLd, breadcrumbJsonLd, howToJsonLd]}
 >
   <article>
