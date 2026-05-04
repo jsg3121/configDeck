@@ -6,11 +6,13 @@
 import { buildLocalizedPath, getTranslation, SUPPORTED_LOCALES, type Locale } from '@/i18n'
 
 import Layout from '@/layouts/Layout.astro'
+import LandingFaq from '@/components/ai-config/landing/LandingFaq.astro'
 import LandingFeatureGrid from '@/components/ai-config/landing/LandingFeatureGrid.astro'
 import LandingHero from '@/components/ai-config/landing/LandingHero.astro'
 import LandingMainCta from '@/components/ai-config/landing/LandingMainCta.astro'
 import LandingOutputExample from '@/components/ai-config/landing/LandingOutputExample.astro'
 import LandingRelatedTools from '@/components/ai-config/landing/LandingRelatedTools.astro'
+import { buildFaqPageJsonLd, getLandingFaqItems } from '@/lib/data/aiConfig/landingFaq'
 import { AI_CONFIG_LANDING_META } from '@/lib/data/aiConfig/landingTools'
 
 export const getStaticPaths = () => {
@@ -74,6 +76,8 @@ const softwareSourceCodeJsonLd = {
   programmingLanguage: 'Markdown',
   codeSampleType: 'snippet',
 }
+
+const faqPageJsonLd = buildFaqPageJsonLd(getLandingFaqItems(locale, meta.i18nKey))
 ---
 
 <Layout
@@ -82,7 +86,7 @@ const softwareSourceCodeJsonLd = {
   {locale}
   pagePath={pagePath}
   currentPath={pagePath}
-  jsonLd={[softwareApplicationJsonLd, breadcrumbJsonLd, softwareSourceCodeJsonLd]}
+  jsonLd={[softwareApplicationJsonLd, breadcrumbJsonLd, softwareSourceCodeJsonLd, faqPageJsonLd]}
 >
   <article>
     <nav aria-label="Breadcrumb" class="mx-auto max-w-4xl px-6 pt-6 text-xs text-gray-500">
@@ -108,6 +112,7 @@ const softwareSourceCodeJsonLd = {
     <LandingHero {locale} i18nKey={meta.i18nKey} docsUrl={meta.docsUrl} focusSlug={meta.slug} />
     <LandingFeatureGrid {locale} i18nKey={meta.i18nKey} />
     <LandingOutputExample {locale} fileName={meta.exampleFileName} code={meta.exampleCode} />
+    <LandingFaq {locale} i18nKey={meta.i18nKey} />
     <LandingMainCta {locale} focusSlug={meta.slug} />
   </article>
 

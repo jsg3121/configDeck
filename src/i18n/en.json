@@ -303,6 +303,20 @@
           "path": ".claude/skills/{name}/SKILL.md",
           "summary": "8 SKILL.md (commit, pr-create, pr-review, test-writer, debug, refactor, adr-create, readme-update). agentskills.io standard."
         }
+      },
+      "howTo": {
+        "heading": "How to generate AI tool config files",
+        "lead": "Pick your stack and check the best practices, and ConfigDeck produces config files for 4 AI tools and 8 Skills in one go.",
+        "step1Name": "Select tools",
+        "step1Text": "Choose all the AI coding tools you use. You can pick any of Cursor, GitHub Copilot, Claude Code, and OpenAI Codex individually or in any combination.",
+        "step2Name": "Pick Agent Skills",
+        "step2Text": "Select the SKILL.md you need from commit, pr-create, pr-review, test-writer, debug, refactor, adr-create, and readme-update.",
+        "step3Name": "Check Best Practices",
+        "step3Text": "Tick the best-practice items by category — Code Style, Git Workflow, Testing, and more. The catalog is grounded in patterns from 2,500+ repositories analyzed by the GitHub Engineering Blog.",
+        "step4Name": "Define Boundaries",
+        "step4Text": "Make boundaries explicit with the 3-tier model: things AI should always do, things to ask first, and things to never do.",
+        "step5Name": "Download and apply",
+        "step5Text": "Download the full ZIP and unzip it at the project root, or copy individual files to the clipboard to drop them in."
       }
     },
     "step1": {
@@ -489,7 +503,20 @@
         "feature3Title": "Six core sections",
         "feature3Body": "Commands / Testing / Project Structure / Code Style / Git Workflow / Boundaries",
         "feature4Title": "Plain Markdown",
-        "feature4Body": "No frontmatter — readable and editable by anyone"
+        "feature4Body": "No frontmatter — readable and editable by anyone",
+        "faq": {
+          "heading": "Frequently asked questions",
+          "q1Question": "What exactly is the AGENTS.md standard?",
+          "q1Answer": "AGENTS.md is an open standard donated by OpenAI to the Linux Foundation. It is a single file that lets AI coding agents understand a project's conventions, and it is adopted by 60,000+ GitHub repositories — making it the de-facto industry standard.",
+          "q2Question": "Which AI tools read AGENTS.md natively?",
+          "q2Answer": "OpenAI Codex reads AGENTS.md as its primary context. Cursor and GitHub Copilot also recognize it officially. Claude Code does not read it directly, so a single @AGENTS.md import line in CLAUDE.md is enough to share the same rules.",
+          "q3Question": "Which sections should AGENTS.md include?",
+          "q3Answer": "Based on the GitHub Engineering Blog's analysis of 2,500+ repositories, the most impactful sections are Commands / Testing / Project Structure / Code Style / Git Workflow / Boundaries. ConfigDeck generates all six automatically.",
+          "q4Question": "Is there a length limit for AGENTS.md?",
+          "q4Answer": "OpenAI Codex reads AGENTS.md up to 32 KiB. Anything beyond that may be truncated, so it is best to keep frequently used core rules in AGENTS.md and split detailed guides into separate documents.",
+          "q5Question": "Can I migrate from .cursorrules or other config files?",
+          "q5Answer": "AGENTS.md is free-form Markdown, so existing instructions can be moved over as-is. ConfigDeck takes your stack and best-practice choices as input and structures the content into the six core sections, which is a quick way to consolidate scattered rules into a single source of truth."
+        }
       },
       "cursor": {
         "h1": "Cursor Rules Generator (MDC Format)",
@@ -502,7 +529,20 @@
         "feature3Title": "Cursor 0.45+ official format",
         "feature3Body": "Uses the current recommended format, not legacy .cursorrules",
         "feature4Title": "Bilingual UI",
-        "feature4Body": "Korean/English UI with English output for AI accuracy"
+        "feature4Body": "Korean/English UI with English output for AI accuracy",
+        "faq": {
+          "heading": "Frequently asked questions",
+          "q1Question": "How is .cursorrules different from .cursor/rules/*.mdc?",
+          "q1Answer": ".cursorrules is the legacy format that puts every rule into a single file. .cursor/rules/*.mdc is the recommended format starting with Cursor 0.45+. MDC adds frontmatter for alwaysApply / globs / description-based triggers, which saves tokens and makes scope explicit.",
+          "q2Question": "Why split into core / stack / boundaries — three files?",
+          "q2Answer": "Cursor's official docs recommend a multi-file, topic-based layout. core.mdc (alwaysApply) covers project-wide rules that always apply, stack.mdc (globs) targets file patterns like frontend or tests, and boundaries.mdc (description) is consulted only when needed — keeping each file's role distinct.",
+          "q3Question": "Does this work on Cursor versions older than 0.45?",
+          "q3Answer": "The .cursor/rules/*.mdc directory format is recognized only in Cursor 0.45+. If you are on an older version, update Cursor or temporarily port the content into .cursorrules. ConfigDeck outputs the recommended 0.45+ MDC format.",
+          "q4Question": "Can I edit the MDC frontmatter fields myself?",
+          "q4Answer": "Yes. alwaysApply / globs / description are all yours to tweak. ConfigDeck's Phase A produces the most common 3-file layout, and after that we recommend narrowing globs patterns to fit your project structure or adding extra .mdc files by hand.",
+          "q5Question": "How do I migrate from an existing .cursorrules?",
+          "q5Answer": "Move the content of your existing .cursorrules into ConfigDeck's Best Practices and Boundaries inputs and generate the 3-file MDC output. Then delete .cursorrules and commit only the .cursor/rules/ directory — the migration to the 0.45+ recommended layout is complete."
+        }
       },
       "copilot": {
         "h1": "GitHub Copilot Instructions Generator",
@@ -515,7 +555,20 @@
         "feature3Title": "Three-tier Boundaries",
         "feature3Body": "Always do / Ask first / Never do for clear guardrails",
         "feature4Title": "Team conventions",
-        "feature4Body": "Add team-specific rules via Additional Notes"
+        "feature4Body": "Add team-specific rules via Additional Notes",
+        "faq": {
+          "heading": "Frequently asked questions",
+          "q1Question": "Where should the Copilot instructions file live?",
+          "q1Answer": ".github/copilot-instructions.md is GitHub's official standard path. Place it in the .github directory at your repository root and GitHub Copilot picks it up automatically when generating suggestions.",
+          "q2Question": "Do I need to enable anything for Copilot to read this file?",
+          "q2Answer": "By default it is recognized without extra setup. Some organization policies may disable 'Use Instructions Files', so check that the instructions-file option is enabled in your GitHub Copilot settings if it does not seem to apply.",
+          "q3Question": "How is this different from path-specific .github/instructions/*.instructions.md?",
+          "q3Answer": "copilot-instructions.md is the baseline that applies repository-wide. .github/instructions/*.instructions.md files use an applyTo glob pattern in frontmatter to target specific files. ConfigDeck outputs the single-file format in Phase A and will support path-specific splits in Phase B.",
+          "q4Question": "Why a three-tier Boundaries section?",
+          "q4Answer": "Splitting boundaries into 'Always do', 'Ask first', and 'Never do' makes Copilot's behavior more consistent than free-form text. The 'Never do' tier is especially effective for security and deployment rules where mistakes are costly.",
+          "q5Question": "Where do I put team-specific rules?",
+          "q5Answer": "Anything you type into ConfigDeck's Additional Notes input is appended verbatim to the bottom of the output file. Use it for team conventions, domain terminology, or library usage patterns that the catalog does not cover."
+        }
       },
       "claudeCode": {
         "h1": "Claude Code CLAUDE.md Generator",
@@ -528,7 +581,20 @@
         "feature3Title": "Official memory format",
         "feature3Body": "Follows the Anthropic Claude Code Memory guide",
         "feature4Title": "Skills integration",
-        "feature4Body": "Generates 8 SKILL.md files under .claude/skills/ at the same time"
+        "feature4Body": "Generates 8 SKILL.md files under .claude/skills/ at the same time",
+        "faq": {
+          "heading": "Frequently asked questions",
+          "q1Question": "Does Claude Code read AGENTS.md directly?",
+          "q1Answer": "No. Claude Code only treats CLAUDE.md as memory. To use AGENTS.md alongside it, add a single @AGENTS.md import line at the top of CLAUDE.md. ConfigDeck inserts that import automatically when you select other tools too.",
+          "q2Question": "Why is the @AGENTS.md import added automatically?",
+          "q2Answer": "Cursor / Copilot / Codex treat AGENTS.md as their single source of truth, so Claude Code needs the import to follow the same rules. Without it, Claude Code ends up with a different ruleset and your tools' behavior diverges.",
+          "q3Question": "How does the Claude Code-only mode work?",
+          "q3Answer": "If you only use Claude Code, toggle 'Use Claude Code only' to write CLAUDE.md as the single source of truth without an @AGENTS.md import. AGENTS.md / Cursor MDC / Copilot instructions are excluded from the output.",
+          "q4Question": "Where should I put CLAUDE.md?",
+          "q4Answer": "CLAUDE.md at the project root is project memory; ~/.claude/CLAUDE.md is user memory. ConfigDeck outputs project memory at the root. You can keep your global personal memory in the user file separately to layer in your own working style.",
+          "q5Question": "How do Skills fit in?",
+          "q5Answer": "ConfigDeck generates eight .claude/skills/{name}/SKILL.md files together with CLAUDE.md. Claude Code auto-discovers the .claude/skills/ directory, so as soon as you unzip the output you can invoke commit, pr-create, debug and other workflows."
+        }
       },
       "agentSkills": {
         "h1": "Agent Skills Generator (SKILL.md)",
@@ -541,7 +607,20 @@
         "feature3Title": "Single source of truth",
         "feature3Body": "Auto-generates .claude/skills/{name}/SKILL.md at the standard path",
         "feature4Title": "GitHub Blog patterns",
-        "feature4Body": "Backed by best practices analyzed by the GitHub Engineering Blog"
+        "feature4Body": "Backed by best practices analyzed by the GitHub Engineering Blog",
+        "faq": {
+          "heading": "Frequently asked questions",
+          "q1Question": "What are Agent Skills (SKILL.md)?",
+          "q1Answer": "SKILL.md is a standard file that defines a single workflow an AI agent can invoke. It follows the agentskills.io standard led by Anthropic — only name and description are required, and the body holds the concrete instructions in free-form Markdown.",
+          "q2Question": "Which tools recognize SKILL.md?",
+          "q2Answer": "Claude Code recognizes the .claude/skills/ directory as its primary path. Cursor also auto-recognizes .claude/skills/ as a legacy-compatible location. GitHub Copilot and OpenAI Codex do not invoke Skills directly, but you can still benefit from the same directory as instructions context.",
+          "q3Question": "How were the P0 catalog of 8 chosen?",
+          "q3Answer": "We analyzed the official anthropics/skills repository (126K stars) and the awesome-claude-skills curated list, then picked eight workflows useful in any project: Conventional Commits, PR creation, code review, test writing, debugging, refactoring, ADR creation, and README updates. Stack-specific Skills will follow in Phase B.",
+          "q4Question": "How do I apply these to my project?",
+          "q4Answer": "Download the ZIP and extract it at the project root — eight .claude/skills/{name}/SKILL.md files appear. Restart Claude Code and it auto-recognizes them; you can then invoke any one by saying something like 'run the commit skill' and the AI follows the instructions in that SKILL.md.",
+          "q5Question": "How do I add team- or company-specific Skills?",
+          "q5Answer": "Use the SKILL.md files ConfigDeck generates as a template, and add a new folder with its own SKILL.md under the same directory. Keep the description in the frontmatter to a single, searchable line; put step-by-step instructions in the body. Phase B will add a 'skill-creator' meta skill to automate this."
+        }
       },
       "tools": {
         "agentsMd": "AGENTS.md",
