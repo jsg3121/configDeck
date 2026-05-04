@@ -303,6 +303,20 @@
           "path": ".claude/skills/{name}/SKILL.md",
           "summary": "SKILL.md 8종(commit, pr-create, pr-review, test-writer, debug, refactor, adr-create, readme-update). agentskills.io 표준."
         }
+      },
+      "howTo": {
+        "heading": "AI 도구 설정 파일 생성 방법",
+        "lead": "스택을 고르고 베스트 프랙티스를 체크하면 4개 AI 도구의 설정 파일과 Skills 8종이 한 번에 만들어집니다.",
+        "step1Name": "도구 선택",
+        "step1Text": "사용 중인 AI 코딩 도구를 모두 선택합니다. Cursor, GitHub Copilot, Claude Code, OpenAI Codex 4종을 단독으로도, 조합으로도 선택할 수 있습니다.",
+        "step2Name": "Agent Skills 선택",
+        "step2Text": "commit, pr-create, pr-review, test-writer, debug, refactor, adr-create, readme-update 중 필요한 SKILL.md를 선택합니다.",
+        "step3Name": "Best Practices 체크",
+        "step3Text": "Code Style, Git Workflow, Testing 등 카테고리별 베스트 프랙티스 항목을 체크합니다. GitHub Blog가 분석한 2,500여 개 저장소 패턴을 기반으로 한 카탈로그입니다.",
+        "step4Name": "Boundaries 정의",
+        "step4Text": "AI가 항상 해야 할 것 / 먼저 물어볼 것 / 절대 하지 말 것 3-tier로 경계를 명확히 합니다.",
+        "step5Name": "다운로드 및 적용",
+        "step5Text": "전체 ZIP을 받아 프로젝트 루트에 압축을 풀거나, 파일별로 클립보드에 복사해 적용합니다."
       }
     },
     "step1": {
@@ -489,7 +503,20 @@
         "feature3Title": "6대 핵심 섹션",
         "feature3Body": "Commands / Testing / Project Structure / Code Style / Git Workflow / Boundaries",
         "feature4Title": "자유 형식 Markdown",
-        "feature4Body": "frontmatter 없는 단순 마크다운으로 누구나 읽고 편집 가능"
+        "feature4Body": "frontmatter 없는 단순 마크다운으로 누구나 읽고 편집 가능",
+        "faq": {
+          "heading": "자주 묻는 질문",
+          "q1Question": "AGENTS.md는 어떤 표준인가요?",
+          "q1Answer": "AGENTS.md는 OpenAI가 Linux Foundation에 기증한 오픈 표준 문서로, AI 코딩 에이전트가 프로젝트 컨벤션을 이해하도록 돕는 단일 파일입니다. 60,000개 이상의 GitHub 저장소에서 채택되어 사실상의 업계 표준 위치를 차지하고 있습니다.",
+          "q2Question": "어떤 AI 도구가 AGENTS.md를 직접 읽나요?",
+          "q2Answer": "OpenAI Codex가 1차 컨텍스트로 AGENTS.md를 직접 읽습니다. Cursor와 GitHub Copilot도 공식적으로 인식합니다. Claude Code는 직접 읽지 않으므로 CLAUDE.md에서 @AGENTS.md 임포트 한 줄로 동일 규칙을 공유하게 됩니다.",
+          "q3Question": "어떤 섹션을 포함해야 하나요?",
+          "q3Answer": "GitHub Blog가 분석한 2,500개 이상 저장소 패턴 기준으로 Commands / Testing / Project Structure / Code Style / Git Workflow / Boundaries 6대 섹션이 가장 영향력이 큽니다. ConfigDeck은 이 6대 섹션을 자동 생성합니다.",
+          "q4Question": "AGENTS.md에 길이 제한이 있나요?",
+          "q4Answer": "OpenAI Codex는 AGENTS.md를 최대 32KiB까지 읽습니다. 그 이상은 잘릴 수 있으므로 자주 사용하는 핵심 규칙만 남기고, 상세 가이드는 별도 문서로 분리하는 것이 좋습니다.",
+          "q5Question": "기존 .cursorrules나 다른 설정 파일에서 마이그레이션할 수 있나요?",
+          "q5Answer": "AGENTS.md는 자유 형식 Markdown이므로 기존 인스트럭션을 그대로 옮겨 쓸 수 있습니다. ConfigDeck은 스택과 베스트 프랙티스를 입력으로 받아 6대 섹션 구조로 자동 정리해주므로, 흩어진 규칙을 단일 진실원으로 통합하는 데 유용합니다."
+        }
       },
       "cursor": {
         "h1": "Cursor Rules 생성기 (MDC 형식)",
@@ -502,7 +529,20 @@
         "feature3Title": "Cursor 0.45+ 공식 형식",
         "feature3Body": "레거시 .cursorrules 대신 현재 권장 형식 사용",
         "feature4Title": "다국어 지원",
-        "feature4Body": "한국어/영어 UI로 한 번에 영어 출력"
+        "feature4Body": "한국어/영어 UI로 한 번에 영어 출력",
+        "faq": {
+          "heading": "자주 묻는 질문",
+          "q1Question": ".cursorrules와 .cursor/rules/*.mdc는 어떻게 다른가요?",
+          "q1Answer": ".cursorrules는 단일 파일에 모든 규칙을 모아두는 레거시 형식이고, .cursor/rules/*.mdc는 Cursor 0.45+의 권장 형식입니다. MDC는 frontmatter로 alwaysApply / globs / description 기반 트리거를 정밀 제어할 수 있어 토큰을 절약하고 적용 범위를 명확히 합니다.",
+          "q2Question": "왜 core / stack / boundaries 3파일로 분리하나요?",
+          "q2Answer": "Cursor 공식 문서가 토픽별 다중 파일 구조를 권장하기 때문입니다. core.mdc(alwaysApply)는 항상 적용되는 전반 규칙, stack.mdc(globs)는 프론트엔드/테스트 등 파일 패턴별 규칙, boundaries.mdc(description)는 AI가 필요할 때만 참조하는 경계 규칙으로 역할이 명확히 분리됩니다.",
+          "q3Question": "Cursor 0.45 미만에서도 동작하나요?",
+          "q3Answer": ".cursor/rules/*.mdc 디렉토리 형식은 Cursor 0.45 이상에서만 인식됩니다. 그 이전 버전을 사용한다면 Cursor를 업데이트하거나, 임시로 .cursorrules로 콘텐츠를 옮겨 쓰는 방법이 있습니다. ConfigDeck은 권장 형식인 0.45+ MDC를 출력합니다.",
+          "q4Question": "MDC frontmatter 필드를 직접 수정해도 되나요?",
+          "q4Answer": "네, alwaysApply / globs / description 모두 사용자가 자유롭게 조정할 수 있습니다. ConfigDeck은 Phase A에서 가장 일반적인 3파일 구성을 자동 생성하지만, 출력 후 globs 패턴을 프로젝트 구조에 맞게 좁히거나 추가 .mdc 파일을 손으로 더하는 것이 권장됩니다.",
+          "q5Question": "기존 .cursorrules에서 마이그레이션하려면 어떻게 하나요?",
+          "q5Answer": "기존 .cursorrules 내용을 ConfigDeck의 Best Practices와 Boundaries 입력란에 옮긴 뒤 MDC 3파일을 생성합니다. 그 후 .cursorrules는 삭제하고 .cursor/rules/ 디렉토리만 커밋하면 0.45+ 권장 구조로 전환이 끝납니다."
+        }
       },
       "copilot": {
         "h1": "GitHub Copilot 인스트럭션 생성기",
@@ -515,7 +555,20 @@
         "feature3Title": "Boundaries 3-tier",
         "feature3Body": "Always do / Ask first / Never do로 명확한 경계 정의",
         "feature4Title": "팀 컨벤션 반영",
-        "feature4Body": "Additional Notes로 팀 고유 규칙을 자유롭게 추가"
+        "feature4Body": "Additional Notes로 팀 고유 규칙을 자유롭게 추가",
+        "faq": {
+          "heading": "자주 묻는 질문",
+          "q1Question": "Copilot 인스트럭션 파일은 어디에 두어야 하나요?",
+          "q1Answer": ".github/copilot-instructions.md 한 위치가 GitHub 공식 표준 경로입니다. 저장소 루트의 .github 디렉토리에 두면 GitHub Copilot이 자동으로 인식해 코드 제안에 반영합니다.",
+          "q2Question": "이 파일을 인식하려면 별도 설정이 필요한가요?",
+          "q2Answer": "기본적으로 별도 설정 없이 인식됩니다. 단, 조직 정책에 따라 'Use Instructions Files' 설정이 비활성화돼 있을 수 있으니 GitHub Copilot 설정에서 인스트럭션 파일 사용이 켜져 있는지 확인하세요.",
+          "q3Question": "Path-specific instructions(.github/instructions/*.instructions.md)와는 어떻게 다른가요?",
+          "q3Answer": "copilot-instructions.md는 저장소 전체에 적용되는 기본 인스트럭션이고, .github/instructions/*.instructions.md는 frontmatter의 applyTo glob 패턴으로 특정 파일에만 적용되는 세분화된 규칙입니다. ConfigDeck은 Phase A에서 단일 파일 형식을 출력하며, path-specific 분리는 Phase B에서 지원할 예정입니다.",
+          "q4Question": "Boundaries 3-tier는 왜 필요한가요?",
+          "q4Answer": "AI가 항상 해야 할 것 / 먼저 물어볼 것 / 절대 하지 말 것을 명시적으로 분리하면, 같은 의도를 자유 텍스트로 적었을 때보다 Copilot의 행동이 일관됩니다. 특히 보안/배포 관련 'Never do' 항목은 사고를 줄이는 데 효과적입니다.",
+          "q5Question": "팀 고유 규칙은 어디에 추가하나요?",
+          "q5Answer": "ConfigDeck의 Additional Notes 입력란에 자연어로 추가한 내용은 출력 파일 하단에 그대로 삽입됩니다. 팀 컨벤션, 도메인 용어, 자주 쓰는 라이브러리 사용 패턴 등 카탈로그에 없는 규칙을 보완할 때 사용합니다."
+        }
       },
       "claudeCode": {
         "h1": "Claude Code CLAUDE.md 생성기",
@@ -528,7 +581,20 @@
         "feature3Title": "공식 메모리 형식",
         "feature3Body": "Anthropic Claude Code Memory 가이드 준수",
         "feature4Title": "Skills 통합",
-        "feature4Body": ".claude/skills/ 디렉토리에 SKILL.md 8종 동시 생성"
+        "feature4Body": ".claude/skills/ 디렉토리에 SKILL.md 8종 동시 생성",
+        "faq": {
+          "heading": "자주 묻는 질문",
+          "q1Question": "Claude Code도 AGENTS.md를 직접 읽나요?",
+          "q1Answer": "아니요. Claude Code는 CLAUDE.md만 메모리로 인식합니다. AGENTS.md를 함께 활용하려면 CLAUDE.md 첫 줄에 @AGENTS.md 임포트 한 줄을 추가해야 합니다. ConfigDeck은 다른 도구를 함께 선택할 때 이 임포트를 자동으로 삽입합니다.",
+          "q2Question": "왜 @AGENTS.md 임포트가 자동으로 들어가나요?",
+          "q2Answer": "Cursor / Copilot / Codex가 AGENTS.md를 단일 진실원으로 인식하므로, Claude Code도 같은 규칙을 따르려면 임포트가 필요합니다. 임포트가 없으면 Claude Code만 다른 규칙을 갖게 되어 도구별 행동이 분기됩니다.",
+          "q3Question": "Claude Code 단독 사용 모드는 어떻게 동작하나요?",
+          "q3Answer": "다른 AI 도구를 사용하지 않는 경우 'Claude Code만 단독으로 사용합니다' 토글을 켜면 @AGENTS.md 임포트 없이 CLAUDE.md를 단일 진실원으로 작성합니다. AGENTS.md / Cursor MDC / Copilot 인스트럭션은 출력에서 제외됩니다.",
+          "q4Question": "CLAUDE.md를 어디에 두어야 하나요?",
+          "q4Answer": "프로젝트 루트의 CLAUDE.md가 프로젝트 메모리, ~/.claude/CLAUDE.md가 사용자 메모리입니다. ConfigDeck은 프로젝트 메모리(루트)를 출력합니다. 사용자 전역 메모리는 별도로 작성해 자신의 작업 스타일을 추가할 수 있습니다.",
+          "q5Question": "Skills와 함께 어떻게 쓰나요?",
+          "q5Answer": "ConfigDeck은 .claude/skills/{name}/SKILL.md 8종을 CLAUDE.md와 함께 한 번에 생성합니다. Claude Code는 .claude/skills/ 디렉토리를 자동 인식하므로 ZIP을 풀어 두면 곧바로 commit, pr-create, debug 같은 워크플로우를 호출할 수 있습니다."
+        }
       },
       "agentSkills": {
         "h1": "Agent Skills 생성기 (SKILL.md)",
@@ -541,7 +607,20 @@
         "feature3Title": "단일 진실원",
         "feature3Body": ".claude/skills/{name}/SKILL.md 표준 경로 자동 생성",
         "feature4Title": "GitHub Blog 검증 패턴",
-        "feature4Body": "GitHub Blog가 분석한 실전 베스트 프랙티스 반영"
+        "feature4Body": "GitHub Blog가 분석한 실전 베스트 프랙티스 반영",
+        "faq": {
+          "heading": "자주 묻는 질문",
+          "q1Question": "Agent Skills(SKILL.md)란 무엇인가요?",
+          "q1Answer": "SKILL.md는 AI 에이전트가 호출할 수 있는 단일 워크플로우를 정의하는 표준 파일입니다. Anthropic이 주도하는 agentskills.io 표준을 따르며, name과 description 두 필드만 필수이고 본문에 구체적 지시 사항을 자유롭게 작성합니다.",
+          "q2Question": "어떤 도구가 SKILL.md를 인식하나요?",
+          "q2Answer": "Claude Code가 .claude/skills/ 디렉토리를 1순위로 인식합니다. Cursor도 레거시 호환 경로로 .claude/skills/를 자동 인식합니다. GitHub Copilot과 OpenAI Codex는 Skills를 직접 호출하지 않지만, 같은 디렉토리에 두면 인스트럭션 컨텍스트로 활용할 수 있습니다.",
+          "q3Question": "P0 8종이 무엇인지 어떻게 정해졌나요?",
+          "q3Answer": "anthropics/skills 공식 리포(126K stars)와 awesome-claude-skills 커뮤니티 큐레이션을 분석해, Conventional Commits / PR / 테스트 / 디버깅 / 리팩토링 / ADR / README 같이 어느 프로젝트에서나 자주 쓰이는 8개를 P0로 선정했습니다. 스택별 Skills 확장은 Phase B에서 추가됩니다.",
+          "q4Question": "프로젝트에 어떻게 적용하나요?",
+          "q4Answer": "ZIP을 다운로드해 프로젝트 루트에 풀면 .claude/skills/{name}/SKILL.md 8개 파일이 생성됩니다. Claude Code를 재시작하면 자동으로 인식하고, 사용자가 'commit 스킬 실행해줘' 같이 자연어로 호출하면 해당 SKILL.md의 지시문에 따라 동작합니다.",
+          "q5Question": "팀이나 회사 고유 Skills를 추가하려면 어떻게 하나요?",
+          "q5Answer": "ConfigDeck이 생성한 SKILL.md를 템플릿으로 삼아 같은 디렉토리에 새 폴더와 SKILL.md를 추가하면 됩니다. frontmatter의 description은 검색 가능한 한 줄로 명확히 적고, 본문에는 단계별 지시문을 작성합니다. Phase B에서 'skill-creator' 메타 스킬이 추가되면 이 작업을 자동화할 수 있습니다."
+        }
       },
       "tools": {
         "agentsMd": "AGENTS.md",

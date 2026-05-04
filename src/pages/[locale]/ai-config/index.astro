@@ -12,7 +12,9 @@ import cursorSvg from '@/assets/cursor.svg?raw'
 import { buildLocalizedPath, getTranslation, SUPPORTED_LOCALES, type Locale } from '@/i18n'
 
 import Layout from '@/layouts/Layout.astro'
+import CatalogHowTo from '@/components/ai-config/catalog/CatalogHowTo.astro'
 import CatalogToolCard from '@/components/ai-config/catalog/CatalogToolCard.astro'
+import { buildHowToJsonLd, getCatalogHowTo } from '@/lib/data/aiConfig/catalogHowTo'
 import { CATALOG_TOOLS } from '@/lib/data/aiConfig/catalogTools'
 
 export const getStaticPaths = () => {
@@ -75,6 +77,8 @@ const breadcrumbJsonLd = {
     },
   ],
 }
+
+const howToJsonLd = buildHowToJsonLd(getCatalogHowTo(locale))
 ---
 
 <Layout
@@ -83,7 +87,7 @@ const breadcrumbJsonLd = {
   {locale}
   pagePath="/ai-config"
   currentPath="/ai-config"
-  jsonLd={[collectionPageJsonLd, breadcrumbJsonLd]}
+  jsonLd={[collectionPageJsonLd, breadcrumbJsonLd, howToJsonLd]}
 >
   <article>
     <nav aria-label="Breadcrumb" class="mx-auto max-w-7xl px-6 pt-6 text-xs text-gray-500">
@@ -173,6 +177,8 @@ const breadcrumbJsonLd = {
         }
       </ul>
     </section>
+
+    <CatalogHowTo {locale} />
   </article>
 </Layout>
 

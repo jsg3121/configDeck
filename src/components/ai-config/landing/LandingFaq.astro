@@ -1,0 +1,51 @@
+---
+/**
+ * 자식 랜딩 페이지의 FAQ 섹션.
+ *
+ * 시각 표시는 native <details>/<summary>로 접근성과 키보드 지원을 보장한다.
+ * JSON-LD(FAQPage)는 페이지 레벨에서 buildFaqPageJsonLd()로 별도 출력하며,
+ * 같은 텍스트를 getLandingFaqItems()에서 한 번에 추출해 시각/JSON-LD 텍스트가 항상 일치한다.
+ */
+import { getTranslation, type Locale } from '@/i18n'
+
+import { getLandingFaqItems } from '@/lib/data/aiConfig/landingFaq'
+
+interface Props {
+  locale: Locale
+  /** aiConfig.landing.{i18nKey} */
+  i18nKey: string
+}
+
+const { locale, i18nKey } = Astro.props as Props
+
+const heading = getTranslation(locale, `aiConfig.landing.${i18nKey}.faq.heading`)
+const items = getLandingFaqItems(locale, i18nKey)
+---
+
+<section class="mx-auto max-w-4xl px-6 py-10">
+  <h2 class="text-xs font-semibold uppercase tracking-wider text-gray-400">
+    {heading}
+  </h2>
+  <ul class="mt-4 flex flex-col gap-3">
+    {
+      items.map((item) => (
+        <li class="rounded-lg border border-border bg-white">
+          <details class="group">
+            <summary class="flex cursor-pointer items-center justify-between gap-3 px-5 py-4 text-sm font-semibold text-gray-900 list-none [&::-webkit-details-marker]:hidden">
+              <span>{item.question}</span>
+              <span
+                aria-hidden="true"
+                class="shrink-0 text-gray-400 transition-transform group-open:rotate-180"
+              >
+                ▾
+              </span>
+            </summary>
+            <div class="border-t border-border px-5 py-4 text-sm leading-relaxed text-gray-600">
+              {item.answer}
+            </div>
+          </details>
+        </li>
+      ))
+    }
+  </ul>
+</section>
