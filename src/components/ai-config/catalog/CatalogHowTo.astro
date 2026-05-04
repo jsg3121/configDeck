@@ -1,0 +1,43 @@
+---
+/**
+ * 카탈로그 허브 페이지의 HowTo 단계별 가이드 섹션.
+ *
+ * 시각 표시는 ordered list로 단계 순서를 명확히 한다.
+ * JSON-LD(HowTo)는 페이지 레벨에서 buildHowToJsonLd()로 별도 출력한다.
+ */
+import type { Locale } from '@/i18n'
+
+import { getCatalogHowTo } from '@/lib/data/aiConfig/catalogHowTo'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props as Props
+const howTo = getCatalogHowTo(locale)
+---
+
+<section class="mx-auto max-w-7xl px-6 py-12">
+  <h2 class="text-xs font-semibold uppercase tracking-wider text-gray-400">
+    {howTo.heading}
+  </h2>
+  <p class="mt-2 max-w-3xl text-sm text-gray-500">
+    {howTo.lead}
+  </p>
+  <ol class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+    {
+      howTo.steps.map((step, index) => (
+        <li class="relative flex flex-col gap-2 rounded-lg border border-border bg-white p-5">
+          <span
+            aria-hidden="true"
+            class="inline-flex size-7 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary"
+          >
+            {index + 1}
+          </span>
+          <h3 class="text-sm font-semibold text-gray-900">{step.name}</h3>
+          <p class="text-xs leading-relaxed text-gray-600">{step.text}</p>
+        </li>
+      ))
+    }
+  </ol>
+</section>

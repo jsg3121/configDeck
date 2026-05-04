@@ -66,6 +66,9 @@ const breadcrumbJsonLd = {
     },
   ],
 }
+
+// 통합 생성기는 카탈로그의 메인 진입점 성격이라 허브 OG를 공유한다.
+const ogImage = `${siteUrl}/og/ai-config-hub.png`
 ---
 
 <Layout
@@ -74,6 +77,7 @@ const breadcrumbJsonLd = {
   {locale}
   pagePath="/ai-config/generator"
   currentPath="/ai-config/generator"
+  ogImage={ogImage}
   jsonLd={[softwareApplicationJsonLd, breadcrumbJsonLd]}
 >
   <article>

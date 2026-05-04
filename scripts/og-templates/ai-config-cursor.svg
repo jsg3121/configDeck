@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#020617"/>
+      <stop offset="100%" style="stop-color:#0F172A"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 배경 -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- 좌측 텍스트 영역 -->
+  <text x="80" y="170" font-family="system-ui, -apple-system, sans-serif" font-size="26" font-weight="600" fill="#94A3B8" letter-spacing="2">CONFIGDECK</text>
+  <text x="80" y="280" font-family="system-ui, -apple-system, sans-serif" font-size="78" font-weight="800" fill="white">Cursor Rules</text>
+  <text x="80" y="340" font-family="system-ui, -apple-system, sans-serif" font-size="36" font-weight="600" fill="#CBD5E1">.cursor/rules/*.mdc Generator</text>
+  <text x="80" y="430" font-family="system-ui, -apple-system, sans-serif" font-size="24" fill="#94A3B8">3-file auto-split · core / stack / boundaries</text>
+  <text x="80" y="470" font-family="system-ui, -apple-system, sans-serif" font-size="22" fill="#64748B">Cursor 0.45+ MDC · alwaysApply · globs</text>
+
+  <!-- 우측 Cursor 로고 (src/assets/cursor.svg) -->
+  <g transform="translate(820, 145) scale(0.44)">
+    <g transform="translate(106.635, 93.955)">
+      <path
+        fill="#E2E8F0"
+        d="M457.43,125.94L244.42,2.96c-6.84-3.95-15.28-3.95-22.12,0L9.3,125.94c-5.75,3.32-9.3,9.46-9.3,16.11v247.99c0,6.65,3.55,12.79,9.3,16.11l213.01,122.98c6.84,3.95,15.28,3.95,22.12,0l213.01-122.98c5.75-3.32,9.3-9.46,9.3-16.11v-247.99c0-6.65-3.55-12.79-9.3-16.11h-.01ZM444.05,151.99l-205.63,356.16c-1.39,2.4-5.06,1.42-5.06-1.36v-233.21c0-4.66-2.49-8.97-6.53-11.31L24.87,145.67c-2.4-1.39-1.42-5.06,1.36-5.06h411.26c5.84,0,9.49,6.33,6.57,11.39h-.01Z"
+      />
+    </g>
+  </g>
+
+  <!-- 하단 도메인 -->
+  <text x="80" y="560" font-family="system-ui, -apple-system, sans-serif" font-size="22" fill="#64748B">configdeck.dev/ai-config/cursor</text>
+</svg>
