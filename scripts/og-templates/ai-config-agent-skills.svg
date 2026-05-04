@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1E1B4B"/>
+      <stop offset="100%" style="stop-color:#7C3AED"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 배경 -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- 좌측 텍스트 영역 -->
+  <text x="80" y="170" font-family="system-ui, -apple-system, sans-serif" font-size="26" font-weight="600" fill="#DDD6FE" letter-spacing="2">CONFIGDECK</text>
+  <text x="80" y="280" font-family="system-ui, -apple-system, sans-serif" font-size="78" font-weight="800" fill="white">Agent Skills</text>
+  <text x="80" y="340" font-family="system-ui, -apple-system, sans-serif" font-size="36" font-weight="600" fill="#E9D5FF">SKILL.md Generator (8 workflows)</text>
+  <text x="80" y="430" font-family="system-ui, -apple-system, sans-serif" font-size="24" fill="#DDD6FE">commit · pr-create · pr-review · test-writer</text>
+  <text x="80" y="470" font-family="system-ui, -apple-system, sans-serif" font-size="24" fill="#DDD6FE">debug · refactor · adr-create · readme-update</text>
+  <text x="80" y="510" font-family="system-ui, -apple-system, sans-serif" font-size="22" fill="#C4B5FD">agentskills.io standard · Claude · Cursor · Codex</text>
+
+  <!-- 우측 Sparkles 로고 (Lucide 패턴 차용) -->
+  <g transform="translate(840, 175) scale(12.5)">
+    <path
+      fill="none"
+      stroke="#FFFFFF"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.582a.5.5 0 0 1 0 .962L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"
+    />
+    <path
+      fill="none"
+      stroke="#FFFFFF"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      d="M20 3v4"
+    />
+    <path
+      fill="none"
+      stroke="#FFFFFF"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      d="M22 5h-4"
+    />
+    <path
+      fill="none"
+      stroke="#FFFFFF"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      d="M4 17v2"
+    />
+    <path
+      fill="none"
+      stroke="#FFFFFF"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      d="M5 18H3"
+    />
+  </g>
+
+  <!-- 하단 도메인 -->
+  <text x="80" y="560" font-family="system-ui, -apple-system, sans-serif" font-size="22" fill="#C4B5FD">configdeck.dev/ai-config/agent-skills</text>
+</svg>

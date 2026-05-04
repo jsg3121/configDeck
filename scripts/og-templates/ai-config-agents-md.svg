@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0F172A"/>
+      <stop offset="100%" style="stop-color:#334155"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 배경 -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- 좌측 텍스트 영역 -->
+  <text x="80" y="170" font-family="system-ui, -apple-system, sans-serif" font-size="26" font-weight="600" fill="#94A3B8" letter-spacing="2">CONFIGDECK</text>
+  <text x="80" y="280" font-family="system-ui, -apple-system, sans-serif" font-size="84" font-weight="800" fill="white">AGENTS.md</text>
+  <text x="80" y="340" font-family="system-ui, -apple-system, sans-serif" font-size="36" font-weight="600" fill="#CBD5E1">Generator for 4 AI Tools</text>
+  <text x="80" y="430" font-family="system-ui, -apple-system, sans-serif" font-size="24" fill="#94A3B8">Cursor · Copilot · Claude Code · OpenAI Codex</text>
+  <text x="80" y="470" font-family="system-ui, -apple-system, sans-serif" font-size="22" fill="#64748B">60,000+ repositories · Linux Foundation standard</text>
+
+  <!-- 우측 AGENTS.md 로고 (실제 src/assets/agent-md.svg) -->
+  <g transform="translate(820, 165) scale(3.125)">
+    <g stroke="#94A3B8" stroke-width="16" stroke-linecap="round" fill="none">
+      <line x1="48" y1="12" x2="28" y2="46"/>
+      <line x1="65" y1="43" x2="85" y2="78"/>
+      <line x1="50" y1="77" x2="10" y2="77"/>
+    </g>
+  </g>
+
+  <!-- 하단 도메인 -->
+  <text x="80" y="560" font-family="system-ui, -apple-system, sans-serif" font-size="22" fill="#64748B">configdeck.dev/ai-config/agents-md</text>
+</svg>
