@@ -1,0 +1,36 @@
+---
+/**
+ * Google Analytics 4 (gtag.js) 통합.
+ *
+ * Layout.astro 의 <head> 끝부분에 삽입해 모든 페이지에 자동 적용된다.
+ * src 는 async 라 페이지 렌더 차단은 하지 않는다.
+ *
+ * GA Measurement ID 는 클라이언트에 노출되는 공개 식별자(publishable key)라
+ * 코드에 직접 박는다 (Stripe pk_live_..., Sentry DSN 등과 동일 부류).
+ *
+ * dev 빌드(localhost)에서는 우발적 추적을 막기 위해 컴포넌트 자체를 렌더링하지 않는다.
+ * 운영(Cloudflare Pages)에서만 자동으로 활성화된다.
+ */
+const GA_MEASUREMENT_ID = 'G-X7RCLQ4C6V'
+
+// import.meta.env.PROD 는 vite/astro build 시 true, dev 시 false.
+const isProduction = import.meta.env.PROD
+---
+
+{
+  isProduction && (
+    <>
+      <script
+        is:inline
+        async
+        src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+      />
+      <script is:inline define:vars={{ GA_MEASUREMENT_ID }}>
+        {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', GA_MEASUREMENT_ID);`}
+      </script>
+    </>
+  )
+}
