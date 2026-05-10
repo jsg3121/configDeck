@@ -13,7 +13,8 @@
     "migration": "마이그레이션 & 진단",
     "docs": "문서",
     "blog": "블로그",
-    "article": "아티클"
+    "article": "아티클",
+    "advisory": "보안 권고"
   },
   "home": {
     "heroTitle": "프로젝트 설정 파일을",
@@ -207,7 +208,9 @@
     "aiConfigHubTitle": "AI 코딩 도구 설정 카탈로그 | ConfigDeck",
     "aiConfigHubDescription": "AGENTS.md, Cursor Rules, Copilot Instructions, CLAUDE.md, Agent Skills 5종을 한 곳에서 비교하고 통합 생성기로 진입하세요.",
     "aiConfigGeneratorTitle": "AI 도구 설정 생성기 — Cursor, Copilot, Claude Code | ConfigDeck",
-    "aiConfigGeneratorDescription": "AGENTS.md, Cursor Rules, GitHub Copilot, Claude Code 설정 파일과 Agent Skills를 스택 기반 프리셋 한 번에 생성합니다."
+    "aiConfigGeneratorDescription": "AGENTS.md, Cursor Rules, GitHub Copilot, Claude Code 설정 파일과 Agent Skills를 스택 기반 프리셋 한 번에 생성합니다.",
+    "advisoryHubTitle": "프레임워크 보안 권고 | ConfigDeck Advisory",
+    "advisoryHubDescription": "ConfigDeck이 한국어로 정리한 프레임워크 보안 권고(CVE)·마이그레이션 가이드 카탈로그. 즉시 버전 진단 포함."
   },
   "docs": {
     "title": "문서",
@@ -257,6 +260,132 @@
       "searchenginejournal": "Search Engine Journal",
       "googlesearchcentral": "Google Search Central",
       "javascriptweekly": "JavaScript Weekly"
+    }
+  },
+  "advisory": {
+    "announcement": {
+      "label": "보안 권고",
+      "messageTemplate": "{title} — CVSS {cvssScore} {severity}. 영향 여부를 즉시 진단해보세요.",
+      "messageTemplateNoCvss": "{title} — {severity}. 영향 여부를 즉시 진단해보세요.",
+      "cta": "지금 진단하기",
+      "dismissLabel": "공지 닫기"
+    },
+    "catalog": {
+      "h1": "프레임워크 보안 권고",
+      "lead": "ConfigDeck이 한국어로 정리한 CVE·마이그레이션 가이드입니다. 버전 진단기를 통해 내 프로젝트가 영향을 받는지 즉시 확인할 수 있습니다.",
+      "filter": {
+        "severity": "심각도",
+        "package": "패키지",
+        "status": "상태",
+        "all": "전체",
+        "sortLabel": "정렬",
+        "sortLatest": "최신순",
+        "sortSeverity": "심각도 높은 순",
+        "reset": "필터 초기화",
+        "empty": "현재 조건에 해당하는 advisory가 없습니다.",
+        "emptyHint": "필터를 변경하거나 전체 보기를 선택하세요."
+      },
+      "card": {
+        "packageLabel": "패키지",
+        "publishedLabel": "발행",
+        "statusLabel": "상태",
+        "ctaDetail": "자세히 보기 →"
+      },
+      "statusBadge": {
+        "active": "Active",
+        "stale": "Stale",
+        "superseded": "Superseded",
+        "archived": "Archived"
+      }
+    },
+    "detail": {
+      "metaPublished": "발행",
+      "metaUpdated": "최종 갱신",
+      "metaStatus": "상태",
+      "metaGhsa": "GHSA",
+      "ghsaOriginalLink": "GHSA 원본",
+      "nvdLink": "NVD",
+      "openInNewTab": "(새 탭에서 열림)",
+      "summaryHeading": "요약",
+      "diagnosisSectionLabel": "즉시 진단",
+      "diagnosisHeadline": "내 프로젝트는 영향받나요?",
+      "diagnosisDescription": "사용 중인 {package} 버전을 입력하면 이 advisory의 영향 여부를 즉시 확인합니다.",
+      "affectedHeading": "영향 범위",
+      "affectedRangeColumn": "영향받는 범위",
+      "patchedColumn": "패치 버전",
+      "affectedTableCaption": "영향받는 버전 범위 및 패치 버전",
+      "hostingHeading": "호스팅 환경별 영향",
+      "mechanismHeading": "취약점 메커니즘",
+      "patchHeading": "패치 및 해결 방안",
+      "patchUpgradeSubheading": "1. 패치 버전으로 업그레이드",
+      "patchTempMitigationSubheading": "2. 임시 완화 방안 (패치 적용 전)",
+      "copyLabel": "복사",
+      "copiedLabel": "복사됨",
+      "referencesHeading": "참고 자료",
+      "creditsHeading": "Credits",
+      "dataSourcesIntro": "이 페이지는 다음 데이터 출처를 기반으로 작성되었습니다:",
+      "dataSourceGhsa": "GitHub Advisory Database (CC-BY-4.0) — github.com/advisories",
+      "dataSourceNvd": "National Vulnerability Database (Public Domain) — nvd.nist.gov",
+      "dataSourceMitre": "MITRE CVE Program (royalty-free) — cve.mitre.org"
+    },
+    "diagnosis": {
+      "tabVersion": "버전 문자열",
+      "tabPackageJson": "package.json 붙여넣기",
+      "inputLabel": "{package} 패키지 버전",
+      "placeholderVersion": "예: 14.2.20",
+      "placeholderPackageJson": "{ \"dependencies\": { \"next\": \"14.2.20\" } }",
+      "packageJsonAriaLabel": "package.json 붙여넣기",
+      "diagnoseButton": "진단하기",
+      "resetButton": "다시 진단",
+      "hintVersion": "{package} 패키지 버전을 입력하면 영향 여부를 즉시 확인합니다.",
+      "hintPackageJson": "{package} 패키지의 버전을 자동으로 추출합니다.",
+      "affectedTitle": "영향받음",
+      "safeTitle": "안전함",
+      "errorTitle": "입력 오류",
+      "affectedBody": "{package}@{version}은 이 취약점의 영향을 받습니다.",
+      "safeBody": "{package}@{version}은 이 취약점의 영향을 받지 않습니다.",
+      "safeAdvice": "패치 버전 이상이므로 안전합니다. 최신 버전을 계속 유지하세요.",
+      "affectedRangeLabel": "영향 범위",
+      "patchRecommendLabel": "권장 패치",
+      "patchRecommendSuffix": "이상으로 업그레이드",
+      "errorInvalidVersion": "유효한 버전 형식이 아닙니다. 예: 14.2.20",
+      "errorInvalidJson": "유효한 JSON이 아닙니다.",
+      "errorPackageMissing": "package.json에 {package} 패키지가 없습니다.",
+      "disclaimer": "이 진단 결과는 정보 제공 목적이며 무보증(AS IS)으로 제공됩니다. 실제 보안 위험 평가는 npm audit, Snyk, Dependabot 등의 공식 도구와 관리자 검토를 병행하세요.",
+      "officialAdvisoryLink": "공식 advisory에서 확인 ↗",
+      "disabledSupersededTitle": "이 advisory는 후속 advisory로 대체되었습니다.",
+      "disabledSupersededBody": "진단은 후속 advisory에서 이용하세요. 후속 페이지의 진단기는 최신 영향 범위를 반영합니다.",
+      "disabledSupersededCta": "후속 advisory에서 진단하기 →",
+      "disabledArchivedTitle": "이 advisory가 다루는 버전은 EOL(지원 종료)되었습니다.",
+      "disabledArchivedBody": "최신 버전으로 마이그레이션을 권장합니다.",
+      "disabledSrLabel": "이 진단기는 현재 비활성화되어 있습니다."
+    },
+    "banner": {
+      "stale": "이 가이드는 {date} 기준입니다. 최신 정보는 공식 advisory를 확인하세요.",
+      "staleLabel": "GHSA 원본",
+      "superseded": "이 advisory는 후속 advisory로 대체되었습니다.",
+      "supersededHint": "최신 분석 및 진단은 후속 페이지에서 확인하세요.",
+      "supersededCta": "후속 advisory 보기 →",
+      "archived": "이 advisory가 다루는 버전은 EOL(지원 종료)되었습니다.",
+      "ariaStale": "오래된 가이드 안내",
+      "ariaSuperseded": "대체된 advisory 안내",
+      "ariaArchived": "EOL 버전 안내"
+    },
+    "cta": {
+      "heading": "다음 단계",
+      "generator": "ConfigDeck으로 설정 파일 업데이트하기",
+      "generatorDescription": "관련 설정 파일을 ConfigDeck에서 빠르게 생성합니다.",
+      "generatorAction": "설정 파일 생성기 →",
+      "aiConfig": "AI 코딩 도구 설정도 점검하세요",
+      "aiConfigDescription": "Cursor, Copilot, Claude Code 등 AI 코딩 도구 설정을 안내합니다.",
+      "aiConfigAction": "AI Config 보기 →"
+    },
+    "dataSources": {
+      "footer": "Advisory 콘텐츠는 GHSA(CC-BY-4.0), NVD(Public Domain), MITRE CVE(royalty-free) 데이터를 기반으로 합니다."
+    },
+    "breadcrumb": {
+      "home": "홈",
+      "hub": "Advisory"
     }
   },
   "aiConfig": {
