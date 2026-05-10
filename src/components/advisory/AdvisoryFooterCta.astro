@@ -1,0 +1,46 @@
+---
+/**
+ * Advisory 자식 페이지 푸터 CTA (SPEC-0006-design §3.5).
+ *
+ * 본 서비스 유입을 위한 2개 카드(생성기 + AI Config). 데스크톱 가로 / 모바일 세로 배치.
+ */
+import { buildLocalizedPath, getTranslation, type Locale } from '@/i18n'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+
+const t = (key: string) => getTranslation(locale, `advisory.cta.${key}`)
+
+const generatorHref = buildLocalizedPath(locale, '/generator')
+const aiConfigHref = buildLocalizedPath(locale, '/ai-config')
+---
+
+<section aria-label={t('heading')} class="mb-12 grid grid-cols-1 gap-4 md:grid-cols-2">
+  <a
+    href={generatorHref}
+    class="group block rounded-2xl border border-border bg-surface p-6 transition-colors hover:border-primary"
+  >
+    <h3 class="mb-2 text-base font-bold text-gray-900 transition-colors group-hover:text-primary">
+      {t('generator')}
+    </h3>
+    <p class="mb-3 text-sm text-gray-600">{t('generatorDescription')}</p>
+    <span class="inline-flex items-center gap-1 text-sm font-semibold text-primary">
+      {t('generatorAction')}
+    </span>
+  </a>
+  <a
+    href={aiConfigHref}
+    class="group block rounded-2xl border border-border bg-surface p-6 transition-colors hover:border-primary"
+  >
+    <h3 class="mb-2 text-base font-bold text-gray-900 transition-colors group-hover:text-primary">
+      {t('aiConfig')}
+    </h3>
+    <p class="mb-3 text-sm text-gray-600">{t('aiConfigDescription')}</p>
+    <span class="inline-flex items-center gap-1 text-sm font-semibold text-primary">
+      {t('aiConfigAction')}
+    </span>
+  </a>
+</section>

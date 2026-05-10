@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Authorization Bypass in Next.js Middleware (CVE-2025-29927) | ConfigDeck Advisory</title>
+  <meta name="description" content="Next.js 13.0.0~15.2.2 middleware authorization bypass via x-middleware-subrequest header (CVE-2025-29927). Affected ranges, patches, and instant version diagnosis." />
+
+  <meta property="og:title" content="Authorization Bypass in Next.js Middleware (CVE-2025-29927)" />
+  <meta property="og:description" content="Next.js 13.0.0~15.2.2 middleware auth bypass — CVSS 9.1. Instant version diagnosis." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://configdeck.dev/en/advisory/nextjs-cve-2025-29927" />
+  <meta property="og:locale" content="en_US" />
+
+  <link rel="canonical" href="https://configdeck.dev/en/advisory/nextjs-cve-2025-29927" />
+  <link rel="alternate" hreflang="ko" href="https://configdeck.dev/ko/advisory/nextjs-cve-2025-29927" />
+  <link rel="alternate" hreflang="en" href="https://configdeck.dev/en/advisory/nextjs-cve-2025-29927" />
+  <link rel="alternate" hreflang="x-default" href="https://configdeck.dev/en/advisory/nextjs-cve-2025-29927" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Authorization Bypass in Next.js Middleware (CVE-2025-29927)",
+    "description": "Next.js 13.0.0~15.2.2 middleware authorization bypass guide.",
+    "datePublished": "2025-03-21",
+    "dateModified": "2026-05-09",
+    "author": { "@type": "Organization", "name": "ConfigDeck" },
+    "publisher": { "@type": "Organization", "name": "ConfigDeck" },
+    "inLanguage": "en",
+    "mainEntityOfPage": "https://configdeck.dev/en/advisory/nextjs-cve-2025-29927"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://configdeck.dev/en" },
+      { "@type": "ListItem", "position": 2, "name": "Advisory", "item": "https://configdeck.dev/en/advisory" },
+      { "@type": "ListItem", "position": 3, "name": "Authorization Bypass in Next.js Middleware (CVE-2025-29927)", "item": "https://configdeck.dev/en/advisory/nextjs-cve-2025-29927" }
+    ]
+  }
+  </script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style type="text/tailwindcss">
+    @theme {
+      --color-primary: #3b82f6;
+      --color-primary-hover: #2563eb;
+      --color-surface: #ffffff;
+      --color-surface-alt: #f8fafc;
+      --color-border: #e2e8f0;
+      --color-code-bg: #1e293b;
+      --font-sans: 'Inter', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+    body { font-family: var(--font-sans); color: #0f172a; }
+    code, pre { font-family: var(--font-mono); }
+  </style>
+</head>
+<body class="bg-surface-alt min-h-screen">
+
+  <header class="border-b border-border bg-surface">
+    <div class="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
+      <a href="./A-catalog.html" class="flex items-center gap-2 font-bold text-gray-900">
+        <span class="inline-block w-7 h-7 rounded bg-primary"></span>
+        <span>ConfigDeck</span>
+      </a>
+      <nav aria-label="Main menu" class="hidden md:flex items-center gap-6 text-sm text-gray-600">
+        <a href="#" class="hover:text-gray-900">Generators</a>
+        <a href="#" class="hover:text-gray-900">AI Config</a>
+        <a href="#" class="hover:text-gray-900">Article</a>
+        <a href="./A-catalog.html" class="text-gray-900 font-medium">Advisory</a>
+        <span class="border-l border-border h-4 mx-1" aria-hidden="true"></span>
+        <a href="./B-detail-active.html" class="hover:text-gray-900">KO</a>
+        <span class="text-gray-900 font-medium">EN</span>
+      </nav>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-4xl px-6 py-8">
+
+    <nav aria-label="Breadcrumb" class="text-xs text-gray-500 mb-4">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li><a href="#" class="hover:text-gray-900">Home</a></li>
+        <li aria-hidden="true">/</li>
+        <li><a href="./A-catalog.html" class="hover:text-gray-900">Advisory</a></li>
+        <li aria-hidden="true">/</li>
+        <li class="font-medium text-gray-900 truncate max-w-[24rem]" aria-current="page">
+          Authorization Bypass in Next.js Middleware (CVE-2025-29927)
+        </li>
+      </ol>
+    </nav>
+
+    <!-- Header meta -->
+    <section aria-label="Advisory metadata" class="bg-surface border border-border rounded-2xl p-6 sm:p-8 mb-6">
+      <div class="flex flex-wrap items-center gap-2 mb-4">
+        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800"
+              aria-label="Severity: Critical (9.1)">
+          <span aria-hidden="true">●</span> CRITICAL
+        </span>
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">CVSS 9.1</span>
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">npm: <code class="ml-1 font-mono">next</code></span>
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">CWE-285</span>
+      </div>
+
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 leading-tight mb-3">
+        Authorization Bypass in Next.js Middleware <span class="text-gray-500 font-normal">(CVE-2025-29927)</span>
+      </h1>
+
+      <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
+        <div class="flex gap-2"><dt class="text-gray-500">Published</dt><dd class="font-medium">2025-03-21</dd></div>
+        <div class="flex gap-2"><dt class="text-gray-500">Last updated</dt><dd class="font-medium">2026-05-09</dd></div>
+        <div class="flex gap-2"><dt class="text-gray-500">Status</dt>
+          <dd><span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium bg-green-100 text-green-800">Active</span></dd>
+        </div>
+        <div class="flex gap-2"><dt class="text-gray-500">GHSA</dt><dd class="font-mono text-xs">GHSA-f82v-jwr5-mffw</dd></div>
+      </dl>
+
+      <div class="flex flex-wrap gap-3 mt-5">
+        <a href="https://github.com/advisories/GHSA-f82v-jwr5-mffw"
+           target="_blank" rel="noopener noreferrer"
+           class="inline-flex items-center gap-1 text-sm text-primary hover:text-primary-hover font-medium">
+          GHSA original <span aria-hidden="true">↗</span>
+          <span class="sr-only">(opens in new tab)</span>
+        </a>
+        <a href="https://nvd.nist.gov/vuln/detail/CVE-2025-29927"
+           target="_blank" rel="noopener noreferrer"
+           class="inline-flex items-center gap-1 text-sm text-primary hover:text-primary-hover font-medium">
+          NVD <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Summary -->
+    <section class="bg-surface border border-border rounded-2xl p-6 sm:p-8 mb-6">
+      <h2 class="text-xl font-bold text-gray-900 mb-3">Summary</h2>
+      <p class="text-gray-700 leading-relaxed">
+        Next.js 13.0.0 through 15.2.2 contain a middleware authorization bypass:
+        an attacker can supply a forged
+        <code class="font-mono text-sm bg-gray-100 px-1.5 py-0.5 rounded">x-middleware-subrequest</code>
+        header to skip authentication/authorization middleware and reach protected routes
+        (e.g. <code class="font-mono text-sm bg-gray-100 px-1.5 py-0.5 rounded">/admin</code>) directly.
+        Upgrade to a patched version (<code class="font-mono text-sm bg-gray-100 px-1.5 py-0.5 rounded">14.2.25</code>,
+        <code class="font-mono text-sm bg-gray-100 px-1.5 py-0.5 rounded">15.2.3</code>, or later) immediately.
+      </p>
+    </section>
+
+    <!-- Diagnosis (moved up for emphasis) -->
+    <section aria-labelledby="diagnosis-heading" id="diagnosis"
+             class="relative overflow-hidden rounded-2xl border-2 border-blue-300 bg-linear-to-br from-blue-50 to-indigo-50 p-6 sm:p-8 mb-6 shadow-sm">
+      <div class="flex items-center gap-2 mb-2">
+        <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white" aria-hidden="true">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </span>
+        <span class="text-xs font-semibold uppercase tracking-wider text-blue-700">Instant diagnosis</span>
+      </div>
+      <h2 id="diagnosis-heading" class="text-2xl font-bold text-gray-900 mb-2">Is your project affected?</h2>
+      <p class="text-sm text-gray-700 mb-5">
+        Enter the <code class="font-mono bg-white px-1.5 py-0.5 rounded border border-blue-100">next</code> version
+        installed in your project to instantly check whether it is affected.
+      </p>
+
+      <div class="inline-flex p-1 mb-4 rounded-lg bg-blue-100 border border-blue-200"
+           role="tablist" aria-label="Input method">
+        <button type="button" role="tab" aria-selected="true" aria-controls="diag-panel-version"
+                id="diag-tab-version"
+                class="diag-tab inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-md transition-colors bg-white text-blue-700 shadow-sm ring-1 ring-blue-200"
+                data-target="diag-panel-version">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+          Version string
+        </button>
+        <button type="button" role="tab" aria-selected="false" aria-controls="diag-panel-pkg"
+                id="diag-tab-pkg"
+                class="diag-tab inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-md transition-colors text-blue-900/70 hover:text-blue-900"
+                data-target="diag-panel-pkg">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+          Paste package.json
+        </button>
+      </div>
+
+      <div id="diag-panel-version" role="tabpanel" aria-labelledby="diag-tab-version">
+        <div class="flex flex-col sm:flex-row gap-2">
+          <input id="diag-version-input" type="text" placeholder="e.g. 14.2.20" aria-label="next package version"
+                 class="flex-1 px-4 py-3 border-2 border-blue-200 bg-white rounded-md text-base font-mono focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-200" />
+          <button id="diag-submit" type="button"
+                  class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-md transition-colors shadow">
+            Diagnose
+          </button>
+        </div>
+        <p class="text-xs text-gray-600 mt-2">ⓘ Enter the <code class="font-mono">next</code> version to instantly check.</p>
+      </div>
+
+      <div id="diag-panel-pkg" role="tabpanel" aria-labelledby="diag-tab-pkg" class="hidden">
+        <textarea id="diag-pkg-input" rows="8" aria-label="Paste your package.json"
+                  placeholder='{ "dependencies": { "next": "14.2.20" } }'
+                  class="w-full px-4 py-3 border-2 border-blue-200 bg-white rounded-md text-sm font-mono focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-200"></textarea>
+        <div class="flex items-center justify-between mt-2">
+          <p class="text-xs text-gray-600">ⓘ The <code class="font-mono">next</code> version will be extracted automatically.</p>
+          <button id="diag-submit-pkg" type="button"
+                  class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-md transition-colors shadow">Diagnose</button>
+        </div>
+      </div>
+
+      <div id="diag-result" class="mt-5" aria-live="polite"></div>
+
+      <div class="mt-6 pt-5 border-t border-blue-200 text-xs text-gray-600 leading-relaxed">
+        This diagnosis is informational and provided AS IS without warranty. Use it alongside official tools such as
+        npm audit, Snyk, and Dependabot for actual security risk assessment.
+        <a href="https://github.com/advisories/GHSA-f82v-jwr5-mffw" target="_blank" rel="noopener noreferrer"
+           class="text-blue-700 hover:text-blue-800 font-medium">Verify on the official advisory ↗</a>
+      </div>
+    </section>
+
+    <!-- Affected versions -->
+    <section class="bg-surface border border-border rounded-2xl p-6 sm:p-8 mb-6">
+      <h2 class="text-xl font-bold text-gray-900 mb-4">Affected versions</h2>
+
+      <div class="overflow-x-auto -mx-2 px-2">
+        <table class="w-full min-w-120 text-sm border-collapse">
+          <caption class="sr-only">CVE-2025-29927 affected Next.js version ranges and patched versions</caption>
+          <thead>
+            <tr class="bg-surface-alt border-b border-border">
+              <th class="text-left font-semibold text-gray-700 px-4 py-3">Affected range</th>
+              <th class="text-left font-semibold text-gray-700 px-4 py-3">Patched</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border">
+            <tr><td class="px-4 py-3 font-mono">&gt;=15.0.0 &lt;15.2.3</td><td class="px-4 py-3 font-mono text-green-700 font-semibold">15.2.3</td></tr>
+            <tr><td class="px-4 py-3 font-mono">&gt;=14.0.0 &lt;14.2.25</td><td class="px-4 py-3 font-mono text-green-700 font-semibold">14.2.25</td></tr>
+            <tr><td class="px-4 py-3 font-mono">&gt;=13.0.0 &lt;13.5.9</td><td class="px-4 py-3 font-mono text-green-700 font-semibold">13.5.9</td></tr>
+            <tr><td class="px-4 py-3 font-mono">&gt;=12.0.0 &lt;12.3.5</td><td class="px-4 py-3 font-mono text-green-700 font-semibold">12.3.5</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="text-base font-semibold text-gray-900 mt-6 mb-2">Hosting environments</h3>
+      <ul class="text-sm text-gray-700 space-y-1">
+        <li>· <span class="font-medium">Vercel Edge Middleware</span>: affected</li>
+        <li>· <span class="font-medium">Netlify</span>: affected</li>
+        <li>· <span class="font-medium">Cloudflare Pages (next-on-pages)</span>: verify separately</li>
+        <li>· <span class="font-medium">Self-hosted Node.js</span>: affected if middleware is used</li>
+      </ul>
+    </section>
+
+    <!-- Mechanism -->
+    <section class="bg-surface border border-border rounded-2xl p-6 sm:p-8 mb-6">
+      <h2 class="text-xl font-bold text-gray-900 mb-3">Vulnerability mechanism</h2>
+      <p class="text-gray-700 leading-relaxed mb-3">
+        The Next.js middleware runtime uses the
+        <code class="font-mono text-sm bg-gray-100 px-1.5 py-0.5 rounded">x-middleware-subrequest</code>
+        header to identify internal sub-requests (e.g. follow-up of rewrites or redirects).
+        This header was intended to be internal-only, but external requests could also supply it,
+        and Next.js had a code path that skipped middleware execution when it was present.
+      </p>
+      <p class="text-gray-700 leading-relaxed mb-3">
+        As a result, an attacker could attach the header to a request for a protected route
+        and reach the underlying handler without going through authentication or authorization middleware.
+        The CVSS 9.1 (Critical) rating reflects the immediacy and breadth of the impact.
+      </p>
+      <a href="https://securitylabs.datadoghq.com/articles/nextjs-middleware-auth-bypass/"
+         target="_blank" rel="noopener noreferrer"
+         class="inline-flex items-center gap-1 text-sm text-primary hover:text-primary-hover font-medium">
+        Datadog Security Labs technical analysis <span aria-hidden="true">↗</span>
+      </a>
+    </section>
+
+    <!-- Patch -->
+    <section class="bg-surface border border-border rounded-2xl p-6 sm:p-8 mb-6">
+      <h2 class="text-xl font-bold text-gray-900 mb-4">Patch and remediation</h2>
+
+      <h3 class="text-base font-semibold text-gray-900 mb-2">1. Upgrade to a patched version</h3>
+      <div class="bg-slate-900 rounded-lg p-4 mb-4">
+        <pre class="text-sm text-slate-100 overflow-x-auto"><code class="text-slate-100"># Upgrade to the patched release on your major
+npm install next@14.2.25
+# or upgrade to the latest stable
+npm install next@latest</code></pre>
+      </div>
+
+      <h3 class="text-base font-semibold text-gray-900 mb-2">2. Temporary mitigation (before patching)</h3>
+      <p class="text-sm text-gray-700 mb-3">
+        If you cannot patch immediately, explicitly reject the
+        <code class="font-mono text-sm bg-gray-100 px-1.5 py-0.5 rounded">x-middleware-subrequest</code>
+        header at the entry of your middleware:
+      </p>
+      <div class="bg-slate-900 rounded-lg p-4">
+        <pre class="text-sm text-slate-100 overflow-x-auto"><code class="text-slate-100">// middleware.ts
+import { NextResponse } from 'next/server'
+
+export function middleware(request) {
+  if (request.headers.get('x-middleware-subrequest')) {
+    return new NextResponse(null, { status: 400 })
+  }
+  // ... your existing auth logic
+}</code></pre>
+      </div>
+    </section>
+
+    <!-- References -->
+    <section class="bg-surface border border-border rounded-2xl p-6 sm:p-8 mb-6">
+      <h2 class="text-xl font-bold text-gray-900 mb-4">References</h2>
+      <ul class="space-y-2 text-sm">
+        <li><a href="https://github.com/advisories/GHSA-f82v-jwr5-mffw" target="_blank" rel="noopener noreferrer" class="text-primary hover:text-primary-hover">GHSA-f82v-jwr5-mffw ↗</a></li>
+        <li><a href="https://nvd.nist.gov/vuln/detail/CVE-2025-29927" target="_blank" rel="noopener noreferrer" class="text-primary hover:text-primary-hover">NVD CVE-2025-29927 ↗</a></li>
+        <li><a href="https://snyk.io/blog/cve-2025-29927-authorization-bypass-in-next-js-middleware/" target="_blank" rel="noopener noreferrer" class="text-primary hover:text-primary-hover">Snyk analysis ↗</a></li>
+        <li><a href="https://securitylabs.datadoghq.com/articles/nextjs-middleware-auth-bypass/" target="_blank" rel="noopener noreferrer" class="text-primary hover:text-primary-hover">Datadog Security Labs ↗</a></li>
+      </ul>
+
+      <h3 class="text-base font-semibold text-gray-900 mt-6 mb-2">Credits</h3>
+      <ul class="space-y-1 text-sm text-gray-700">
+        <li>· Reporter: Allam Rachid</li>
+        <li>· Reporter: Allam Yasser</li>
+      </ul>
+
+      <hr class="my-6 border-border" aria-hidden="true" />
+
+      <footer aria-label="Data sources and licensing" class="text-xs text-gray-500 leading-relaxed">
+        <p class="mb-2 font-medium">This page is based on the following data sources:</p>
+        <ul class="space-y-1">
+          <li>· GitHub Advisory Database (CC-BY-4.0) — github.com/advisories</li>
+          <li>· National Vulnerability Database (Public Domain) — nvd.nist.gov</li>
+          <li>· MITRE CVE Program (royalty-free) — cve.mitre.org</li>
+        </ul>
+      </footer>
+    </section>
+
+    <!-- Footer CTA -->
+    <section aria-label="ConfigDeck services" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
+      <a href="#" class="block bg-surface border border-border hover:border-primary rounded-2xl p-6 transition-colors">
+        <h3 class="text-base font-bold text-gray-900 mb-2">Update your Next.js config files</h3>
+        <p class="text-sm text-gray-600 mb-3">Generate Next.js-related config files with ConfigDeck.</p>
+        <span class="inline-flex items-center gap-1 text-sm font-semibold text-primary">Open the config generator →</span>
+      </a>
+      <a href="#" class="block bg-surface border border-border hover:border-primary rounded-2xl p-6 transition-colors">
+        <h3 class="text-base font-bold text-gray-900 mb-2">Review your AI coding tool configs</h3>
+        <p class="text-sm text-gray-600 mb-3">Cursor, Copilot, Claude Code and more.</p>
+        <span class="inline-flex items-center gap-1 text-sm font-semibold text-primary">Browse AI Config →</span>
+      </a>
+    </section>
+
+  </main>
+
+  <footer class="border-t border-border bg-surface">
+    <div class="mx-auto max-w-7xl px-6 py-6 text-xs text-gray-500">
+      © 2026 ConfigDeck. Advisory content is based on data from GHSA (CC-BY-4.0), NVD (Public Domain), and MITRE CVE (royalty-free).
+    </div>
+  </footer>
+
+  <script>
+    const advisory = {
+      package: "next",
+      affected: [
+        { range: ">=15.0.0 <15.2.3" },
+        { range: ">=14.0.0 <14.2.25" },
+        { range: ">=13.0.0 <13.5.9" },
+        { range: ">=12.0.0 <12.3.5" },
+      ],
+      patched: ["12.3.5", "13.5.9", "14.2.25", "15.2.3"],
+    };
+
+    function parseSemver(v) { const m = String(v).trim().match(/^(\d+)\.(\d+)\.(\d+)(?:[-+].*)?$/); return m ? { major:+m[1], minor:+m[2], patch:+m[3] } : null; }
+    function cmp(a,b) { return a.major-b.major || a.minor-b.minor || a.patch-b.patch; }
+    function satisfies(v, range) {
+      const p = parseSemver(v); if (!p) return null;
+      const m = range.match(/^>=([\d.]+)\s+<([\d.]+)$/); if (!m) return null;
+      return cmp(p, parseSemver(m[1])) >= 0 && cmp(p, parseSemver(m[2])) < 0;
+    }
+    function recommendedPatch(v) {
+      const p = parseSemver(v); if (!p) return advisory.patched[0];
+      const cand = advisory.patched.map(parseSemver).filter(x => x.major===p.major).sort(cmp);
+      return cand.length ? `${p.major}.${cand[0].minor}.${cand[0].patch}` : advisory.patched.at(-1);
+    }
+    function diagnose(v) {
+      if (!parseSemver(v)) return { state:"ERROR", message:"Not a valid version format." };
+      for (const a of advisory.affected) if (satisfies(v, a.range)) return { state:"AFFECTED", range:a.range, patch:recommendedPatch(v), version:v };
+      return { state:"SAFE", version:v };
+    }
+    function render(r) {
+      const el = document.getElementById('diag-result');
+      if (!r) { el.innerHTML = ''; return; }
+      if (r.state === "AFFECTED") {
+        el.innerHTML = `<div class="border border-red-200 bg-red-50 rounded-xl p-5">
+          <p class="font-bold text-red-900 mb-2">Affected</p>
+          <p class="text-sm text-red-900 mb-2"><code class="font-mono">next@${r.version}</code> is affected by this vulnerability.</p>
+          <p class="text-sm text-red-800 mb-2">Affected range: <code class="font-mono">${r.range}</code></p>
+          <p class="text-sm text-red-800 mb-3">Recommended patch: <code class="font-mono font-semibold">next@${r.patch}</code> or later</p>
+          <div class="bg-slate-900 rounded-md p-3 text-xs text-slate-100 font-mono">npm install next@${r.patch}</div>
+        </div>`;
+      } else if (r.state === "SAFE") {
+        el.innerHTML = `<div class="border border-green-200 bg-green-50 rounded-xl p-5">
+          <p class="font-bold text-green-900 mb-2">Safe</p>
+          <p class="text-sm text-green-900"><code class="font-mono">next@${r.version}</code> is not affected by this vulnerability.</p>
+        </div>`;
+      } else {
+        el.innerHTML = `<div class="border border-gray-200 bg-gray-50 rounded-xl p-5">
+          <p class="font-bold text-gray-900 mb-1">Input error</p>
+          <p class="text-sm text-gray-700">${r.message} Example: <code class="font-mono">14.2.20</code></p>
+        </div>`;
+      }
+    }
+    document.getElementById('diag-submit').addEventListener('click', () => render(diagnose(document.getElementById('diag-version-input').value)));
+    document.getElementById('diag-version-input').addEventListener('keydown', e => { if (e.key === 'Enter') render(diagnose(e.currentTarget.value)); });
+    document.getElementById('diag-version-input').addEventListener('input', () => render(null));
+    document.getElementById('diag-submit-pkg').addEventListener('click', () => {
+      try {
+        const j = JSON.parse(document.getElementById('diag-pkg-input').value);
+        const v = (j.dependencies||{})[advisory.package] || (j.devDependencies||{})[advisory.package];
+        if (!v) return render({state:"ERROR", message:`No ${advisory.package} package found in package.json.`});
+        render(diagnose(String(v).replace(/^[^\d]*/, '')));
+      } catch { render({state:"ERROR", message:"Not valid JSON."}); }
+    });
+    const ACTIVE_CLS = ['bg-white','text-blue-700','shadow-sm','ring-1','ring-blue-200'];
+    const INACTIVE_CLS = ['text-blue-900/70','hover:text-blue-900'];
+    document.querySelectorAll('.diag-tab').forEach(btn => btn.addEventListener('click', () => {
+      document.querySelectorAll('.diag-tab').forEach(b => {
+        b.setAttribute('aria-selected','false');
+        b.classList.remove(...ACTIVE_CLS);
+        b.classList.add(...INACTIVE_CLS);
+      });
+      btn.setAttribute('aria-selected','true');
+      btn.classList.remove(...INACTIVE_CLS);
+      btn.classList.add(...ACTIVE_CLS);
+      document.getElementById('diag-panel-version').classList.toggle('hidden', btn.dataset.target !== 'diag-panel-version');
+      document.getElementById('diag-panel-pkg').classList.toggle('hidden', btn.dataset.target !== 'diag-panel-pkg');
+      render(null);
+    }));
+  </script>
+</body>
+</html>

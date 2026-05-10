@@ -1,0 +1,26 @@
+---
+/**
+ * Advisory 데이터 출처 + 라이선스 푸터 (SPEC-0006 §3.9).
+ *
+ * 상세 페이지 References 섹션 하단의 footer 영역으로 사용된다.
+ * 라이선스 표기는 GHSA(CC-BY-4.0), NVD(Public Domain), MITRE CVE(royalty-free).
+ */
+import { getTranslation, type Locale } from '@/i18n'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+
+const t = (key: string) => getTranslation(locale, `advisory.detail.${key}`)
+---
+
+<footer aria-label={t('dataSourcesIntro')} class="text-xs leading-relaxed text-gray-500">
+  <p class="mb-2 font-medium">{t('dataSourcesIntro')}</p>
+  <ul class="space-y-1">
+    <li>· {t('dataSourceGhsa')}</li>
+    <li>· {t('dataSourceNvd')}</li>
+    <li>· {t('dataSourceMitre')}</li>
+  </ul>
+</footer>

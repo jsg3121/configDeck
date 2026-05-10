@@ -1,0 +1,211 @@
+---
+/**
+ * Advisory 카탈로그 부모 페이지 (SPEC-0006 §3.3 / SPEC-0006-design 화면 A).
+ *
+ * 부모-자식 위계 (ADR-0019): 카탈로그(부모)는 시리즈 개요/목록/필터를,
+ * 자식 페이지([slug].astro)는 상세 콘텐츠와 진단을 담는다.
+ */
+import { buildLocalizedPath, getTranslation, SUPPORTED_LOCALES, type Locale } from '@/i18n'
+import { getCollection } from 'astro:content'
+
+import Layout from '@/layouts/Layout.astro'
+import AdvisoryCard from '@/components/advisory/AdvisoryCard.astro'
+import AdvisoryFilter from '@/components/advisory/AdvisoryFilter.svelte'
+import {
+  assertAdvisoryLocaleConsistency,
+  getAdvisorySlug,
+} from '@/lib/data/advisory/validateLocaleConsistency'
+
+export const getStaticPaths = () => {
+  return SUPPORTED_LOCALES.map((locale) => ({ params: { locale } }))
+}
+
+const { locale } = Astro.params as { locale: Locale }
+
+const allAdvisories = await getCollection('advisory')
+// 빌드 타임 다국어 일관성 검증 (ADR-0020).
+// 한 페이지(부모/자식 어느 쪽이든)에서 한 번만 호출되면 빌드 단계에서 어긋남이 잡힌다.
+assertAdvisoryLocaleConsistency(allAdvisories)
+
+const localeAdvisories = allAdvisories
+  .filter((entry) => entry.id.startsWith(`${locale}/`))
+  .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime())
+
+const packages = Array.from(new Set(localeAdvisories.map((entry) => entry.data.package))).sort()
+
+const t = (key: string) => getTranslation(locale, `advisory.catalog.${key}`)
+const tDetail = (key: string) => getTranslation(locale, `advisory.detail.${key}`)
+const tDataSources = (key: string) => getTranslation(locale, `advisory.dataSources.${key}`)
+
+const filterLabels = {
+  severityLabel: t('filter.severity'),
+  packageLabel: t('filter.package'),
+  statusLabel: t('filter.status'),
+  sortLabel: t('filter.sortLabel'),
+  sortLatest: t('filter.sortLatest'),
+  sortSeverity: t('filter.sortSeverity'),
+  reset: t('filter.reset'),
+  all: t('filter.all'),
+  severityCritical: 'Critical',
+  severityHigh: 'High',
+  severityMedium: 'Medium',
+  severityLow: 'Low',
+  statusActive: t('statusBadge.active'),
+  statusStale: t('statusBadge.stale'),
+  statusSuperseded: t('statusBadge.superseded'),
+  statusArchived: t('statusBadge.archived'),
+}
+
+const siteUrl = 'https://configdeck.dev'
+const pagePath = '/advisory'
+const pageUrl = `${siteUrl}/${locale}${pagePath}`
+
+const title = getTranslation(locale, 'seo.advisoryHubTitle')
+const description = getTranslation(locale, 'seo.advisoryHubDescription')
+
+const collectionPageJsonLd = {
+  '@type': 'CollectionPage',
+  name: title,
+  description,
+  url: pageUrl,
+  inLanguage: locale,
+  isPartOf: {
+    '@type': 'WebSite',
+    name: 'ConfigDeck',
+    url: siteUrl,
+  },
+  mainEntity: {
+    '@type': 'ItemList',
+    itemListElement: localeAdvisories.map((entry, index) => {
+      const slug = getAdvisorySlug(entry.id).replace(/\.md$/, '')
+      return {
+        '@type': 'ListItem',
+        position: index + 1,
+        url: `${siteUrl}/${locale}/advisory/${slug}`,
+        name: entry.data.title,
+      }
+    }),
+  },
+}
+
+const breadcrumbJsonLd = {
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: getTranslation(locale, 'advisory.breadcrumb.home'),
+      item: `${siteUrl}/${locale}`,
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: getTranslation(locale, 'advisory.breadcrumb.hub'),
+      item: pageUrl,
+    },
+  ],
+}
+---
+
+<Layout
+  {title}
+  {description}
+  {locale}
+  pagePath={pagePath}
+  currentPath={pagePath}
+  jsonLd={[collectionPageJsonLd, breadcrumbJsonLd]}
+>
+  <article>
+    <nav aria-label="Breadcrumb" class="mx-auto max-w-7xl px-6 pt-6 text-xs text-gray-500">
+      <ol class="flex items-center gap-2">
+        <li>
+          <a href={buildLocalizedPath(locale, '/')} class="hover:text-gray-900">
+            {getTranslation(locale, 'advisory.breadcrumb.home')}
+          </a>
+        </li>
+        <li aria-hidden="true">/</li>
+        <li class="font-medium text-gray-900" aria-current="page">
+          {getTranslation(locale, 'advisory.breadcrumb.hub')}
+        </li>
+      </ol>
+    </nav>
+
+    <header class="mx-auto max-w-7xl px-6 pt-8 pb-6">
+      <h1 class="text-3xl font-extrabold tracking-tight text-gray-900 lg:text-4xl">
+        {t('h1')}
+      </h1>
+      <p class="mt-3 max-w-full text-base leading-relaxed text-gray-600">
+        {t('lead')}
+      </p>
+    </header>
+
+    <section class="mx-auto max-w-7xl px-6 pb-4">
+      <AdvisoryFilter client:load packages={packages} labels={filterLabels} />
+
+      <div
+        id="advisory-list"
+        aria-label={getTranslation(locale, 'advisory.breadcrumb.hub')}
+        class:list={[
+          'grid grid-cols-1 gap-4 lg:grid-cols-2',
+          localeAdvisories.length === 0 && 'hidden',
+        ]}
+      >
+        {
+          localeAdvisories.map((entry) => {
+            const slug = getAdvisorySlug(entry.id).replace(/\.md$/, '')
+            return (
+              <AdvisoryCard
+                locale={locale}
+                slug={slug}
+                severity={entry.data.severity}
+                cvssScore={entry.data.cvssScore}
+                cveId={entry.data.cveId}
+                ghsaId={entry.data.ghsaId}
+                title={entry.data.title}
+                packageName={entry.data.package}
+                publishedAt={entry.data.publishedAt}
+                status={entry.data.status}
+              />
+            )
+          })
+        }
+      </div>
+
+      <div
+        id="advisory-empty-state"
+        class:list={[
+          'rounded-2xl border border-dashed border-border bg-surface py-16 text-center',
+          localeAdvisories.length === 0 ? '' : 'hidden',
+        ]}
+        aria-live="polite"
+      >
+        <svg
+          aria-hidden="true"
+          class="mx-auto mb-4 h-10 w-10 text-gray-400"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+        </svg>
+        <p class="mb-1 font-medium text-gray-700">{t('filter.empty')}</p>
+        <p class="mb-4 text-sm text-gray-500">{t('filter.emptyHint')}</p>
+        <button
+          id="advisory-empty-reset"
+          type="button"
+          class="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover"
+        >
+          {t('filter.reset')}
+        </button>
+      </div>
+    </section>
+
+    <footer class="mx-auto max-w-7xl px-6 pt-8 pb-16 text-xs text-gray-500">
+      <p>{tDetail('dataSourcesIntro')}</p>
+      <p class="mt-1">{tDataSources('footer')}</p>
+    </footer>
+  </article>
+</Layout>

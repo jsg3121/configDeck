@@ -1,0 +1,132 @@
+---
+/**
+ * Advisory sunset 상태 배너 (SPEC-0006-design §3.6).
+ *
+ * status가 active이면 컴포넌트 자체가 아무것도 렌더링하지 않는다 (HTML에 빈 div 잔존 금지 — §11-3).
+ * 색조는 stale=amber, superseded=blue, archived=gray를 사용한다.
+ */
+import { buildLocalizedPath, getTranslation, type Locale } from '@/i18n'
+
+interface Props {
+  status: 'active' | 'stale' | 'superseded' | 'archived'
+  locale: Locale
+  /** stale 배너에 표시할 갱신 일자 */
+  updatedAt?: Date
+  /** stale 배너의 GHSA 원본 링크 (frontmatter ghsaId가 있는 경우) */
+  ghsaId?: string
+  /** superseded 배너의 후속 advisory slug */
+  supersededBy?: string
+}
+
+const { status, locale, updatedAt, ghsaId, supersededBy } = Astro.props
+
+const formatDate = (date: Date): string =>
+  date.toLocaleDateString(locale === 'ko' ? 'ko-KR' : 'en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  })
+
+const t = (key: string) => getTranslation(locale, `advisory.banner.${key}`)
+const tDiag = (key: string) => getTranslation(locale, `advisory.diagnosis.${key}`)
+
+const ghsaUrl = ghsaId ? `https://github.com/advisories/${ghsaId}` : undefined
+const supersededHref = supersededBy
+  ? buildLocalizedPath(locale, `/advisory/${supersededBy}`)
+  : undefined
+---
+
+{
+  status === 'stale' && (
+    <aside
+      role="note"
+      aria-label={t('ariaStale')}
+      class="mb-6 flex items-start gap-3 rounded-r-md border-l-4 border-amber-500 bg-amber-50 p-4"
+    >
+      <svg
+        aria-hidden="true"
+        class="mt-0.5 h-5 w-5 shrink-0 text-amber-600"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path d="M12 9v4M12 17h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+      </svg>
+      <div class="text-sm text-amber-900">
+        <p class="mb-0.5 font-semibold">
+          {t('stale').replace('{date}', updatedAt ? formatDate(updatedAt) : '—')}
+        </p>
+        {ghsaUrl && (
+          <p>
+            <a
+              href={ghsaUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="font-medium underline hover:text-amber-700"
+            >
+              {t('staleLabel')} ↗<span class="sr-only">{tDiag('officialAdvisoryLink')}</span>
+            </a>
+          </p>
+        )}
+      </div>
+    </aside>
+  )
+}
+
+{
+  status === 'superseded' && (
+    <aside
+      role="alert"
+      aria-label={t('ariaSuperseded')}
+      class="mb-6 flex items-start gap-3 rounded-r-md border-l-4 border-blue-500 bg-blue-50 p-4"
+    >
+      <svg
+        aria-hidden="true"
+        class="mt-0.5 h-5 w-5 shrink-0 text-blue-600"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <circle cx="12" cy="12" r="10" />
+        <path d="M12 16v-4M12 8h.01" />
+      </svg>
+      <div class="text-sm text-blue-900">
+        <p class="mb-0.5 font-semibold">{t('superseded')}</p>
+        <p>
+          {t('supersededHint')}{' '}
+          {supersededHref && (
+            <a href={supersededHref} class="font-medium underline hover:text-blue-700">
+              {t('supersededCta')}
+            </a>
+          )}
+        </p>
+      </div>
+    </aside>
+  )
+}
+
+{
+  status === 'archived' && (
+    <aside
+      role="note"
+      aria-label={t('ariaArchived')}
+      class="mb-6 flex items-start gap-3 rounded-r-md border-l-4 border-gray-400 bg-gray-50 p-4"
+    >
+      <svg
+        aria-hidden="true"
+        class="mt-0.5 h-5 w-5 shrink-0 text-gray-500"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path d="M21 8v13H3V8M1 3h22v5H1zM10 12h4" />
+      </svg>
+      <div class="text-sm text-gray-800">
+        <p class="font-semibold">{t('archived')}</p>
+      </div>
+    </aside>
+  )
+}

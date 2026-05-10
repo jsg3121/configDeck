@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>(Superseded) Next.js 미들웨어 인증 우회 (CVE-2025-29927-old) | ConfigDeck Advisory</title>
+  <meta name="description" content="이 advisory는 후속 advisory로 대체되었습니다." />
+
+  <!--
+    어노테이션: superseded 상태 — canonical을 후속 advisory URL로 설정
+    SPEC-0006-design §11-7 / §6.3 / SPEC-0006 §3.8
+  -->
+  <link rel="canonical" href="https://configdeck.dev/ko/advisory/nextjs-cve-2025-29927" />
+  <link rel="alternate" hreflang="ko" href="https://configdeck.dev/ko/advisory/nextjs-cve-2025-29927-old" />
+  <link rel="alternate" hreflang="en" href="https://configdeck.dev/en/advisory/nextjs-cve-2025-29927-old" />
+
+  <meta property="og:title" content="(Superseded) Next.js 미들웨어 인증 우회 (CVE-2025-29927-old)" />
+  <meta property="og:type" content="article" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style type="text/tailwindcss">
+    @theme {
+      --color-primary: #3b82f6;
+      --color-primary-hover: #2563eb;
+      --color-surface: #ffffff;
+      --color-surface-alt: #f8fafc;
+      --color-border: #e2e8f0;
+      --font-sans: 'Inter', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+    body { font-family: var(--font-sans); color: #0f172a; }
+    code { font-family: var(--font-mono); }
+  </style>
+</head>
+<body class="bg-surface-alt min-h-screen">
+
+  <header class="border-b border-border bg-surface">
+    <div class="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
+      <a href="./A-catalog.html" class="flex items-center gap-2 font-bold text-gray-900">
+        <span class="inline-block w-7 h-7 rounded bg-primary"></span>
+        <span>ConfigDeck</span>
+      </a>
+      <nav aria-label="주요 메뉴" class="hidden md:flex items-center gap-6 text-sm text-gray-600">
+        <a href="#" class="hover:text-gray-900">Generators</a>
+        <a href="#" class="hover:text-gray-900">AI Config</a>
+        <a href="#" class="hover:text-gray-900">Article</a>
+        <a href="./A-catalog.html" class="text-gray-900 font-medium">Advisory</a>
+        <span class="border-l border-border h-4 mx-1" aria-hidden="true"></span>
+        <span class="text-gray-900 font-medium">KO</span>
+        <a href="#" class="hover:text-gray-900">EN</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-4xl px-6 py-8">
+
+    <nav aria-label="Breadcrumb" class="text-xs text-gray-500 mb-4">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li><a href="#" class="hover:text-gray-900">홈</a></li>
+        <li aria-hidden="true">/</li>
+        <li><a href="./A-catalog.html" class="hover:text-gray-900">Advisory</a></li>
+        <li aria-hidden="true">/</li>
+        <li class="font-medium text-gray-900 truncate" aria-current="page">(Superseded) 이전 advisory</li>
+      </ol>
+    </nav>
+
+    <!-- SUPERSEDED 배너 -->
+    <aside role="alert" aria-label="대체된 advisory 안내"
+           class="border-l-4 border-blue-500 bg-blue-50 rounded-r-md p-4 mb-6 flex items-start gap-3">
+      <svg aria-hidden="true" class="w-5 h-5 text-blue-600 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>
+      </svg>
+      <div class="text-sm text-blue-900">
+        <p class="font-semibold mb-0.5">이 advisory는 후속 advisory로 대체되었습니다.</p>
+        <p>최신 분석 및 진단은 후속 페이지에서 확인하세요.
+          <a href="./B-detail-active.html"
+             class="underline font-medium hover:text-blue-700">
+            후속 advisory 보기 (CVE-2025-29927) →
+          </a>
+        </p>
+      </div>
+    </aside>
+
+    <!-- 헤더 메타 -->
+    <section aria-label="권고 메타 정보" class="bg-surface border border-border rounded-2xl p-6 sm:p-8 mb-6">
+      <div class="flex flex-wrap items-center gap-2 mb-4">
+        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800"
+              aria-label="심각도: Critical (이전 추정)">
+          <span aria-hidden="true">●</span> CRITICAL
+        </span>
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">Superseded</span>
+      </div>
+
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 leading-tight mb-3">
+        (이전) Next.js 미들웨어 인증 우회 <span class="text-gray-500 font-normal">(CVE-2025-29927-old)</span>
+      </h1>
+
+      <p class="text-sm text-gray-600">
+        이 페이지는 보존되어 있으나, 분석은 후속 advisory에서 갱신되었습니다.
+      </p>
+    </section>
+
+    <!-- 진단기 (비활성/disabled) -->
+    <section aria-labelledby="diagnosis-heading" class="bg-surface border border-border rounded-2xl p-6 sm:p-8 mb-6"
+             aria-disabled="true">
+      <h2 id="diagnosis-heading" class="text-xl font-bold text-gray-900 mb-2">내 프로젝트 진단</h2>
+
+      <div class="opacity-50 pointer-events-none mb-4" aria-hidden="true">
+        <div class="flex flex-col sm:flex-row gap-2">
+          <input type="text" placeholder="예: 14.2.20" disabled
+                 class="flex-1 px-3 py-2 border border-border rounded-md text-sm font-mono bg-gray-50 text-gray-400 cursor-not-allowed" />
+          <button type="button" disabled
+                  class="px-5 py-2 bg-gray-300 text-gray-500 text-sm font-semibold rounded-md cursor-not-allowed">
+            진단하기
+          </button>
+        </div>
+      </div>
+
+      <!-- 비활성 사유 안내 (aria-describedby로 입력 필드와 연결되는 메시지) -->
+      <div id="diag-disabled-reason"
+           class="border border-blue-200 bg-blue-50 rounded-xl p-5 text-sm text-blue-900">
+        <p class="font-semibold mb-2">이 advisory는 후속 advisory로 대체되었습니다.</p>
+        <p class="mb-3">진단은 후속 advisory에서 이용하세요. 후속 페이지의 진단기는 최신 영향 범위를 반영합니다.</p>
+        <a href="./B-detail-active.html"
+           class="inline-flex items-center gap-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-md">
+          후속 advisory에서 진단하기 →
+        </a>
+      </div>
+
+      <p class="sr-only" id="diag-disabled-sr">이 진단기는 현재 비활성화되어 있습니다.</p>
+
+      <div class="mt-6 pt-5 border-t border-border text-xs text-gray-500 leading-relaxed">
+        이 진단 결과는 정보 제공 목적이며 무보증(AS IS)으로 제공됩니다. 실제 보안 위험 평가는 npm audit 등 공식 도구를 병행하세요.
+      </div>
+    </section>
+
+    <!-- References (간이) -->
+    <section class="bg-surface border border-border rounded-2xl p-6 sm:p-8 mb-6">
+      <h2 class="text-xl font-bold text-gray-900 mb-4">참고 자료</h2>
+      <ul class="space-y-2 text-sm">
+        <li><a href="./B-detail-active.html" class="text-primary hover:text-primary-hover">후속 advisory: CVE-2025-29927 →</a></li>
+        <li><a href="https://github.com/advisories/GHSA-f82v-jwr5-mffw" target="_blank" rel="noopener noreferrer" class="text-primary hover:text-primary-hover">GHSA 원본 ↗</a></li>
+      </ul>
+
+      <hr class="my-6 border-border" aria-hidden="true" />
+      <footer aria-label="데이터 출처 및 라이선스" class="text-xs text-gray-500 leading-relaxed">
+        <p class="mb-2 font-medium">이 페이지는 다음 데이터 출처를 기반으로 작성되었습니다:</p>
+        <ul class="space-y-1">
+          <li>· GitHub Advisory Database (CC-BY-4.0)</li>
+          <li>· National Vulnerability Database (Public Domain)</li>
+          <li>· MITRE CVE Program (royalty-free)</li>
+        </ul>
+      </footer>
+    </section>
+
+    <!-- 푸터 CTA -->
+    <section aria-label="본 서비스 진입" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
+      <a href="#" class="block bg-surface border border-border hover:border-primary rounded-2xl p-6 transition-colors">
+        <h3 class="text-base font-bold text-gray-900 mb-2">설정 파일 업데이트</h3>
+        <p class="text-sm text-gray-600 mb-3">Next.js 설정 파일을 ConfigDeck에서 생성합니다.</p>
+        <span class="inline-flex items-center gap-1 text-sm font-semibold text-primary">설정 파일 생성기 →</span>
+      </a>
+      <a href="#" class="block bg-surface border border-border hover:border-primary rounded-2xl p-6 transition-colors">
+        <h3 class="text-base font-bold text-gray-900 mb-2">AI 도구 설정 점검</h3>
+        <p class="text-sm text-gray-600 mb-3">Cursor, Copilot 등 AI 도구 설정 안내.</p>
+        <span class="inline-flex items-center gap-1 text-sm font-semibold text-primary">AI Config 보기 →</span>
+      </a>
+    </section>
+
+  </main>
+
+  <footer class="border-t border-border bg-surface">
+    <div class="mx-auto max-w-7xl px-6 py-6 text-xs text-gray-500">
+      © 2026 ConfigDeck. GHSA(CC-BY-4.0) / NVD / MITRE CVE 데이터 기반.
+    </div>
+  </footer>
+</body>
+</html>

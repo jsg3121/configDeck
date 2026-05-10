@@ -13,7 +13,8 @@
     "migration": "Migrate & Audit",
     "docs": "Docs",
     "blog": "Blog",
-    "article": "Articles"
+    "article": "Articles",
+    "advisory": "Advisory"
   },
   "home": {
     "heroTitle": "Build your project config",
@@ -207,7 +208,9 @@
     "aiConfigHubTitle": "AI Coding Tool Config Files — Generator Hub | ConfigDeck",
     "aiConfigHubDescription": "Browse 5 AI tool config files — AGENTS.md, Cursor Rules, Copilot Instructions, CLAUDE.md, Agent Skills — and generate them together.",
     "aiConfigGeneratorTitle": "AI Tool Config Generator — 4 Tools + Skills | ConfigDeck",
-    "aiConfigGeneratorDescription": "Generate config files for AGENTS.md, Cursor Rules, GitHub Copilot, Claude Code, and Agent Skills — all from one stack-aware preset."
+    "aiConfigGeneratorDescription": "Generate config files for AGENTS.md, Cursor Rules, GitHub Copilot, Claude Code, and Agent Skills — all from one stack-aware preset.",
+    "advisoryHubTitle": "Framework Security Advisories | ConfigDeck Advisory",
+    "advisoryHubDescription": "Curated framework CVE and migration guides with instant version diagnosis. Catalog of advisories for npm packages."
   },
   "docs": {
     "title": "Documentation",
@@ -257,6 +260,132 @@
       "searchenginejournal": "Search Engine Journal",
       "googlesearchcentral": "Google Search Central",
       "javascriptweekly": "JavaScript Weekly"
+    }
+  },
+  "advisory": {
+    "announcement": {
+      "label": "Security Advisory",
+      "messageTemplate": "{title} — CVSS {cvssScore} {severity}. Check if your project is affected.",
+      "messageTemplateNoCvss": "{title} — {severity}. Check if your project is affected.",
+      "cta": "Diagnose now",
+      "dismissLabel": "Dismiss announcement"
+    },
+    "catalog": {
+      "h1": "Framework Security Advisories",
+      "lead": "Curated CVE and migration guides for npm packages. Use the version diagnosis to instantly check whether your project is affected.",
+      "filter": {
+        "severity": "Severity",
+        "package": "Package",
+        "status": "Status",
+        "all": "All",
+        "sortLabel": "Sort",
+        "sortLatest": "Latest",
+        "sortSeverity": "Severity (high to low)",
+        "reset": "Reset filters",
+        "empty": "No advisories match the current filters.",
+        "emptyHint": "Adjust the filters or reset to see all advisories."
+      },
+      "card": {
+        "packageLabel": "Package",
+        "publishedLabel": "Published",
+        "statusLabel": "Status",
+        "ctaDetail": "View advisory →"
+      },
+      "statusBadge": {
+        "active": "Active",
+        "stale": "Stale",
+        "superseded": "Superseded",
+        "archived": "Archived"
+      }
+    },
+    "detail": {
+      "metaPublished": "Published",
+      "metaUpdated": "Last updated",
+      "metaStatus": "Status",
+      "metaGhsa": "GHSA",
+      "ghsaOriginalLink": "GHSA original",
+      "nvdLink": "NVD",
+      "openInNewTab": "(opens in new tab)",
+      "summaryHeading": "Summary",
+      "diagnosisSectionLabel": "Instant diagnosis",
+      "diagnosisHeadline": "Is your project affected?",
+      "diagnosisDescription": "Enter the {package} version installed in your project to instantly check whether it is affected.",
+      "affectedHeading": "Affected versions",
+      "affectedRangeColumn": "Affected range",
+      "patchedColumn": "Patched",
+      "affectedTableCaption": "Affected version ranges and patched versions",
+      "hostingHeading": "Hosting environments",
+      "mechanismHeading": "Vulnerability mechanism",
+      "patchHeading": "Patch and remediation",
+      "patchUpgradeSubheading": "1. Upgrade to a patched version",
+      "patchTempMitigationSubheading": "2. Temporary mitigation (before patching)",
+      "copyLabel": "Copy",
+      "copiedLabel": "Copied",
+      "referencesHeading": "References",
+      "creditsHeading": "Credits",
+      "dataSourcesIntro": "This page is based on the following data sources:",
+      "dataSourceGhsa": "GitHub Advisory Database (CC-BY-4.0) — github.com/advisories",
+      "dataSourceNvd": "National Vulnerability Database (Public Domain) — nvd.nist.gov",
+      "dataSourceMitre": "MITRE CVE Program (royalty-free) — cve.mitre.org"
+    },
+    "diagnosis": {
+      "tabVersion": "Version string",
+      "tabPackageJson": "Paste package.json",
+      "inputLabel": "{package} package version",
+      "placeholderVersion": "e.g. 14.2.20",
+      "placeholderPackageJson": "{ \"dependencies\": { \"next\": \"14.2.20\" } }",
+      "packageJsonAriaLabel": "Paste your package.json",
+      "diagnoseButton": "Diagnose",
+      "resetButton": "Run again",
+      "hintVersion": "Enter the {package} version to instantly check.",
+      "hintPackageJson": "The {package} version will be extracted automatically.",
+      "affectedTitle": "Affected",
+      "safeTitle": "Safe",
+      "errorTitle": "Input error",
+      "affectedBody": "{package}@{version} is affected by this vulnerability.",
+      "safeBody": "{package}@{version} is not affected by this vulnerability.",
+      "safeAdvice": "You are on a patched version. Keep your project up to date.",
+      "affectedRangeLabel": "Affected range",
+      "patchRecommendLabel": "Recommended patch",
+      "patchRecommendSuffix": "or later",
+      "errorInvalidVersion": "Not a valid version format. Example: 14.2.20",
+      "errorInvalidJson": "Not a valid JSON.",
+      "errorPackageMissing": "No {package} package found in package.json.",
+      "disclaimer": "This diagnosis is informational and provided AS IS without warranty. Use it alongside official tools such as npm audit, Snyk, and Dependabot for actual security risk assessment.",
+      "officialAdvisoryLink": "Verify on the official advisory ↗",
+      "disabledSupersededTitle": "This advisory has been superseded.",
+      "disabledSupersededBody": "Use the successor advisory for the latest analysis and diagnosis.",
+      "disabledSupersededCta": "Diagnose on the successor advisory →",
+      "disabledArchivedTitle": "The versions covered by this advisory have reached end of life.",
+      "disabledArchivedBody": "We recommend migrating to a supported major version.",
+      "disabledSrLabel": "This diagnosis tool is currently disabled."
+    },
+    "banner": {
+      "stale": "This guide reflects information as of {date}. Please verify the latest details on the official advisory.",
+      "staleLabel": "GHSA original",
+      "superseded": "This advisory has been superseded.",
+      "supersededHint": "See the successor advisory for the latest analysis and diagnosis.",
+      "supersededCta": "View successor advisory →",
+      "archived": "The versions covered by this advisory have reached end of life.",
+      "ariaStale": "Stale guide notice",
+      "ariaSuperseded": "Superseded advisory notice",
+      "ariaArchived": "EOL versions notice"
+    },
+    "cta": {
+      "heading": "Next steps",
+      "generator": "Update your config files with ConfigDeck",
+      "generatorDescription": "Generate the related config files quickly with ConfigDeck.",
+      "generatorAction": "Open the config generator →",
+      "aiConfig": "Review your AI coding tool configs",
+      "aiConfigDescription": "Cursor, GitHub Copilot, Claude Code and more.",
+      "aiConfigAction": "Browse AI Config →"
+    },
+    "dataSources": {
+      "footer": "Advisory content is based on data from GHSA (CC-BY-4.0), NVD (Public Domain), and MITRE CVE (royalty-free)."
+    },
+    "breadcrumb": {
+      "home": "Home",
+      "hub": "Advisory"
     }
   },
   "aiConfig": {
