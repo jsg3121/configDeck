@@ -1,0 +1,179 @@
+---
+/**
+ * Advisory 공지 배너 (헤더 바로 아래 노출용).
+ *
+ * 정책:
+ * - 가장 최근의 critical/high active advisory 1건을 자동 노출 (selectFeaturedAdvisory)
+ * - advisory 페이지 본인에서는 노출하지 않음 (Layout/Header에서 currentPath 기반 분기)
+ * - dismiss 시 localStorage에 slug 저장 → 같은 slug는 재방문 시 다시 노출 안 됨
+ * - 새 advisory가 게시되어 slug가 바뀌면 자동으로 다시 노출됨 (slug 기반 dismiss)
+ *
+ * CLS 0 정책 (옵션 C — head blocking + CSS):
+ * - <aside>는 SSR 시점에 정상 렌더링 (hidden 없음)
+ * - <head>(또는 컴포넌트 최상단) inline blocking script가 localStorage 즉시 확인
+ *   → dismiss 상태이면 `<html>`에 `data-advisory-dismissed` 속성 추가
+ * - CSS로 해당 속성이 있을 때만 배너 숨김 (display:none) → paint 전 결정되어 시프트 없음
+ * - 보일 사용자: SSR 그대로 정상 표시, 시프트 없음
+ * - 사라질 사용자: paint 전에 hidden, 깜빡임 없음
+ *
+ * 외부 사용:
+ *   import AdvisoryAnnouncementBanner from '@/components/advisory/AdvisoryAnnouncementBanner.astro'
+ *   <AdvisoryAnnouncementBanner locale={locale} />
+ */
+import { buildLocalizedPath, getTranslation, type Locale } from '@/i18n'
+import { getCollection } from 'astro:content'
+
+import { getAdvisorySlug, selectFeaturedAdvisory } from '@/lib/data/advisory/selectFeaturedAdvisory'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+
+const allAdvisories = await getCollection('advisory')
+const featured = selectFeaturedAdvisory(allAdvisories, locale)
+
+const slug = featured ? getAdvisorySlug(featured) : null
+const detailPath = featured ? buildLocalizedPath(locale, `/advisory/${slug}`) : null
+
+const tA = (key: string) => getTranslation(locale, `advisory.announcement.${key}`)
+
+// severity 라벨은 시안과 SeverityBadge 컴포넌트의 결정과 일관되게 영어 그대로 표기한다
+// (CRITICAL / HIGH — 국제 표준 식별자, 번역 시 신뢰도 손상). aria-label 보조는 라벨 자체가 영어이므로 생략.
+const severityLabel = (severity: 'critical' | 'high') =>
+  severity === 'critical' ? 'Critical' : 'High'
+
+// 메시지 템플릿: cvssScore 유무에 따라 다른 키 사용.
+// title에는 보통 CVE ID가 이미 포함되므로 ({cveId}) 자리표시자는 템플릿에서 제외했다.
+const message = featured
+  ? (() => {
+      const data = featured.data
+      const template = data.cvssScore ? tA('messageTemplate') : tA('messageTemplateNoCvss')
+      return template
+        .replace('{title}', data.title)
+        .replace('{cvssScore}', data.cvssScore?.toString() ?? '')
+        .replace('{severity}', severityLabel(data.severity as 'critical' | 'high'))
+    })()
+  : ''
+
+// localStorage 키 (배너와 head script가 동일한 키를 사용)
+const storageKey = slug ? `configdeck:advisory-banner-dismissed:${slug}` : null
+---
+
+{
+  /*
+   * Head blocking script — paint 전에 dismiss 여부 결정 (CLS 0 보장).
+   * <html>에 data-advisory-dismissed 속성을 즉시 추가하면 CSS가 paint 전에 적용된다.
+   * is:inline으로 모듈 처리(defer) 우회 → 동기 실행.
+   * featured가 있을 때만 출력해 불필요한 인라인 스크립트를 페이지에 추가하지 않는다.
+   */
+  featured && storageKey && (
+    <script is:inline define:vars={{ storageKey }}>
+      {`try {
+        if (localStorage.getItem(storageKey) === '1') {
+          document.documentElement.setAttribute('data-advisory-dismissed', '');
+        } else {
+          // view transitions 환경에서 이전 페이지의 다른 slug 속성이 남아있을 수 있어 명시적으로 제거.
+          document.documentElement.removeAttribute('data-advisory-dismissed');
+        }
+      } catch (e) { /* localStorage 비활성 환경 — 그냥 노출 */ }`}
+    </script>
+  )
+}
+
+{
+  featured && detailPath && slug && (
+    <aside
+      role="region"
+      aria-label={tA('label')}
+      data-advisory-banner
+      data-advisory-slug={slug}
+      class="advisory-banner border-b border-amber-200 bg-amber-50 text-amber-950"
+    >
+      <div class="mx-auto flex max-w-7xl items-center gap-3 px-4 py-2.5 text-sm sm:px-6">
+        <span
+          aria-hidden="true"
+          class="inline-flex shrink-0 items-center justify-center rounded-full bg-amber-200 px-2 py-0.5 text-[10px] font-bold tracking-wider text-amber-900 uppercase"
+        >
+          {tA('label')}
+        </span>
+        <a
+          href={detailPath}
+          class="flex-1 truncate font-medium text-amber-950 hover:text-amber-900 hover:underline"
+        >
+          {message}
+        </a>
+        <a
+          href={detailPath}
+          class="hidden shrink-0 items-center gap-1 rounded-md bg-amber-900 px-3 py-1 text-xs font-semibold text-white hover:bg-amber-800 sm:inline-flex"
+        >
+          {tA('cta')}
+          <span aria-hidden="true">→</span>
+        </a>
+        <button
+          type="button"
+          data-advisory-banner-dismiss
+          aria-label={tA('dismissLabel')}
+          class="shrink-0 rounded p-1 text-amber-900 transition-colors hover:bg-amber-100 hover:text-amber-950"
+        >
+          <svg
+            class="h-4 w-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+    </aside>
+  )
+}
+
+<style is:global>
+  /*
+   * CLS 0 보장 핵심:
+   * head blocking script가 paint 전에 <html data-advisory-dismissed>를 설정하면
+   * 배너가 paint 단계에서 이미 display:none 상태가 되어 레이아웃 시프트 없음.
+   * dismiss하지 않은 사용자는 SSR 그대로 보이므로 역시 시프트 없음.
+   */
+  html[data-advisory-dismissed] .advisory-banner {
+    display: none;
+  }
+</style>
+
+<script>
+  // dismiss 클릭 → localStorage 저장 + 즉시 숨김.
+  // Astro view transitions 환경에서도 다시 실행되도록 astro:page-load 이벤트에 바인딩한다.
+  const STORAGE_KEY_PREFIX = 'configdeck:advisory-banner-dismissed:'
+
+  const initAdvisoryBanner = () => {
+    const banner = document.querySelector<HTMLElement>('[data-advisory-banner]')
+    if (!banner) return
+
+    const slug = banner.dataset.advisorySlug
+    if (!slug) return
+
+    const storageKey = `${STORAGE_KEY_PREFIX}${slug}`
+
+    const dismissBtn = banner.querySelector<HTMLButtonElement>('[data-advisory-banner-dismiss]')
+    dismissBtn?.addEventListener('click', () => {
+      try {
+        localStorage.setItem(storageKey, '1')
+      } catch {
+        /* 저장 실패 시에도 일단 화면에서는 닫는다 (세션 dismiss 효과) */
+      }
+      // <html data-advisory-dismissed>로 CSS 일관성 유지
+      document.documentElement.setAttribute('data-advisory-dismissed', '')
+    })
+  }
+
+  initAdvisoryBanner()
+  document.addEventListener('astro:page-load', initAdvisoryBanner)
+</script>

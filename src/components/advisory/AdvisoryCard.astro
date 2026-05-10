@@ -1,0 +1,116 @@
+---
+/**
+ * Advisory 카탈로그 카드.
+ *
+ * SPEC-0006-design §2.2 / §2.4. severity 배지 → 제목 → CVE/GHSA → 패키지/날짜/상태 → CTA 위계.
+ * 카드는 Svelte AdvisoryFilter 아일랜드가 클라이언트에서 가시성을 토글하므로,
+ * data-* 속성(severity/package/status/published)을 필수로 기록한다.
+ */
+import { buildLocalizedPath, getTranslation, type Locale } from '@/i18n'
+
+import SeverityBadge from './SeverityBadge.astro'
+
+interface Props {
+  locale: Locale
+  slug: string
+  severity: 'low' | 'medium' | 'high' | 'critical'
+  cvssScore?: number
+  cveId?: string
+  ghsaId?: string
+  title: string
+  packageName: string
+  publishedAt: Date
+  status: 'active' | 'stale' | 'superseded' | 'archived'
+}
+
+const {
+  locale,
+  slug,
+  severity,
+  cvssScore,
+  cveId,
+  ghsaId,
+  title,
+  packageName,
+  publishedAt,
+  status,
+} = Astro.props
+
+const t = (key: string) => getTranslation(locale, `advisory.catalog.${key}`)
+
+const formatDate = (date: Date): string =>
+  date.toLocaleDateString(locale === 'ko' ? 'ko-KR' : 'en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  })
+
+const detailHref = buildLocalizedPath(locale, `/advisory/${slug}`)
+
+const STATUS_BADGE: Record<Props['status'], string> = {
+  active: 'bg-green-100 text-green-800',
+  stale: 'bg-amber-100 text-amber-800',
+  superseded: 'bg-blue-100 text-blue-800',
+  archived: 'bg-gray-100 text-gray-700',
+}
+
+const idLine = [cveId, ghsaId].filter(Boolean).join(' · ')
+---
+
+<article
+  class="advisory-card relative rounded-2xl border border-border bg-surface p-5 transition-colors hover:border-primary"
+  data-severity={severity}
+  data-package={packageName}
+  data-status={status}
+  data-published={publishedAt.toISOString().slice(0, 10)}
+>
+  <div class="mb-3 flex flex-wrap items-center gap-2">
+    <SeverityBadge {severity} {cvssScore} {locale} size="sm" />
+    {
+      cvssScore !== undefined && (
+        <span class="rounded-md bg-gray-100 px-2 py-0.5 text-xs text-gray-700">
+          CVSS {cvssScore}
+        </span>
+      )
+    }
+  </div>
+  <h3 class="mb-2 text-lg leading-snug font-bold text-gray-900">
+    <a href={detailHref} class="advisory-card-link before:absolute before:inset-0">
+      {title}
+    </a>
+  </h3>
+  {idLine && <p class="mb-3 font-mono text-xs text-gray-500">{idLine}</p>}
+  <dl class="space-y-1 text-sm text-gray-600">
+    <div class="flex gap-2">
+      <dt>{t('card.packageLabel')}:</dt>
+      <dd class="font-mono text-gray-900">{packageName}</dd>
+    </div>
+    <div class="flex gap-2">
+      <dt>{t('card.publishedLabel')}:</dt>
+      <dd>{formatDate(publishedAt)}</dd>
+    </div>
+    <div class="flex gap-2">
+      <dt>{t('card.statusLabel')}:</dt>
+      <dd>
+        <span
+          class:list={[
+            'inline-flex items-center rounded px-2 py-0.5 text-xs',
+            STATUS_BADGE[status],
+          ]}
+        >
+          {t(`statusBadge.${status}`)}
+        </span>
+      </dd>
+    </div>
+  </dl>
+  <span class="mt-3 block text-right text-sm font-semibold text-primary">
+    {t('card.ctaDetail')}
+  </span>
+</article>
+
+<style>
+  /* 카드 전체를 클릭 가능하게 (stretched-link 패턴, ai-config 카탈로그와 동일 정신) */
+  .advisory-card-link::before {
+    content: '';
+  }
+</style>

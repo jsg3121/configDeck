@@ -1,0 +1,439 @@
+---
+/**
+ * Advisory 자식 상세 페이지 (SPEC-0006-design 화면 B).
+ *
+ * 7섹션 구성: 헤더 메타 → 요약 → 진단기(상단 부각) → 영향 범위 → 취약점 메커니즘 → 패치 → References + Credits + 데이터 출처.
+ * 진단기는 Svelte 아일랜드(`AdvisoryDiagnosis.svelte`)로 client:load 마운트.
+ * 본문 markdown은 Content Collection의 render()로 렌더링한다.
+ */
+import { buildLocalizedPath, getTranslation, SUPPORTED_LOCALES, type Locale } from '@/i18n'
+import { getCollection, render } from 'astro:content'
+
+import Layout from '@/layouts/Layout.astro'
+import AdvisoryDataSources from '@/components/advisory/AdvisoryDataSources.astro'
+import AdvisoryDiagnosis from '@/components/advisory/AdvisoryDiagnosis.svelte'
+import AdvisoryFooterCta from '@/components/advisory/AdvisoryFooterCta.astro'
+import SeverityBadge from '@/components/advisory/SeverityBadge.astro'
+import SunsetBanner from '@/components/advisory/SunsetBanner.astro'
+import {
+  assertAdvisoryLocaleConsistency,
+  getAdvisorySlug,
+} from '@/lib/data/advisory/validateLocaleConsistency'
+
+export const getStaticPaths = async () => {
+  const allAdvisories = await getCollection('advisory')
+  // 빌드 타임 다국어 일관성 검증 (ADR-0020).
+  assertAdvisoryLocaleConsistency(allAdvisories)
+
+  const paths = []
+  for (const locale of SUPPORTED_LOCALES) {
+    const localeEntries = allAdvisories.filter((entry) => entry.id.startsWith(`${locale}/`))
+    for (const entry of localeEntries) {
+      const slug = getAdvisorySlug(entry.id).replace(/\.md$/, '')
+      const { Content } = await render(entry)
+      paths.push({
+        params: { locale, slug },
+        props: { entry, Content, allAdvisories },
+      })
+    }
+  }
+  return paths
+}
+
+const { locale, slug } = Astro.params as { locale: Locale; slug: string }
+const { entry, Content, allAdvisories } = Astro.props
+
+const data = entry.data
+
+const t = (key: string) => getTranslation(locale, `advisory.detail.${key}`)
+const tBreadcrumb = (key: string) => getTranslation(locale, `advisory.breadcrumb.${key}`)
+const tDiag = (key: string) => getTranslation(locale, `advisory.diagnosis.${key}`)
+
+const formatDate = (date: Date): string =>
+  date.toLocaleDateString(locale === 'ko' ? 'ko-KR' : 'en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  })
+
+const ghsaUrl = data.ghsaId ? `https://github.com/advisories/${data.ghsaId}` : undefined
+const nvdUrl = data.cveId ? `https://nvd.nist.gov/vuln/detail/${data.cveId}` : undefined
+
+const supersededHref = data.supersededBy
+  ? buildLocalizedPath(locale, `/advisory/${data.supersededBy}`)
+  : undefined
+
+// canonical 처리: superseded일 때 후속 advisory URL 가리키기 (SPEC-0006-design §6.3)
+const siteUrl = 'https://configdeck.dev'
+const pagePath = `/advisory/${slug}`
+const canonicalOverride =
+  data.status === 'superseded' && data.supersededBy
+    ? buildLocalizedPath(locale, `/advisory/${data.supersededBy}`)
+    : undefined
+
+const STATUS_BADGE_CLASS: Record<typeof data.status, string> = {
+  active: 'bg-green-100 text-green-800',
+  stale: 'bg-amber-100 text-amber-800',
+  superseded: 'bg-blue-100 text-blue-800',
+  archived: 'bg-gray-100 text-gray-800',
+}
+
+const STATUS_LABEL = (s: typeof data.status) =>
+  getTranslation(locale, `advisory.catalog.statusBadge.${s}`)
+
+// JSON-LD: Article + BreadcrumbList (SPEC-0006 §3.11)
+const articleJsonLd = {
+  '@type': 'Article',
+  headline: data.title,
+  description: data.summary,
+  datePublished: data.publishedAt.toISOString(),
+  dateModified: data.updatedAt.toISOString(),
+  author: { '@type': 'Organization', name: 'ConfigDeck' },
+  publisher: { '@type': 'Organization', name: 'ConfigDeck' },
+  inLanguage: locale,
+  mainEntityOfPage: `${siteUrl}/${locale}${pagePath}`,
+}
+
+const breadcrumbJsonLd = {
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: tBreadcrumb('home'),
+      item: `${siteUrl}/${locale}`,
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: tBreadcrumb('hub'),
+      item: `${siteUrl}/${locale}/advisory`,
+    },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      name: data.title,
+      item: `${siteUrl}/${locale}${pagePath}`,
+    },
+  ],
+}
+
+// 진단기 i18n 라벨 묶음 (Svelte 컴포넌트는 i18n에 직접 접근하지 않고 props로 받음)
+const diagnosisLabels = {
+  sectionLabel: t('diagnosisSectionLabel'),
+  headline: t('diagnosisHeadline'),
+  description: t('diagnosisDescription'),
+  tabVersion: tDiag('tabVersion'),
+  tabPackageJson: tDiag('tabPackageJson'),
+  inputLabel: tDiag('inputLabel'),
+  placeholderVersion: tDiag('placeholderVersion'),
+  placeholderPackageJson: tDiag('placeholderPackageJson'),
+  packageJsonAriaLabel: tDiag('packageJsonAriaLabel'),
+  diagnoseButton: tDiag('diagnoseButton'),
+  resetButton: tDiag('resetButton'),
+  hintVersion: tDiag('hintVersion'),
+  hintPackageJson: tDiag('hintPackageJson'),
+  affectedTitle: tDiag('affectedTitle'),
+  safeTitle: tDiag('safeTitle'),
+  errorTitle: tDiag('errorTitle'),
+  affectedBody: tDiag('affectedBody'),
+  safeBody: tDiag('safeBody'),
+  safeAdvice: tDiag('safeAdvice'),
+  affectedRangeLabel: tDiag('affectedRangeLabel'),
+  patchRecommendLabel: tDiag('patchRecommendLabel'),
+  patchRecommendSuffix: tDiag('patchRecommendSuffix'),
+  errorInvalidVersion: tDiag('errorInvalidVersion'),
+  errorInvalidJson: tDiag('errorInvalidJson'),
+  errorPackageMissing: tDiag('errorPackageMissing'),
+  disclaimer: tDiag('disclaimer'),
+  officialAdvisoryLink: tDiag('officialAdvisoryLink'),
+  disabledSupersededTitle: tDiag('disabledSupersededTitle'),
+  disabledSupersededBody: tDiag('disabledSupersededBody'),
+  disabledSupersededCta: tDiag('disabledSupersededCta'),
+  disabledArchivedTitle: tDiag('disabledArchivedTitle'),
+  disabledArchivedBody: tDiag('disabledArchivedBody'),
+  disabledSrLabel: tDiag('disabledSrLabel'),
+  copyLabel: t('copyLabel'),
+  copiedLabel: t('copiedLabel'),
+}
+
+// hreflang: ko/en 모두 존재할 때만 alternate 활성 (SPEC-0006-design §6.2).
+// 현재 advisory는 ko/en이 모두 있는지 확인. 한 쪽만 있으면 Layout이 양쪽 hreflang을 출력하더라도
+// 실제로는 의미가 없을 수 있으나, getCollection 결과로 동일 slug 두 entry가 모두 있는 경우만 alternates를 통과시킨다.
+const sameSlugEntries = allAdvisories.filter(
+  (e) => getAdvisorySlug(e.id).replace(/\.md$/, '') === slug,
+)
+const hasBothLocales = sameSlugEntries.length === SUPPORTED_LOCALES.length
+
+const ogImage = `${siteUrl}/og-image.png`
+---
+
+<Layout
+  title={`${data.title} | ConfigDeck Advisory`}
+  description={data.summary}
+  {locale}
+  pagePath={hasBothLocales ? pagePath : undefined}
+  currentPath="/advisory"
+  ogType="article"
+  articlePublishedTime={data.publishedAt}
+  canonicalUrl={canonicalOverride}
+  ogImage={ogImage}
+  jsonLd={[articleJsonLd, breadcrumbJsonLd]}
+>
+  <article class="mx-auto max-w-4xl px-6 py-8">
+    <!-- Breadcrumb -->
+    <nav aria-label="Breadcrumb" class="mb-4 text-xs text-gray-500">
+      <ol class="flex flex-wrap items-center gap-2">
+        <li>
+          <a href={buildLocalizedPath(locale, '/')} class="hover:text-gray-900">
+            {tBreadcrumb('home')}
+          </a>
+        </li>
+        <li aria-hidden="true">/</li>
+        <li>
+          <a href={buildLocalizedPath(locale, '/advisory')} class="hover:text-gray-900">
+            {tBreadcrumb('hub')}
+          </a>
+        </li>
+        <li aria-hidden="true">/</li>
+        <li class="max-w-[20rem] truncate font-medium text-gray-900" aria-current="page">
+          {data.title}
+        </li>
+      </ol>
+    </nav>
+
+    <!-- Sunset 배너 (active일 때 컴포넌트가 아무것도 렌더링하지 않음) -->
+    <SunsetBanner
+      status={data.status}
+      locale={locale}
+      updatedAt={data.updatedAt}
+      ghsaId={data.ghsaId}
+      supersededBy={data.supersededBy}
+    />
+
+    <!-- 섹션 1: 헤더 메타 -->
+    <section
+      aria-label={data.title}
+      class="mb-6 rounded-2xl border border-border bg-surface p-6 sm:p-8"
+    >
+      <div class="mb-4 flex flex-wrap items-center gap-2">
+        <SeverityBadge severity={data.severity} cvssScore={data.cvssScore} locale={locale} />
+        {
+          data.cvssScore !== undefined && (
+            <span class="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">
+              CVSS {data.cvssScore}
+            </span>
+          )
+        }
+        <span
+          class="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700"
+        >
+          npm: <code class="ml-1 font-mono">{data.package}</code>
+        </span>
+        {
+          data.cwe?.map((cwe) => (
+            <span class="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">
+              {cwe}
+            </span>
+          ))
+        }
+      </div>
+
+      <h1 class="mb-3 text-2xl leading-tight font-bold text-gray-900 sm:text-3xl">
+        {data.title}
+      </h1>
+
+      <dl class="grid grid-cols-1 gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
+        <div class="flex gap-2">
+          <dt class="text-gray-500">{t('metaPublished')}</dt>
+          <dd class="font-medium">{formatDate(data.publishedAt)}</dd>
+        </div>
+        <div class="flex gap-2">
+          <dt class="text-gray-500">{t('metaUpdated')}</dt>
+          <dd class="font-medium">{formatDate(data.updatedAt)}</dd>
+        </div>
+        <div class="flex gap-2">
+          <dt class="text-gray-500">{t('metaStatus')}</dt>
+          <dd>
+            <span
+              class:list={[
+                'inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium',
+                STATUS_BADGE_CLASS[data.status],
+              ]}
+            >
+              {STATUS_LABEL(data.status)}
+            </span>
+          </dd>
+        </div>
+        {
+          data.ghsaId && (
+            <div class="flex gap-2">
+              <dt class="text-gray-500">{t('metaGhsa')}</dt>
+              <dd class="font-mono text-xs">{data.ghsaId}</dd>
+            </div>
+          )
+        }
+      </dl>
+
+      <div class="mt-5 flex flex-wrap gap-3">
+        {
+          ghsaUrl && (
+            <a
+              href={ghsaUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1 text-sm font-medium text-primary hover:text-primary-hover"
+            >
+              {t('ghsaOriginalLink')}
+              <span aria-hidden="true">↗</span>
+              <span class="sr-only">{t('openInNewTab')}</span>
+            </a>
+          )
+        }
+        {
+          nvdUrl && (
+            <a
+              href={nvdUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1 text-sm font-medium text-primary hover:text-primary-hover"
+            >
+              {t('nvdLink')}
+              <span aria-hidden="true">↗</span>
+              <span class="sr-only">{t('openInNewTab')}</span>
+            </a>
+          )
+        }
+      </div>
+    </section>
+
+    <!-- 섹션 2: 요약 -->
+    <section
+      aria-labelledby="advisory-summary-heading"
+      class="mb-6 rounded-2xl border border-border bg-surface p-6 sm:p-8"
+    >
+      <h2 id="advisory-summary-heading" class="mb-3 text-xl font-bold text-gray-900">
+        {t('summaryHeading')}
+      </h2>
+      <p class="leading-relaxed text-gray-700">{data.summary}</p>
+    </section>
+
+    <!-- 섹션 3: 진단기 (상단 부각, 사용자 피드백 반영분) -->
+    <AdvisoryDiagnosis
+      client:load
+      affected={data.affected}
+      patched={data.patched}
+      packageName={data.package}
+      ghsaUrl={ghsaUrl}
+      status={data.status}
+      supersededHref={supersededHref}
+      labels={diagnosisLabels}
+    />
+
+    <!-- 섹션 4: 영향 범위 (frontmatter affected/patched 시각화) -->
+    <section
+      aria-labelledby="advisory-affected-heading"
+      class="mb-6 rounded-2xl border border-border bg-surface p-6 sm:p-8"
+    >
+      <h2 id="advisory-affected-heading" class="mb-4 text-xl font-bold text-gray-900">
+        {t('affectedHeading')}
+      </h2>
+      <div class="-mx-2 overflow-x-auto px-2">
+        <table class="w-full min-w-[480px] border-collapse text-sm">
+          <caption class="sr-only">{t('affectedTableCaption')}</caption>
+          <thead>
+            <tr class="border-b border-border bg-surface-alt">
+              <th class="px-4 py-3 text-left font-semibold text-gray-700">
+                {t('affectedRangeColumn')}
+              </th>
+              <th class="px-4 py-3 text-left font-semibold text-gray-700">
+                {t('patchedColumn')}
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border">
+            {
+              data.affected.map((item, index) => (
+                <tr>
+                  <td class="px-4 py-3 font-mono">{item.range}</td>
+                  <td class="px-4 py-3 font-mono font-semibold text-green-700">
+                    {data.patched[index] ?? data.patched[data.patched.length - 1] ?? '—'}
+                  </td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 섹션 5/6: 본문 markdown (취약점 메커니즘 + 패치 + 호스팅 환경 등 콘텐츠 작성자 영역) -->
+    <section
+      aria-label={t('mechanismHeading')}
+      class="prose-content mb-6 rounded-2xl border border-border bg-surface p-6 sm:p-8"
+    >
+      <Content />
+    </section>
+
+    <!-- 섹션 7: References + Credits + 데이터 출처 -->
+    <section
+      aria-labelledby="advisory-references-heading"
+      class="mb-6 rounded-2xl border border-border bg-surface p-6 sm:p-8"
+    >
+      <h2 id="advisory-references-heading" class="mb-4 text-xl font-bold text-gray-900">
+        {t('referencesHeading')}
+      </h2>
+      <ul class="space-y-2 text-sm">
+        {
+          data.references.map((ref) => (
+            <li>
+              <a
+                href={ref.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-primary hover:text-primary-hover"
+              >
+                {ref.label} <span aria-hidden="true">↗</span>
+                <span class="sr-only">{t('openInNewTab')}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      {
+        data.credits && data.credits.length > 0 && (
+          <>
+            <h3 class="mt-6 mb-2 text-base font-semibold text-gray-900">{t('creditsHeading')}</h3>
+            <ul class="space-y-1 text-sm text-gray-700">
+              {data.credits.map((credit) => (
+                <li>
+                  ·{' '}
+                  {credit.url ? (
+                    <a
+                      href={credit.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-primary hover:text-primary-hover"
+                    >
+                      {credit.name}
+                    </a>
+                  ) : (
+                    credit.name
+                  )}
+                </li>
+              ))}
+            </ul>
+          </>
+        )
+      }
+
+      <hr class="my-6 border-border" aria-hidden="true" />
+
+      <AdvisoryDataSources locale={locale} />
+    </section>
+
+    <!-- 푸터 CTA -->
+    <AdvisoryFooterCta locale={locale} />
+  </article>
+</Layout>
