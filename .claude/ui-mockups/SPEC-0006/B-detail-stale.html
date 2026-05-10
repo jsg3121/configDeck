@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Next.js Image Optimization SSRF (CVE-2024-46982) | ConfigDeck Advisory</title>
+  <meta name="description" content="Next.js Image Optimization SSRF 취약점(CVE-2024-46982) 한국어 가이드. 영향 범위·패치·진단 포함." />
+
+  <meta property="og:title" content="Next.js Image Optimization SSRF (CVE-2024-46982)" />
+  <meta property="og:description" content="Next.js Image Optimization SSRF — 한국어 가이드 + 즉시 진단." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://configdeck.dev/ko/advisory/nextjs-cve-2024-46982" />
+  <meta property="og:locale" content="ko_KR" />
+
+  <link rel="canonical" href="https://configdeck.dev/ko/advisory/nextjs-cve-2024-46982" />
+  <link rel="alternate" hreflang="ko" href="https://configdeck.dev/ko/advisory/nextjs-cve-2024-46982" />
+  <link rel="alternate" hreflang="en" href="https://configdeck.dev/en/advisory/nextjs-cve-2024-46982" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style type="text/tailwindcss">
+    @theme {
+      --color-primary: #3b82f6;
+      --color-primary-hover: #2563eb;
+      --color-surface: #ffffff;
+      --color-surface-alt: #f8fafc;
+      --color-border: #e2e8f0;
+      --color-code-bg: #1e293b;
+      --font-sans: 'Inter', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+    body { font-family: var(--font-sans); color: #0f172a; }
+    code, pre { font-family: var(--font-mono); }
+  </style>
+</head>
+<body class="bg-surface-alt min-h-screen">
+
+  <header class="border-b border-border bg-surface">
+    <div class="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
+      <a href="./A-catalog.html" class="flex items-center gap-2 font-bold text-gray-900">
+        <span class="inline-block w-7 h-7 rounded bg-primary"></span>
+        <span>ConfigDeck</span>
+      </a>
+      <nav aria-label="주요 메뉴" class="hidden md:flex items-center gap-6 text-sm text-gray-600">
+        <a href="#" class="hover:text-gray-900">Generators</a>
+        <a href="#" class="hover:text-gray-900">AI Config</a>
+        <a href="#" class="hover:text-gray-900">Article</a>
+        <a href="./A-catalog.html" class="text-gray-900 font-medium">Advisory</a>
+        <span class="border-l border-border h-4 mx-1" aria-hidden="true"></span>
+        <span class="text-gray-900 font-medium">KO</span>
+        <a href="#" class="hover:text-gray-900">EN</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-4xl px-6 py-8">
+
+    <nav aria-label="Breadcrumb" class="text-xs text-gray-500 mb-4">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li><a href="#" class="hover:text-gray-900">홈</a></li>
+        <li aria-hidden="true">/</li>
+        <li><a href="./A-catalog.html" class="hover:text-gray-900">Advisory</a></li>
+        <li aria-hidden="true">/</li>
+        <li class="font-medium text-gray-900 truncate" aria-current="page">Next.js Image Optimization SSRF</li>
+      </ol>
+    </nav>
+
+    <!--
+      어노테이션: stale 상태 — 상단 STALE 배너 (breadcrumb 아래, h1 위)
+      좌측 4px amber border + amber-50 배경, role="note", SPEC-0006-design §3.6
+    -->
+    <aside role="note" aria-label="오래된 가이드 안내"
+           class="border-l-4 border-amber-500 bg-amber-50 rounded-r-md p-4 mb-6 flex items-start gap-3">
+      <svg aria-hidden="true" class="w-5 h-5 text-amber-600 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+      <div class="text-sm text-amber-900">
+        <p class="font-semibold mb-0.5">이 가이드는 2024-09-01 기준입니다.</p>
+        <p>최신 정보는 공식 advisory를 확인하세요.
+          <a href="https://github.com/advisories/GHSA-7gfc-8cq8-jh5f"
+             target="_blank" rel="noopener noreferrer"
+             class="underline font-medium hover:text-amber-700">
+            GHSA 원본 ↗
+            <span class="sr-only">(새 탭에서 열림)</span>
+          </a>
+        </p>
+      </div>
+    </aside>
+
+    <!--
+      어노테이션: 사용자 피드백 반영 — stale에서도 진단기를 헤더 메타 직후, 본문 카드들 위로 이동.
+      "내가 영향받는지" 확인 동선이 stale 안내 직후 자연스럽게 연결되도록 한다.
+      (요약/영향범위가 stale 콘텐츠라 신뢰도가 낮아도, 진단기는 단지 frontmatter affected 배열을 소비하므로 stale 상태에서도 정확하다.)
+    -->
+
+    <!-- 헤더 메타 -->
+    <section aria-label="권고 메타 정보" class="bg-surface border border-border rounded-2xl p-6 sm:p-8 mb-6">
+      <div class="flex flex-wrap items-center gap-2 mb-4">
+        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-orange-100 text-orange-800"
+              aria-label="심각도: High (7.0)">
+          <span aria-hidden="true">●</span> HIGH
+        </span>
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">CVSS 7.0</span>
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">npm: <code class="ml-1 font-mono">next</code></span>
+      </div>
+
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 leading-tight mb-3">
+        Next.js Image Optimization SSRF <span class="text-gray-500 font-normal">(CVE-2024-46982)</span>
+      </h1>
+
+      <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
+        <div class="flex gap-2"><dt class="text-gray-500">발행</dt><dd class="font-medium">2024-09-01</dd></div>
+        <div class="flex gap-2"><dt class="text-gray-500">최종 갱신</dt><dd class="font-medium">2025-01-12</dd></div>
+        <div class="flex gap-2"><dt class="text-gray-500">상태</dt>
+          <dd><span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium bg-amber-100 text-amber-800">Stale</span></dd>
+        </div>
+        <div class="flex gap-2"><dt class="text-gray-500">GHSA</dt><dd class="font-mono text-xs">GHSA-7gfc-8cq8-jh5f</dd></div>
+      </dl>
+    </section>
+
+    <!-- 요약 -->
+    <section class="bg-surface border border-border rounded-2xl p-6 sm:p-8 mb-6">
+      <h2 class="text-xl font-bold text-gray-900 mb-3">요약</h2>
+      <p class="text-gray-700 leading-relaxed">
+        Next.js Image Optimization API에서 외부 URL 검증 미흡으로 인한 SSRF(Server-Side Request Forgery)
+        취약점입니다. 시안에서는 stale 상태 배너 표현을 시연합니다 (실제 콘텐츠는 코드 적용 단계에서 채워짐).
+      </p>
+    </section>
+
+    <!-- 진단기 (요약 직후로 상단 부각) -->
+    <section aria-labelledby="diagnosis-heading" id="diagnosis"
+             class="relative overflow-hidden rounded-2xl border-2 border-blue-300 bg-linear-to-br from-blue-50 to-indigo-50 p-6 sm:p-8 mb-6 shadow-sm">
+      <div class="flex items-center gap-2 mb-2">
+        <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white" aria-hidden="true">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </span>
+        <span class="text-xs font-semibold uppercase tracking-wider text-blue-700">즉시 진단</span>
+      </div>
+      <h2 id="diagnosis-heading" class="text-2xl font-bold text-gray-900 mb-2">내 프로젝트는 영향받나요?</h2>
+      <p class="text-sm text-gray-700 mb-5">
+        사용 중인 <code class="font-mono bg-white px-1.5 py-0.5 rounded border border-blue-100">next</code> 버전을 입력하면
+        이 advisory의 영향 여부를 즉시 확인합니다. (stale 상태에서도 진단 룰셋은 유효합니다.)
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-2">
+        <input id="diag-version-input" type="text" placeholder="예: 14.2.5" aria-label="next 패키지 버전"
+               class="flex-1 px-4 py-3 border-2 border-blue-200 bg-white rounded-md text-base font-mono focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-200" />
+        <button id="diag-submit" type="button"
+                class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-md shadow">
+          진단하기
+        </button>
+      </div>
+
+      <div id="diag-result" class="mt-5" aria-live="polite"></div>
+
+      <div class="mt-6 pt-5 border-t border-blue-200 text-xs text-gray-600 leading-relaxed">
+        이 진단 결과는 정보 제공 목적이며 무보증(AS IS)으로 제공됩니다. 실제 보안 위험 평가는 npm audit 등 공식 도구를 병행하세요.
+        <a href="https://github.com/advisories/GHSA-7gfc-8cq8-jh5f"
+           target="_blank" rel="noopener noreferrer"
+           class="text-blue-700 hover:text-blue-800 font-medium">공식 advisory에서 확인 ↗</a>
+      </div>
+    </section>
+
+    <!-- 영향 범위 -->
+    <section class="bg-surface border border-border rounded-2xl p-6 sm:p-8 mb-6">
+      <h2 class="text-xl font-bold text-gray-900 mb-4">영향 범위</h2>
+      <div class="overflow-x-auto -mx-2 px-2">
+        <table class="w-full min-w-120 text-sm border-collapse">
+          <caption class="sr-only">CVE-2024-46982 영향 범위</caption>
+          <thead>
+            <tr class="bg-surface-alt border-b border-border">
+              <th class="text-left font-semibold text-gray-700 px-4 py-3">영향받는 범위</th>
+              <th class="text-left font-semibold text-gray-700 px-4 py-3">패치 버전</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border">
+            <tr><td class="px-4 py-3 font-mono">&gt;=14.0.0 &lt;14.2.10</td><td class="px-4 py-3 font-mono text-green-700 font-semibold">14.2.10</td></tr>
+            <tr><td class="px-4 py-3 font-mono">&gt;=13.0.0 &lt;13.5.7</td><td class="px-4 py-3 font-mono text-green-700 font-semibold">13.5.7</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 푸터 CTA -->
+    <section aria-label="본 서비스 진입" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
+      <a href="#" class="block bg-surface border border-border hover:border-primary rounded-2xl p-6 transition-colors">
+        <h3 class="text-base font-bold text-gray-900 mb-2">설정 파일 업데이트</h3>
+        <p class="text-sm text-gray-600 mb-3">Next.js 설정 파일을 ConfigDeck에서 생성합니다.</p>
+        <span class="inline-flex items-center gap-1 text-sm font-semibold text-primary">설정 파일 생성기 →</span>
+      </a>
+      <a href="#" class="block bg-surface border border-border hover:border-primary rounded-2xl p-6 transition-colors">
+        <h3 class="text-base font-bold text-gray-900 mb-2">AI 도구 설정 점검</h3>
+        <p class="text-sm text-gray-600 mb-3">Cursor, Copilot 등 AI 도구 설정 안내.</p>
+        <span class="inline-flex items-center gap-1 text-sm font-semibold text-primary">AI Config 보기 →</span>
+      </a>
+    </section>
+
+  </main>
+
+  <footer class="border-t border-border bg-surface">
+    <div class="mx-auto max-w-7xl px-6 py-6 text-xs text-gray-500">
+      © 2026 ConfigDeck. GHSA(CC-BY-4.0) / NVD / MITRE CVE 데이터 기반.
+    </div>
+  </footer>
+
+  <script>
+    // 시안: 14.x 영향 범위만 단순 시연
+    const advisory = {
+      package: "next",
+      affected: [
+        { range: ">=14.0.0 <14.2.10" },
+        { range: ">=13.0.0 <13.5.7" }
+      ],
+      patched: ["13.5.7", "14.2.10"]
+    };
+    function parseSemver(v) {
+      const m = String(v).trim().match(/^(\d+)\.(\d+)\.(\d+)/);
+      return m ? { major: +m[1], minor: +m[2], patch: +m[3] } : null;
+    }
+    function cmp(a, b) {
+      if (a.major !== b.major) return a.major - b.major;
+      if (a.minor !== b.minor) return a.minor - b.minor;
+      return a.patch - b.patch;
+    }
+    function satisfies(version, range) {
+      const v = parseSemver(version); if (!v) return null;
+      const m = range.match(/^>=([\d.]+)\s+<([\d.]+)$/); if (!m) return null;
+      const lo = parseSemver(m[1]); const hi = parseSemver(m[2]);
+      return cmp(v, lo) >= 0 && cmp(v, hi) < 0;
+    }
+    function diagnose(version) {
+      if (!parseSemver(version)) return { state: "ERROR", message: "유효한 버전 형식이 아닙니다." };
+      for (const a of advisory.affected) {
+        if (satisfies(version, a.range)) return { state: "AFFECTED", range: a.range, version };
+      }
+      return { state: "SAFE", version };
+    }
+    function render(r) {
+      const el = document.getElementById('diag-result');
+      if (!r) { el.innerHTML = ''; return; }
+      if (r.state === "AFFECTED") {
+        el.innerHTML = `<div class="border border-red-200 bg-red-50 rounded-xl p-4 text-sm text-red-900">
+          <p class="font-bold mb-1">영향받음</p>
+          <p>next@${r.version}은 이 취약점의 영향을 받습니다. (영향 범위: <code class="font-mono">${r.range}</code>)</p>
+        </div>`;
+      } else if (r.state === "SAFE") {
+        el.innerHTML = `<div class="border border-green-200 bg-green-50 rounded-xl p-4 text-sm text-green-900">
+          <p class="font-bold mb-1">안전함</p>
+          <p>next@${r.version}은 이 취약점의 영향을 받지 않습니다.</p>
+        </div>`;
+      } else {
+        el.innerHTML = `<div class="border border-gray-200 bg-gray-50 rounded-xl p-4 text-sm text-gray-700">
+          <p class="font-bold text-gray-900 mb-1">입력 오류</p>
+          <p>${r.message}</p>
+        </div>`;
+      }
+    }
+    document.getElementById('diag-submit').addEventListener('click', () => {
+      render(diagnose(document.getElementById('diag-version-input').value));
+    });
+    document.getElementById('diag-version-input').addEventListener('input', () => render(null));
+  </script>
+</body>
+</html>

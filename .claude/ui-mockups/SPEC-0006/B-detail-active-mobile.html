@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>(모바일 시안) Next.js 미들웨어 인증 우회 (CVE-2025-29927)</title>
+  <meta name="description" content="CVE-2025-29927 모바일 와이어프레임 시안" />
+
+  <link rel="canonical" href="https://configdeck.dev/ko/advisory/nextjs-cve-2025-29927" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style type="text/tailwindcss">
+    @theme {
+      --color-primary: #3b82f6;
+      --color-primary-hover: #2563eb;
+      --color-surface: #ffffff;
+      --color-surface-alt: #f8fafc;
+      --color-border: #e2e8f0;
+      --color-code-bg: #1e293b;
+      --font-sans: 'Inter', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+    body { font-family: var(--font-sans); color: #0f172a; }
+    code, pre { font-family: var(--font-mono); }
+  </style>
+</head>
+<body class="bg-surface-alt min-h-screen">
+
+  <!-- 모바일 시안 안내 -->
+  <div class="bg-yellow-50 border-b border-yellow-200 px-4 py-2 text-xs text-yellow-900">
+    <strong>모바일 시안</strong> · 768px 미만 자식 advisory 와이어프레임
+  </div>
+
+  <header class="border-b border-border bg-surface sticky top-0 z-10">
+    <div class="px-4 py-3 flex items-center justify-between">
+      <a href="./A-catalog-mobile.html" class="flex items-center gap-2 font-bold text-gray-900 text-sm">
+        <span class="inline-block w-6 h-6 rounded bg-primary"></span>
+        <span>ConfigDeck</span>
+      </a>
+      <button type="button" aria-label="메뉴 열기" class="p-2 text-gray-700">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-5 h-5"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="px-4 py-4">
+
+    <nav aria-label="Breadcrumb" class="text-[11px] text-gray-500 mb-3">
+      <ol class="flex items-center gap-1.5 flex-wrap">
+        <li><a href="#" class="hover:text-gray-900">홈</a></li>
+        <li aria-hidden="true">/</li>
+        <li><a href="./A-catalog-mobile.html" class="hover:text-gray-900">Advisory</a></li>
+        <li aria-hidden="true">/</li>
+        <li class="font-medium text-gray-900 truncate" aria-current="page">CVE-2025-29927</li>
+      </ol>
+    </nav>
+
+    <!-- 헤더 메타 -->
+    <section class="bg-surface border border-border rounded-xl p-4 mb-4">
+      <div class="flex flex-wrap items-center gap-1.5 mb-3">
+        <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-red-100 text-red-800" aria-label="심각도: Critical (9.1)">CRITICAL</span>
+        <span class="px-1.5 py-0.5 rounded text-[10px] bg-gray-100 text-gray-700">CVSS 9.1</span>
+        <span class="px-1.5 py-0.5 rounded text-[10px] bg-gray-100 text-gray-700">npm: <code class="font-mono">next</code></span>
+      </div>
+
+      <h1 class="text-xl font-bold text-gray-900 leading-tight mb-2">
+        Next.js 미들웨어 인증 우회 <span class="text-gray-500 font-normal text-base">(CVE-2025-29927)</span>
+      </h1>
+
+      <dl class="grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
+        <div class="flex gap-1"><dt class="text-gray-500">발행</dt><dd class="font-medium">2025-03-21</dd></div>
+        <div class="flex gap-1"><dt class="text-gray-500">갱신</dt><dd class="font-medium">2026-05-09</dd></div>
+        <div class="flex gap-1"><dt class="text-gray-500">상태</dt>
+          <dd><span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] bg-green-100 text-green-800">Active</span></dd>
+        </div>
+        <div class="flex gap-1 col-span-2"><dt class="text-gray-500">GHSA</dt><dd class="font-mono text-[11px]">GHSA-f82v-jwr5-mffw</dd></div>
+      </dl>
+
+      <div class="flex flex-wrap gap-3 mt-3">
+        <a href="https://github.com/advisories/GHSA-f82v-jwr5-mffw"
+           target="_blank" rel="noopener noreferrer"
+           class="text-xs text-primary font-medium">GHSA 원본 ↗</a>
+        <a href="https://nvd.nist.gov/vuln/detail/CVE-2025-29927"
+           target="_blank" rel="noopener noreferrer"
+           class="text-xs text-primary font-medium">NVD ↗</a>
+      </div>
+    </section>
+
+    <!-- 요약 -->
+    <section class="bg-surface border border-border rounded-xl p-4 mb-4">
+      <h2 class="text-base font-bold text-gray-900 mb-2">요약</h2>
+      <p class="text-sm text-gray-700 leading-relaxed">
+        Next.js 13.0.0 ~ 15.2.2의 미들웨어에서 <code class="font-mono text-xs bg-gray-100 px-1 rounded">x-middleware-subrequest</code>
+        헤더를 외부에서 조작하여 인증/인가 검사를 우회할 수 있습니다. 즉시 패치 권장.
+      </p>
+    </section>
+
+    <!-- 영향 범위 (가로 스크롤 표) -->
+    <section class="bg-surface border border-border rounded-xl p-4 mb-4">
+      <h2 class="text-base font-bold text-gray-900 mb-3">영향 범위</h2>
+
+      <p class="text-[11px] text-gray-500 mb-2 italic">
+        ↓ 표는 좌우로 스크롤됩니다 (모바일 가로 스크롤 데모)
+      </p>
+      <div class="overflow-x-auto -mx-4 px-4">
+        <table class="w-full min-w-[440px] text-xs border-collapse">
+          <caption class="sr-only">CVE-2025-29927 영향 범위</caption>
+          <thead>
+            <tr class="bg-surface-alt border-b border-border">
+              <th class="text-left font-semibold text-gray-700 px-3 py-2">영향받는 범위</th>
+              <th class="text-left font-semibold text-gray-700 px-3 py-2">패치 버전</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border">
+            <tr><td class="px-3 py-2 font-mono">&gt;=15.0.0 &lt;15.2.3</td><td class="px-3 py-2 font-mono text-green-700 font-semibold">15.2.3</td></tr>
+            <tr><td class="px-3 py-2 font-mono">&gt;=14.0.0 &lt;14.2.25</td><td class="px-3 py-2 font-mono text-green-700 font-semibold">14.2.25</td></tr>
+            <tr><td class="px-3 py-2 font-mono">&gt;=13.0.0 &lt;13.5.9</td><td class="px-3 py-2 font-mono text-green-700 font-semibold">13.5.9</td></tr>
+            <tr><td class="px-3 py-2 font-mono">&gt;=12.0.0 &lt;12.3.5</td><td class="px-3 py-2 font-mono text-green-700 font-semibold">12.3.5</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="text-sm font-semibold text-gray-900 mt-4 mb-1.5">호스팅 환경별 영향</h3>
+      <ul class="text-xs text-gray-700 space-y-0.5">
+        <li>· Vercel Edge Middleware: 영향받음</li>
+        <li>· Netlify: 영향받음</li>
+        <li>· Cloudflare Pages: 별도 확인 필요</li>
+      </ul>
+    </section>
+
+    <!-- 취약점 메커니즘 -->
+    <section class="bg-surface border border-border rounded-xl p-4 mb-4">
+      <h2 class="text-base font-bold text-gray-900 mb-2">취약점 메커니즘</h2>
+      <p class="text-sm text-gray-700 leading-relaxed mb-2">
+        Next.js 미들웨어 런타임은 내부 서브요청 식별을 위해
+        <code class="font-mono text-xs bg-gray-100 px-1 rounded">x-middleware-subrequest</code>
+        헤더를 사용합니다. 외부에서 이 헤더를 위조하면 미들웨어 본문 실행이 건너뛰어 인증 우회가 발생합니다.
+      </p>
+      <a href="https://securitylabs.datadoghq.com/articles/nextjs-middleware-auth-bypass/"
+         target="_blank" rel="noopener noreferrer"
+         class="text-xs text-primary font-medium">Datadog Security Labs 분석 ↗</a>
+    </section>
+
+    <!-- 진단기 -->
+    <section class="bg-surface border border-border rounded-xl p-4 mb-4">
+      <h2 class="text-base font-bold text-gray-900 mb-1">내 프로젝트 진단</h2>
+      <p class="text-xs text-gray-500 mb-3">next 버전을 입력하면 즉시 영향 여부를 확인합니다.</p>
+
+      <!-- 탭 (모바일에서도 보존) -->
+      <div class="inline-flex rounded-lg border border-border bg-surface-alt p-0.5 mb-3" role="tablist">
+        <button type="button" role="tab" aria-selected="true" class="m-tab px-2.5 py-1 text-xs font-medium rounded bg-surface text-gray-900 shadow-sm" data-target="m-panel-v">버전</button>
+        <button type="button" role="tab" aria-selected="false" class="m-tab px-2.5 py-1 text-xs font-medium rounded text-gray-600" data-target="m-panel-p">package.json</button>
+      </div>
+
+      <div id="m-panel-v">
+        <div class="flex flex-col gap-2">
+          <input id="m-version-input" type="text" placeholder="예: 14.2.20" aria-label="next 패키지 버전"
+                 class="w-full px-3 py-2 border border-border rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary" />
+          <button id="m-submit" type="button"
+                  class="w-full px-3 py-2 bg-primary hover:bg-primary-hover text-white text-sm font-semibold rounded-md">진단하기</button>
+        </div>
+      </div>
+
+      <div id="m-panel-p" class="hidden">
+        <textarea id="m-pkg-input" rows="6" aria-label="package.json"
+                  class="w-full px-3 py-2 border border-border rounded-md text-xs font-mono focus:outline-none focus:ring-2 focus:ring-primary"
+                  placeholder='{ "dependencies": { "next": "14.2.20" } }'></textarea>
+        <button id="m-submit-pkg" type="button"
+                class="w-full mt-2 px-3 py-2 bg-primary hover:bg-primary-hover text-white text-sm font-semibold rounded-md">진단하기</button>
+      </div>
+
+      <div id="m-result" class="mt-4" aria-live="polite"></div>
+
+      <div class="mt-4 pt-3 border-t border-border text-[10px] text-gray-500 leading-relaxed">
+        이 진단 결과는 정보 제공 목적이며 무보증(AS IS)입니다. npm audit, Snyk 등 공식 도구를 병행하세요.
+        <a href="https://github.com/advisories/GHSA-f82v-jwr5-mffw" target="_blank" rel="noopener noreferrer" class="text-primary font-medium">공식 advisory ↗</a>
+      </div>
+    </section>
+
+    <!-- 패치 -->
+    <section class="bg-surface border border-border rounded-xl p-4 mb-4">
+      <h2 class="text-base font-bold text-gray-900 mb-3">패치 및 해결 방안</h2>
+      <h3 class="text-sm font-semibold text-gray-900 mb-1.5">1. 패치 버전으로 업그레이드</h3>
+      <div class="bg-code-bg rounded-md p-3 mb-3 text-xs font-mono text-gray-100 overflow-x-auto">
+        <pre><code>npm install next@14.2.25
+npm install next@latest</code></pre>
+      </div>
+      <h3 class="text-sm font-semibold text-gray-900 mb-1.5">2. 임시 완화</h3>
+      <p class="text-xs text-gray-700 mb-2">미들웨어에서 <code class="font-mono bg-gray-100 px-1 rounded">x-middleware-subrequest</code> 헤더 명시 거부.</p>
+    </section>
+
+    <!-- References -->
+    <section class="bg-surface border border-border rounded-xl p-4 mb-4">
+      <h2 class="text-base font-bold text-gray-900 mb-2">참고 자료</h2>
+      <ul class="space-y-1.5 text-xs">
+        <li><a href="https://github.com/advisories/GHSA-f82v-jwr5-mffw" target="_blank" rel="noopener noreferrer" class="text-primary">GHSA-f82v-jwr5-mffw ↗</a></li>
+        <li><a href="https://nvd.nist.gov/vuln/detail/CVE-2025-29927" target="_blank" rel="noopener noreferrer" class="text-primary">NVD CVE-2025-29927 ↗</a></li>
+        <li><a href="https://snyk.io/blog/cve-2025-29927-authorization-bypass-in-next-js-middleware/" target="_blank" rel="noopener noreferrer" class="text-primary">Snyk 분석 ↗</a></li>
+      </ul>
+
+      <h3 class="text-sm font-semibold text-gray-900 mt-3 mb-1">Credits</h3>
+      <ul class="text-xs text-gray-700 space-y-0.5">
+        <li>· Allam Rachid · Allam Yasser</li>
+      </ul>
+
+      <hr class="my-3 border-border" aria-hidden="true" />
+      <footer class="text-[10px] text-gray-500 leading-relaxed">
+        <p class="font-medium mb-1">데이터 출처:</p>
+        <ul class="space-y-0.5">
+          <li>· GHSA Database (CC-BY-4.0)</li>
+          <li>· NVD (Public Domain)</li>
+          <li>· MITRE CVE (royalty-free)</li>
+        </ul>
+      </footer>
+    </section>
+
+    <!-- 푸터 CTA (세로 배치) -->
+    <section aria-label="본 서비스 진입" class="space-y-3 mb-8">
+      <a href="#" class="block bg-surface border border-border hover:border-primary rounded-xl p-4 transition-colors">
+        <h3 class="text-sm font-bold text-gray-900 mb-1">설정 파일 업데이트</h3>
+        <p class="text-xs text-gray-600 mb-2">Next.js 관련 설정 파일을 ConfigDeck에서 생성합니다.</p>
+        <span class="text-xs font-semibold text-primary">설정 파일 생성기 →</span>
+      </a>
+      <a href="#" class="block bg-surface border border-border hover:border-primary rounded-xl p-4 transition-colors">
+        <h3 class="text-sm font-bold text-gray-900 mb-1">AI 도구 설정 점검</h3>
+        <p class="text-xs text-gray-600 mb-2">Cursor, Copilot, Claude Code 등.</p>
+        <span class="text-xs font-semibold text-primary">AI Config 보기 →</span>
+      </a>
+    </section>
+
+  </main>
+
+  <footer class="border-t border-border bg-surface">
+    <div class="px-4 py-4 text-[10px] text-gray-500">© 2026 ConfigDeck — GHSA / NVD / MITRE CVE 기반</div>
+  </footer>
+
+  <script>
+    const advisory = {
+      package: "next",
+      affected: [
+        { range: ">=15.0.0 <15.2.3" },
+        { range: ">=14.0.0 <14.2.25" },
+        { range: ">=13.0.0 <13.5.9" },
+        { range: ">=12.0.0 <12.3.5" },
+      ],
+      patched: ["12.3.5", "13.5.9", "14.2.25", "15.2.3"],
+    };
+    function parseSemver(v) { const m = String(v).trim().match(/^(\d+)\.(\d+)\.(\d+)/); return m ? { major:+m[1], minor:+m[2], patch:+m[3] } : null; }
+    function cmp(a,b) { return a.major-b.major || a.minor-b.minor || a.patch-b.patch; }
+    function satisfies(v, range) {
+      const p = parseSemver(v); if (!p) return null;
+      const m = range.match(/^>=([\d.]+)\s+<([\d.]+)$/); if (!m) return null;
+      return cmp(p, parseSemver(m[1])) >= 0 && cmp(p, parseSemver(m[2])) < 0;
+    }
+    function recommendedPatch(v) {
+      const p = parseSemver(v); if (!p) return advisory.patched[0];
+      const cand = advisory.patched.map(parseSemver).filter(x => x.major===p.major).sort(cmp);
+      return cand.length ? `${p.major}.${cand[0].minor}.${cand[0].patch}` : advisory.patched.at(-1);
+    }
+    function diagnose(v) {
+      if (!parseSemver(v)) return { state:"ERROR", message:"유효한 버전 형식이 아닙니다." };
+      for (const a of advisory.affected) if (satisfies(v, a.range)) return { state:"AFFECTED", range:a.range, patch:recommendedPatch(v), version:v };
+      return { state:"SAFE", version:v };
+    }
+    function render(r) {
+      const el = document.getElementById('m-result');
+      if (!r) { el.innerHTML = ''; return; }
+      if (r.state === "AFFECTED") el.innerHTML = `<div class="border border-red-200 bg-red-50 rounded-lg p-3 text-sm">
+        <p class="font-bold text-red-900 mb-1">영향받음</p>
+        <p class="text-red-900"><code class="font-mono">next@${r.version}</code> 영향받음. 패치: <code class="font-mono">${r.patch}</code></p></div>`;
+      else if (r.state === "SAFE") el.innerHTML = `<div class="border border-green-200 bg-green-50 rounded-lg p-3 text-sm">
+        <p class="font-bold text-green-900 mb-1">안전함</p>
+        <p class="text-green-900"><code class="font-mono">next@${r.version}</code>는 안전합니다.</p></div>`;
+      else el.innerHTML = `<div class="border border-gray-200 bg-gray-50 rounded-lg p-3 text-sm">
+        <p class="font-bold text-gray-900 mb-1">입력 오류</p><p class="text-gray-700">${r.message}</p></div>`;
+    }
+    document.getElementById('m-submit').addEventListener('click', () => render(diagnose(document.getElementById('m-version-input').value)));
+    document.getElementById('m-version-input').addEventListener('input', () => render(null));
+    document.getElementById('m-submit-pkg').addEventListener('click', () => {
+      try {
+        const j = JSON.parse(document.getElementById('m-pkg-input').value);
+        const v = (j.dependencies||{})[advisory.package] || (j.devDependencies||{})[advisory.package];
+        if (!v) return render({state:"ERROR", message:`package.json에 ${advisory.package} 없음.`});
+        render(diagnose(String(v).replace(/^[^\d]*/, '')));
+      } catch { render({state:"ERROR", message:"유효한 JSON이 아닙니다."}); }
+    });
+    document.querySelectorAll('.m-tab').forEach(btn => btn.addEventListener('click', () => {
+      document.querySelectorAll('.m-tab').forEach(b => { b.setAttribute('aria-selected','false'); b.classList.remove('bg-surface','text-gray-900','shadow-sm'); b.classList.add('text-gray-600'); });
+      btn.setAttribute('aria-selected','true'); btn.classList.add('bg-surface','text-gray-900','shadow-sm'); btn.classList.remove('text-gray-600');
+      document.getElementById('m-panel-v').classList.toggle('hidden', btn.dataset.target!=='m-panel-v');
+      document.getElementById('m-panel-p').classList.toggle('hidden', btn.dataset.target!=='m-panel-p');
+      render(null);
+    }));
+  </script>
+</body>
+</html>

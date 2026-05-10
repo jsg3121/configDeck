@@ -46,3 +46,4 @@
 | [STR-0002](reports/STR-0002-configdeck-strategy-2026-04.md)                 | ConfigDeck 시장 진입 및 성장 전략             | 2026-04-24 |
 | [MKT-0001](reports/MKT-0001-user-acquisition-channels-2026-04.md)           | ConfigDeck 사용자 유입 채널 전략              | 2026-04-29 |
 | [RES-0003](reports/RES-0003-ai-tool-config-files-2026-04.md)                | AI 코딩 도구 설정 파일 생성기 시장 리서치     | 2026-04-30 |
+| [RES-0004](reports/RES-0004-framework-advisory-landing-2026-05.md)          | 프레임워크 보안 권고 이벤트성 랜딩 도입 검증  | 2026-05-09 |

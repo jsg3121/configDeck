@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>프레임워크 보안 권고 | ConfigDeck Advisory</title>
+  <meta name="description" content="ConfigDeck이 한국어로 정리한 프레임워크 보안 권고(CVE)·마이그레이션 가이드 카탈로그. 버전 진단 포함." />
+
+  <link rel="canonical" href="https://configdeck.dev/ko/advisory" />
+  <link rel="alternate" hreflang="ko" href="https://configdeck.dev/ko/advisory" />
+  <link rel="alternate" hreflang="en" href="https://configdeck.dev/en/advisory" />
+  <link rel="alternate" hreflang="x-default" href="https://configdeck.dev/en/advisory" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style type="text/tailwindcss">
+    @theme {
+      --color-primary: #3b82f6;
+      --color-primary-hover: #2563eb;
+      --color-surface: #ffffff;
+      --color-surface-alt: #f8fafc;
+      --color-border: #e2e8f0;
+      --font-sans: 'Inter', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+    body { font-family: var(--font-sans); color: #0f172a; }
+    code { font-family: var(--font-mono); }
+    /* 칩 기본 (비활성). 토큰 미적용 환경에서도 텍스트가 보이도록 명시. */
+    .filter-chip { color: #334155; background-color: #ffffff; border-color: #e2e8f0; }
+    .filter-chip:hover { border-color: #2563eb; color: #1e3a8a; }
+    /* 활성 칩 */
+    .chip-active { background-color: #2563eb !important; color: #ffffff !important; border-color: #2563eb !important; }
+  </style>
+</head>
+<body class="bg-surface-alt min-h-screen">
+
+  <header class="border-b border-border bg-surface">
+    <div class="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
+      <a href="#" class="flex items-center gap-2 font-bold text-gray-900">
+        <span class="inline-block w-7 h-7 rounded bg-primary"></span>
+        <span>ConfigDeck</span>
+      </a>
+      <nav aria-label="주요 메뉴" class="hidden md:flex items-center gap-6 text-sm text-gray-600">
+        <a href="#" class="hover:text-gray-900">Generators</a>
+        <a href="#" class="hover:text-gray-900">AI Config</a>
+        <a href="#" class="hover:text-gray-900">Article</a>
+        <a href="./A-catalog.html" class="text-gray-900 font-medium">Advisory</a>
+        <span class="border-l border-border h-4 mx-1" aria-hidden="true"></span>
+        <span class="text-gray-900 font-medium">KO</span>
+        <a href="#" class="hover:text-gray-900">EN</a>
+      </nav>
+      <a href="./A-catalog-mobile.html" class="md:hidden text-xs text-gray-500 underline">모바일 시안 보기</a>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-7xl px-6 py-8">
+
+    <!-- Breadcrumb -->
+    <nav aria-label="Breadcrumb" class="text-xs text-gray-500 mb-4">
+      <ol class="flex items-center gap-2">
+        <li><a href="#" class="hover:text-gray-900">홈</a></li>
+        <li aria-hidden="true">/</li>
+        <li class="font-medium text-gray-900" aria-current="page">Advisory</li>
+      </ol>
+    </nav>
+
+    <!-- 시리즈 헤더 -->
+    <header class="mb-8">
+      <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 leading-tight mb-3">
+        프레임워크 보안 권고
+      </h1>
+      <p class="text-gray-600 max-w-2xl leading-relaxed">
+        ConfigDeck이 한국어로 정리한 CVE·마이그레이션 가이드입니다. 버전 진단기를 통해
+        내 프로젝트가 영향을 받는지 즉시 확인할 수 있습니다.
+      </p>
+    </header>
+
+    <!-- 필터 영역 -->
+    <section aria-label="필터" class="bg-surface border border-border rounded-2xl p-6 mb-6">
+      <div class="space-y-4">
+        <!-- 심각도 -->
+        <div>
+          <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">심각도</p>
+          <div class="flex flex-wrap gap-2" data-filter-group="severity">
+            <button type="button" class="filter-chip chip-active px-3 py-1 rounded-full border border-border text-sm" data-value="all">전체</button>
+            <button type="button" class="filter-chip px-3 py-1 rounded-full border border-border text-sm" data-value="critical">Critical</button>
+            <button type="button" class="filter-chip px-3 py-1 rounded-full border border-border text-sm" data-value="high">High</button>
+            <button type="button" class="filter-chip px-3 py-1 rounded-full border border-border text-sm" data-value="medium">Medium</button>
+            <button type="button" class="filter-chip px-3 py-1 rounded-full border border-border text-sm" data-value="low">Low</button>
+          </div>
+        </div>
+
+        <!-- 패키지 -->
+        <div>
+          <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">패키지</p>
+          <div class="flex flex-wrap gap-2" data-filter-group="package">
+            <button type="button" class="filter-chip chip-active px-3 py-1 rounded-full border border-border text-sm" data-value="all">전체</button>
+            <button type="button" class="filter-chip px-3 py-1 rounded-full border border-border text-sm" data-value="next">next</button>
+            <button type="button" class="filter-chip px-3 py-1 rounded-full border border-border text-sm" data-value="react">react</button>
+            <button type="button" class="filter-chip px-3 py-1 rounded-full border border-border text-sm" data-value="astro">astro</button>
+          </div>
+        </div>
+
+        <!-- 상태 -->
+        <div>
+          <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">상태</p>
+          <div class="flex flex-wrap gap-2" data-filter-group="status">
+            <button type="button" class="filter-chip chip-active px-3 py-1 rounded-full border border-border text-sm" data-value="all">전체</button>
+            <button type="button" class="filter-chip px-3 py-1 rounded-full border border-border text-sm" data-value="active">Active</button>
+            <button type="button" class="filter-chip px-3 py-1 rounded-full border border-border text-sm" data-value="stale">Stale</button>
+            <button type="button" class="filter-chip px-3 py-1 rounded-full border border-border text-sm" data-value="superseded">Superseded</button>
+            <button type="button" class="filter-chip px-3 py-1 rounded-full border border-border text-sm" data-value="archived">Archived</button>
+          </div>
+        </div>
+
+        <!-- 정렬 + 초기화 -->
+        <div class="flex items-center justify-between flex-wrap gap-3 pt-2">
+          <label class="text-sm text-gray-700">
+            정렬:
+            <select id="sort-select" class="ml-2 px-3 py-1.5 border border-border rounded-md text-sm bg-surface">
+              <option value="latest">최신순</option>
+              <option value="severity">심각도 높은 순</option>
+            </select>
+          </label>
+          <button id="reset-filter" type="button" class="text-sm text-gray-500 hover:text-gray-900 underline">필터 초기화</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Advisory 카드 목록 -->
+    <section aria-label="Advisory 목록" class="grid grid-cols-1 lg:grid-cols-2 gap-4" id="advisory-list">
+      <!-- 카드 1: CRITICAL Active -->
+      <article class="advisory-card bg-surface border border-border rounded-2xl p-5 relative hover:border-blue-500 transition-colors"
+               data-severity="critical" data-package="next" data-status="active" data-published="2025-03-21">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800" aria-label="심각도: Critical (9.1)">CRITICAL</span>
+          <span class="px-2 py-0.5 rounded-md text-xs bg-gray-100 text-gray-700">CVSS 9.1</span>
+        </div>
+        <h3 class="text-lg font-bold text-gray-900 mb-2 leading-snug">
+          <a href="./B-detail-active.html" class="stretched-link before:absolute before:inset-0">
+            Next.js 미들웨어 인증 우회
+          </a>
+        </h3>
+        <p class="text-xs font-mono text-gray-500 mb-3">CVE-2025-29927 · GHSA-f82v-jwr5-mffw</p>
+        <dl class="text-sm text-gray-600 space-y-1">
+          <div class="flex gap-2"><dt>패키지:</dt><dd class="font-mono text-gray-900">next</dd></div>
+          <div class="flex gap-2"><dt>발행:</dt><dd>2025-03-21</dd></div>
+          <div class="flex gap-2"><dt>상태:</dt><dd><span class="inline-flex items-center px-2 py-0.5 rounded text-xs bg-green-100 text-green-800">Active</span></dd></div>
+        </dl>
+        <span class="block text-right text-sm font-semibold text-blue-700 mt-3">자세히 보기 →</span>
+      </article>
+
+      <!-- 카드 2: HIGH (마이그레이션 예시) -->
+      <article class="advisory-card bg-surface border border-border rounded-2xl p-5 relative hover:border-blue-500 transition-colors"
+               data-severity="high" data-package="react" data-status="active" data-published="2026-01-15">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-orange-100 text-orange-800" aria-label="심각도: High (7.5)">HIGH</span>
+          <span class="px-2 py-0.5 rounded-md text-xs bg-gray-100 text-gray-700">CVSS 7.5</span>
+          <span class="px-2 py-0.5 rounded-md text-xs bg-purple-100 text-purple-800">migration</span>
+        </div>
+        <h3 class="text-lg font-bold text-gray-900 mb-2 leading-snug">
+          <a href="#" class="stretched-link before:absolute before:inset-0">
+            React 19 마이그레이션 가이드 (Breaking Changes)
+          </a>
+        </h3>
+        <p class="text-xs font-mono text-gray-500 mb-3">REACT-19-MIGRATION</p>
+        <dl class="text-sm text-gray-600 space-y-1">
+          <div class="flex gap-2"><dt>패키지:</dt><dd class="font-mono text-gray-900">react</dd></div>
+          <div class="flex gap-2"><dt>발행:</dt><dd>2026-01-15</dd></div>
+          <div class="flex gap-2"><dt>상태:</dt><dd><span class="inline-flex items-center px-2 py-0.5 rounded text-xs bg-green-100 text-green-800">Active</span></dd></div>
+        </dl>
+        <span class="block text-right text-sm font-semibold text-blue-700 mt-3">자세히 보기 →</span>
+      </article>
+
+      <!-- 카드 3: MEDIUM -->
+      <article class="advisory-card bg-surface border border-border rounded-2xl p-5 relative hover:border-blue-500 transition-colors"
+               data-severity="medium" data-package="astro" data-status="active" data-published="2026-02-20">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800" aria-label="심각도: Medium (5.4)">MEDIUM</span>
+          <span class="px-2 py-0.5 rounded-md text-xs bg-gray-100 text-gray-700">CVSS 5.4</span>
+        </div>
+        <h3 class="text-lg font-bold text-gray-900 mb-2 leading-snug">
+          <a href="#" class="stretched-link before:absolute before:inset-0">
+            Astro Dev Server XSS 취약점
+          </a>
+        </h3>
+        <p class="text-xs font-mono text-gray-500 mb-3">CVE-2026-XXXX</p>
+        <dl class="text-sm text-gray-600 space-y-1">
+          <div class="flex gap-2"><dt>패키지:</dt><dd class="font-mono text-gray-900">astro</dd></div>
+          <div class="flex gap-2"><dt>발행:</dt><dd>2026-02-20</dd></div>
+          <div class="flex gap-2"><dt>상태:</dt><dd><span class="inline-flex items-center px-2 py-0.5 rounded text-xs bg-green-100 text-green-800">Active</span></dd></div>
+        </dl>
+        <span class="block text-right text-sm font-semibold text-blue-700 mt-3">자세히 보기 →</span>
+      </article>
+
+      <!-- 카드 4: STALE 상태 -->
+      <article class="advisory-card bg-surface border border-border rounded-2xl p-5 relative hover:border-blue-500 transition-colors"
+               data-severity="high" data-package="next" data-status="stale" data-published="2024-09-01">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-orange-100 text-orange-800" aria-label="심각도: High (7.0)">HIGH</span>
+          <span class="px-2 py-0.5 rounded-md text-xs bg-gray-100 text-gray-700">CVSS 7.0</span>
+        </div>
+        <h3 class="text-lg font-bold text-gray-900 mb-2 leading-snug">
+          <a href="./B-detail-stale.html" class="stretched-link before:absolute before:inset-0">
+            Next.js Image Optimization SSRF
+          </a>
+        </h3>
+        <p class="text-xs font-mono text-gray-500 mb-3">CVE-2024-46982</p>
+        <dl class="text-sm text-gray-600 space-y-1">
+          <div class="flex gap-2"><dt>패키지:</dt><dd class="font-mono text-gray-900">next</dd></div>
+          <div class="flex gap-2"><dt>발행:</dt><dd>2024-09-01</dd></div>
+          <div class="flex gap-2"><dt>상태:</dt><dd><span class="inline-flex items-center px-2 py-0.5 rounded text-xs bg-amber-100 text-amber-800">Stale</span></dd></div>
+        </dl>
+        <span class="block text-right text-sm font-semibold text-blue-700 mt-3">자세히 보기 →</span>
+      </article>
+    </section>
+
+    <!-- 빈 상태 (필터 결과 0건일 때 표시) -->
+    <section id="empty-state"
+             class="hidden mt-6 rounded-2xl border border-dashed border-border bg-surface py-16 text-center"
+             aria-live="polite">
+      <svg aria-hidden="true" class="mx-auto mb-4 h-10 w-10 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+      </svg>
+      <p class="text-gray-700 font-medium mb-1">현재 조건에 해당하는 advisory가 없습니다.</p>
+      <p class="text-sm text-gray-500 mb-4">필터를 변경하거나 전체 보기를 선택하세요.</p>
+      <button type="button" id="empty-reset" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-md transition-colors">
+        필터 초기화
+      </button>
+    </section>
+
+    <!-- 데모: 빈 상태 미리보기 (어노테이션) -->
+    <section aria-label="빈 상태 데모 (시안 검토용)" class="mt-12 pt-8 border-t border-dashed border-border">
+      <p class="text-xs text-gray-500 mb-3 font-mono">
+        ↓ 시안 검토용: 필터 결과 0건 시 표시되는 빈 상태(위 영역과 동일 — 항상 표시 데모)
+      </p>
+      <div class="rounded-2xl border border-dashed border-border bg-surface py-12 text-center">
+        <svg aria-hidden="true" class="mx-auto mb-4 h-10 w-10 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+        </svg>
+        <p class="text-gray-700 font-medium mb-1">현재 조건에 해당하는 advisory가 없습니다.</p>
+        <p class="text-sm text-gray-500 mb-4">필터를 변경하거나 전체 보기를 선택하세요.</p>
+        <button type="button" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-md transition-colors">
+          필터 초기화
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="border-t border-border bg-surface mt-12">
+    <div class="mx-auto max-w-7xl px-6 py-6 text-xs text-gray-500">
+      © 2026 ConfigDeck. Advisory 콘텐츠는 GHSA(CC-BY-4.0), NVD(Public Domain), MITRE CVE(royalty-free) 데이터를 기반으로 합니다.
+    </div>
+  </footer>
+
+  <script>
+    // -------- 필터 상태 --------
+    const state = { severity: 'all', package: 'all', status: 'all', sort: 'latest' };
+
+    // 초기 URL → 상태 로드
+    function loadStateFromURL() {
+      const sp = new URLSearchParams(location.search);
+      ['severity', 'package', 'status', 'sort'].forEach(k => {
+        const v = sp.get(k); if (v) state[k] = v;
+      });
+    }
+
+    // 상태 → URL 동기화 (history.replaceState — 새 히스토리 항목 X)
+    function syncURL() {
+      const sp = new URLSearchParams();
+      if (state.severity !== 'all') sp.set('severity', state.severity);
+      if (state.package !== 'all') sp.set('package', state.package);
+      if (state.status !== 'all') sp.set('status', state.status);
+      if (state.sort !== 'latest') sp.set('sort', state.sort);
+      const q = sp.toString();
+      const url = location.pathname + (q ? '?' + q : '');
+      history.replaceState(null, '', url);
+    }
+
+    // 칩 활성 표시 갱신
+    function refreshChips() {
+      document.querySelectorAll('[data-filter-group]').forEach(group => {
+        const key = group.dataset.filterGroup;
+        group.querySelectorAll('.filter-chip').forEach(btn => {
+          const active = btn.dataset.value === state[key];
+          btn.classList.toggle('chip-active', active);
+          btn.classList.toggle('bg-surface', !active);
+          btn.setAttribute('aria-pressed', String(active));
+        });
+      });
+      document.getElementById('sort-select').value = state.sort;
+    }
+
+    // 필터 적용
+    const SEV_RANK = { critical: 4, high: 3, medium: 2, low: 1 };
+    function applyFilter() {
+      const cards = Array.from(document.querySelectorAll('.advisory-card'));
+      let visible = cards.filter(c =>
+        (state.severity === 'all' || c.dataset.severity === state.severity) &&
+        (state.package === 'all' || c.dataset.package === state.package) &&
+        (state.status === 'all' || c.dataset.status === state.status)
+      );
+
+      // 정렬
+      if (state.sort === 'severity') {
+        visible.sort((a, b) => (SEV_RANK[b.dataset.severity] || 0) - (SEV_RANK[a.dataset.severity] || 0));
+      } else {
+        visible.sort((a, b) => (b.dataset.published || '').localeCompare(a.dataset.published || ''));
+      }
+
+      // 표시/순서 적용
+      const list = document.getElementById('advisory-list');
+      cards.forEach(c => c.classList.add('hidden'));
+      visible.forEach(c => { c.classList.remove('hidden'); list.appendChild(c); });
+
+      document.getElementById('empty-state').classList.toggle('hidden', visible.length > 0);
+      document.getElementById('advisory-list').classList.toggle('hidden', visible.length === 0);
+    }
+
+    // 칩 클릭
+    document.querySelectorAll('[data-filter-group]').forEach(group => {
+      const key = group.dataset.filterGroup;
+      group.querySelectorAll('.filter-chip').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state[key] = btn.dataset.value;
+          syncURL(); refreshChips(); applyFilter();
+        });
+      });
+    });
+
+    // 정렬
+    document.getElementById('sort-select').addEventListener('change', e => {
+      state.sort = e.target.value;
+      syncURL(); applyFilter();
+    });
+
+    // 초기화
+    function resetAll() {
+      state.severity = 'all'; state.package = 'all'; state.status = 'all'; state.sort = 'latest';
+      syncURL(); refreshChips(); applyFilter();
+    }
+    document.getElementById('reset-filter').addEventListener('click', resetAll);
+    document.getElementById('empty-reset').addEventListener('click', resetAll);
+
+    // 부팅
+    loadStateFromURL();
+    refreshChips();
+    applyFilter();
+  </script>
+</body>
+</html>

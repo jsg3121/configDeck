@@ -44,3 +44,4 @@
 | [0017](records/ADR-0017-ai-config-file-format-priority.md) | AI 도구 설정 파일 형식 우선순위 (AGENTS.md 1순위) | 승인됨 | 2026-04-30 |
 | [0018](records/ADR-0018-agent-skills-catalog.md)           | Agent Skills 카탈로그 채택 및 P0 8종 범위         | 승인됨 | 2026-04-30 |
 | [0019](records/ADR-0019-ai-config-ia-redesign.md)          | AI Config IA 재설계: 카탈로그 + 통합 생성기 분리  | 승인됨 | 2026-05-01 |
+| [0020](records/ADR-0020-advisory-content-schema.md)        | Advisory 콘텐츠 스키마와 진단 룰셋 SSOT           | 제안됨 | 2026-05-09 |

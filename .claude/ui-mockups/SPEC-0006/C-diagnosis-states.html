@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>진단기 상태 갤러리 (시안) | ConfigDeck Advisory</title>
+  <meta name="description" content="AdvisoryDiagnosis 컴포넌트 4상태(IDLE / AFFECTED / SAFE / ERROR) + 비활성 + package.json 탭 시연." />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style type="text/tailwindcss">
+    @theme {
+      --color-primary: #3b82f6;
+      --color-primary-hover: #2563eb;
+      --color-surface: #ffffff;
+      --color-surface-alt: #f8fafc;
+      --color-border: #e2e8f0;
+      --color-code-bg: #1e293b;
+      --font-sans: 'Inter', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+    body { font-family: var(--font-sans); color: #0f172a; }
+    code, pre { font-family: var(--font-mono); }
+  </style>
+</head>
+<body class="bg-surface-alt min-h-screen">
+
+  <header class="border-b border-border bg-surface">
+    <div class="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
+      <a href="./A-catalog.html" class="flex items-center gap-2 font-bold text-gray-900">
+        <span class="inline-block w-7 h-7 rounded bg-primary"></span>
+        <span>ConfigDeck</span>
+      </a>
+      <p class="text-xs text-gray-500">진단기 상태 갤러리 (검토용 시안)</p>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-7xl px-6 py-8">
+
+    <header class="mb-8">
+      <p class="text-xs text-gray-500 mb-1 font-mono">SPEC-0006-design §4.2 / §5</p>
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">AdvisoryDiagnosis 진단기 상태 갤러리</h1>
+      <p class="text-gray-600 max-w-3xl">
+        진단기 컴포넌트의 5가지 상태(IDLE, AFFECTED, SAFE, ERROR, DISABLED)와
+        package.json 붙여넣기 탭, 인터랙티브 시연을 한 페이지에 배치합니다. 시안 검토용으로만 사용되며,
+        실제 코드 적용 시에는 `AdvisoryDiagnosis.svelte`로 분리됩니다.
+      </p>
+    </header>
+
+    <!-- ========== 인터랙티브 진단기 (실제 입력 → 상태 전환) ========== -->
+    <section class="relative overflow-hidden rounded-2xl border-2 border-blue-300 bg-linear-to-br from-blue-50 to-indigo-50 p-6 sm:p-8 mb-10 shadow-sm">
+      <div class="flex items-center gap-2 mb-2">
+        <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white" aria-hidden="true">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </span>
+        <span class="text-xs font-semibold uppercase tracking-wider text-blue-700">인터랙티브 시연</span>
+      </div>
+      <h2 class="text-2xl font-bold text-gray-900 mb-2">실제 입력 → 상태 전환</h2>
+      <p class="text-sm text-gray-700 mb-5">
+        다음 입력값으로 각 상태를 시연할 수 있습니다:
+        <code class="font-mono bg-white px-1.5 py-0.5 rounded border border-blue-100">14.2.20</code> (AFFECTED) ·
+        <code class="font-mono bg-white px-1.5 py-0.5 rounded border border-blue-100">15.2.5</code> (SAFE) ·
+        <code class="font-mono bg-white px-1.5 py-0.5 rounded border border-blue-100">14.abc</code> (ERROR) ·
+        빈 값(IDLE 유지)
+      </p>
+
+      <!-- 입력 방식 세그먼티드 컨트롤 -->
+      <div class="inline-flex p-1 mb-4 rounded-lg bg-blue-100 border border-blue-200" role="tablist" aria-label="입력 방식 선택">
+        <button type="button" role="tab" aria-selected="true" data-target="live-panel-version"
+                id="live-tab-version"
+                class="live-tab inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-md transition-colors bg-white text-blue-700 shadow-sm ring-1 ring-blue-200">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+          버전 문자열
+        </button>
+        <button type="button" role="tab" aria-selected="false" data-target="live-panel-pkg"
+                id="live-tab-pkg"
+                class="live-tab inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-md transition-colors text-blue-900/70 hover:text-blue-900">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+          package.json 붙여넣기
+        </button>
+      </div>
+
+      <!-- 버전 문자열 패널 -->
+      <div id="live-panel-version">
+        <div class="flex flex-col sm:flex-row gap-2">
+          <input id="live-version-input" type="text" placeholder="예: 14.2.20" aria-label="next 패키지 버전"
+                 class="flex-1 px-4 py-3 border-2 border-blue-200 bg-white rounded-md text-base font-mono focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-200" />
+          <button id="live-submit" type="button"
+                  class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-md transition-colors shadow">진단하기</button>
+        </div>
+        <p class="text-xs text-gray-600 mt-2">ⓘ <code class="font-mono">next</code> 패키지 버전을 입력하면 영향 여부를 즉시 확인합니다.</p>
+      </div>
+
+      <!-- package.json 패널 -->
+      <div id="live-panel-pkg" class="hidden">
+        <textarea id="live-pkg-input" rows="8" aria-label="package.json 붙여넣기"
+                  placeholder='{ "dependencies": { "next": "14.2.20" } }'
+                  class="w-full px-4 py-3 border-2 border-blue-200 bg-white rounded-md text-sm font-mono focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-200"></textarea>
+        <div class="flex items-center justify-between mt-2">
+          <p class="text-xs text-gray-600">ⓘ <code class="font-mono">next</code> 패키지의 버전을 자동으로 추출합니다.</p>
+          <button id="live-submit-pkg" type="button"
+                  class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-md transition-colors shadow">진단하기</button>
+        </div>
+      </div>
+
+      <div id="live-result" class="mt-5" aria-live="polite"></div>
+
+      <!-- 면책 조항 (상시 표시) -->
+      <div class="mt-6 pt-5 border-t border-blue-200 text-xs text-gray-600 leading-relaxed">
+        이 진단 결과는 정보 제공 목적이며 무보증(AS IS)으로 제공됩니다. 실제 보안 위험 평가는 npm audit, Snyk,
+        Dependabot 등의 공식 도구와 관리자 검토를 병행하세요.
+        <a href="https://github.com/advisories/GHSA-f82v-jwr5-mffw"
+           target="_blank" rel="noopener noreferrer"
+           class="text-blue-700 hover:text-blue-800 font-medium">공식 advisory에서 확인 ↗</a>
+      </div>
+    </section>
+
+    <!-- ========== 4상태 정적 갤러리 ========== -->
+    <header class="mb-4">
+      <h2 class="text-2xl font-bold text-gray-900">상태별 시각 시안</h2>
+      <p class="text-sm text-gray-500">각 상태의 결과 카드 디자인을 한눈에 비교합니다.</p>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+      <!-- IDLE -->
+      <section class="bg-surface border border-border rounded-2xl p-6">
+        <p class="text-xs font-mono text-gray-500 mb-2">상태 1 / IDLE</p>
+        <h3 class="text-lg font-bold text-gray-900 mb-3">입력 전 (idle)</h3>
+
+        <div class="flex flex-col sm:flex-row gap-2 mb-3">
+          <input type="text" placeholder="예: 14.2.20" disabled
+                 class="flex-1 px-3 py-2 border border-border rounded-md text-sm font-mono bg-surface-alt"
+                 aria-label="시안: idle 상태 입력 필드" />
+          <button type="button" class="px-5 py-2 bg-blue-600 text-white text-sm font-semibold rounded-md opacity-90">진단하기</button>
+        </div>
+        <p class="text-xs text-gray-500">결과 영역은 비어있고, 면책조항만 하단에 노출됩니다.</p>
+        <div class="mt-4 pt-4 border-t border-border text-[11px] text-gray-500">
+          이 진단 결과는 정보 제공 목적이며 무보증(AS IS)으로 제공됩니다. (idle 상태에서도 표시)
+        </div>
+      </section>
+
+      <!-- AFFECTED -->
+      <section class="bg-surface border border-border rounded-2xl p-6">
+        <p class="text-xs font-mono text-gray-500 mb-2">상태 2 / AFFECTED</p>
+        <h3 class="text-lg font-bold text-gray-900 mb-3">영향받음</h3>
+
+        <div class="flex flex-col sm:flex-row gap-2 mb-4">
+          <input type="text" value="14.2.20" disabled
+                 class="flex-1 px-3 py-2 border border-border rounded-md text-sm font-mono bg-surface-alt" />
+          <button type="button" class="px-5 py-2 bg-gray-200 text-gray-700 text-sm font-semibold rounded-md">다시 진단</button>
+        </div>
+
+        <div class="border border-red-200 bg-red-50 rounded-xl p-5">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-600 text-white text-xs font-bold" aria-hidden="true">!</span>
+            <p class="font-bold text-red-900">영향받음</p>
+          </div>
+          <p class="text-sm text-red-900 mb-2"><code class="font-mono">next@14.2.20</code>은 이 취약점의 영향을 받습니다.</p>
+          <p class="text-sm text-red-800 mb-2">영향 범위: <code class="font-mono">&gt;=14.0.0 &lt;14.2.25</code></p>
+          <p class="text-sm text-red-800 mb-3">권장 패치: <code class="font-mono font-semibold">next@14.2.25</code> 이상</p>
+          <div class="bg-slate-900 rounded-md p-3 text-xs text-slate-100 font-mono">npm install next@14.2.25</div>
+        </div>
+
+        <div class="mt-4 pt-4 border-t border-border text-[11px] text-gray-500">
+          이 진단 결과는 정보 제공 목적이며 무보증(AS IS)으로 제공됩니다.
+        </div>
+      </section>
+
+      <!-- SAFE -->
+      <section class="bg-surface border border-border rounded-2xl p-6">
+        <p class="text-xs font-mono text-gray-500 mb-2">상태 3 / SAFE</p>
+        <h3 class="text-lg font-bold text-gray-900 mb-3">안전함</h3>
+
+        <div class="flex flex-col sm:flex-row gap-2 mb-4">
+          <input type="text" value="15.2.5" disabled
+                 class="flex-1 px-3 py-2 border border-border rounded-md text-sm font-mono bg-surface-alt" />
+          <button type="button" class="px-5 py-2 bg-gray-200 text-gray-700 text-sm font-semibold rounded-md">다시 진단</button>
+        </div>
+
+        <div class="border border-green-200 bg-green-50 rounded-xl p-5">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-600 text-white text-xs font-bold" aria-hidden="true">✓</span>
+            <p class="font-bold text-green-900">안전함</p>
+          </div>
+          <p class="text-sm text-green-900 mb-1"><code class="font-mono">next@15.2.5</code>는 이 취약점의 영향을 받지 않습니다.</p>
+          <p class="text-sm text-green-800">패치 버전 15.2.3 이상이므로 안전합니다. 최신 버전을 계속 유지하세요.</p>
+        </div>
+
+        <div class="mt-4 pt-4 border-t border-border text-[11px] text-gray-500">
+          이 진단 결과는 정보 제공 목적이며 무보증(AS IS)으로 제공됩니다.
+        </div>
+      </section>
+
+      <!-- ERROR -->
+      <section class="bg-surface border border-border rounded-2xl p-6">
+        <p class="text-xs font-mono text-gray-500 mb-2">상태 4 / ERROR</p>
+        <h3 class="text-lg font-bold text-gray-900 mb-3">입력 오류</h3>
+
+        <div class="flex flex-col sm:flex-row gap-2 mb-2">
+          <input type="text" value="14.abc" disabled
+                 class="flex-1 px-3 py-2 border-2 border-red-300 rounded-md text-sm font-mono bg-red-50" />
+          <button type="button" class="px-5 py-2 bg-blue-600 text-white text-sm font-semibold rounded-md opacity-90">진단하기</button>
+        </div>
+        <p class="text-xs text-red-600 mb-4">⚠ 올바른 버전 형식이 아닙니다. 예: 14.2.20</p>
+
+        <div class="border border-gray-200 bg-gray-50 rounded-xl p-5">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-600 text-white text-xs font-bold" aria-hidden="true">i</span>
+            <p class="font-bold text-gray-900">입력 오류</p>
+          </div>
+          <p class="text-sm text-gray-700">유효한 semver 형식으로 입력해주세요. 예: <code class="font-mono">14.2.20</code>, <code class="font-mono">15.0.0-canary.1</code></p>
+        </div>
+
+        <div class="mt-4 pt-4 border-t border-border text-[11px] text-gray-500">
+          이 진단 결과는 정보 제공 목적이며 무보증(AS IS)으로 제공됩니다.
+        </div>
+      </section>
+
+      <!-- DISABLED (archived/superseded) -->
+      <section class="bg-surface border border-border rounded-2xl p-6 md:col-span-2">
+        <p class="text-xs font-mono text-gray-500 mb-2">상태 5 / DISABLED — archived 또는 superseded</p>
+        <h3 class="text-lg font-bold text-gray-900 mb-3">진단기 비활성</h3>
+
+        <div class="opacity-50 pointer-events-none mb-4" aria-hidden="true">
+          <div class="flex flex-col sm:flex-row gap-2">
+            <input type="text" placeholder="예: 14.2.20" disabled
+                   class="flex-1 px-3 py-2 border border-border rounded-md text-sm font-mono bg-gray-50 text-gray-400 cursor-not-allowed" />
+            <button type="button" disabled class="px-5 py-2 bg-gray-300 text-gray-500 text-sm font-semibold rounded-md cursor-not-allowed">진단하기</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- archived 사유 -->
+          <div class="border border-gray-300 bg-gray-100 rounded-xl p-4 text-sm text-gray-800">
+            <p class="font-semibold mb-1.5">archived 사유</p>
+            <p class="mb-2">이 advisory가 다루는 버전은 EOL입니다. 최신 Next.js 버전으로 마이그레이션을 권장합니다.</p>
+            <a href="#" class="text-blue-700 hover:text-blue-800 text-xs font-semibold">최신 버전 확인 →</a>
+          </div>
+          <!-- superseded 사유 -->
+          <div class="border border-blue-200 bg-blue-50 rounded-xl p-4 text-sm text-blue-900">
+            <p class="font-semibold mb-1.5">superseded 사유</p>
+            <p class="mb-2">이 advisory는 후속 advisory로 대체되었습니다. 진단은 후속 advisory에서 이용하세요.</p>
+            <a href="./B-detail-active.html" class="text-blue-700 hover:text-blue-800 text-xs font-semibold">후속 advisory 진단하기 →</a>
+          </div>
+        </div>
+
+        <div class="mt-4 pt-4 border-t border-border text-[11px] text-gray-500">
+          이 진단 결과는 정보 제공 목적이며 무보증(AS IS)으로 제공됩니다. (DISABLED 상태에서도 면책 표기 유지)
+        </div>
+      </section>
+
+    </div>
+
+    <!-- 상태 전이 다이어그램 (텍스트 박스) -->
+    <section class="mt-10 bg-surface border border-border rounded-2xl p-6">
+      <h2 class="text-xl font-bold text-gray-900 mb-3">상태 전이 다이어그램 (텍스트)</h2>
+      <pre class="text-xs text-gray-700 leading-relaxed overflow-x-auto"><code>페이지 로드
+   │
+   ├─ status === 'archived' || 'superseded' → DISABLED
+   └─ 그 외 → IDLE
+                │
+        ┌───────┼───────────────────────────┐
+        │       │                           │
+   [버전 입력]  [package.json 붙여넣기]    [진단하기 클릭]
+        │       │                           │
+        │  [패키지 추출]                    │
+        │       │                           │
+        └───────┴───────────────────────────┘
+                │
+        [진단하기 클릭 / Enter]
+                │
+   ┌────────────┼────────────────┐
+   │            │                │
+[invalid]   [satisfies=true]  [satisfies=false]
+   │            │                │
+   ▼            ▼                ▼
+ ERROR      AFFECTED            SAFE
+   │            │                │
+   └────────────┴────────────────┘
+                │
+        [입력값 변경 / "다시 진단"]
+                │
+                ▼
+              IDLE</code></pre>
+    </section>
+
+    <p class="mt-6 text-xs text-gray-500">
+      ← <a href="./A-catalog.html" class="text-blue-700 hover:text-blue-800">카탈로그로 돌아가기</a>
+    </p>
+
+  </main>
+
+  <footer class="border-t border-border bg-surface mt-12">
+    <div class="mx-auto max-w-7xl px-6 py-6 text-xs text-gray-500">
+      © 2026 ConfigDeck — 시안 (검토용)
+    </div>
+  </footer>
+
+  <script>
+    // -------- advisory 데이터 (시안 시연용) --------
+    const advisory = {
+      package: "next",
+      affected: [
+        { range: ">=15.0.0 <15.2.3" },
+        { range: ">=14.0.0 <14.2.25" },
+        { range: ">=13.0.0 <13.5.9" },
+        { range: ">=12.0.0 <12.3.5" },
+      ],
+      patched: ["12.3.5", "13.5.9", "14.2.25", "15.2.3"],
+    };
+
+    function parseSemver(v) {
+      const m = String(v).trim().match(/^(\d+)\.(\d+)\.(\d+)(?:[-+].*)?$/);
+      return m ? { major: +m[1], minor: +m[2], patch: +m[3] } : null;
+    }
+    function cmp(a, b) {
+      if (a.major !== b.major) return a.major - b.major;
+      if (a.minor !== b.minor) return a.minor - b.minor;
+      return a.patch - b.patch;
+    }
+    function satisfies(version, range) {
+      const v = parseSemver(version); if (!v) return null;
+      const m = range.match(/^>=([\d.]+)\s+<([\d.]+)$/); if (!m) return null;
+      const lo = parseSemver(m[1]); const hi = parseSemver(m[2]);
+      return cmp(v, lo) >= 0 && cmp(v, hi) < 0;
+    }
+    function recommendedPatch(version) {
+      const v = parseSemver(version); if (!v) return advisory.patched[0];
+      const candidate = advisory.patched.map(parseSemver).filter(p => p.major === v.major).sort(cmp);
+      return candidate.length ? `${v.major}.${candidate[0].minor}.${candidate[0].patch}` : advisory.patched[advisory.patched.length - 1];
+    }
+    function diagnose(version) {
+      const v = parseSemver(version);
+      if (!v) return { state: "ERROR", message: "유효한 버전 형식이 아닙니다." };
+      for (const a of advisory.affected) {
+        if (satisfies(version, a.range)) return { state: "AFFECTED", range: a.range, patch: recommendedPatch(version), version };
+      }
+      return { state: "SAFE", version };
+    }
+
+    function render(r) {
+      const el = document.getElementById('live-result');
+      if (!r) { el.innerHTML = ''; return; }
+      if (r.state === "AFFECTED") {
+        el.innerHTML = `
+          <div class="border border-red-200 bg-red-50 rounded-xl p-5">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-600 text-white text-xs font-bold" aria-hidden="true">!</span>
+              <p class="font-bold text-red-900">영향받음</p>
+            </div>
+            <p class="text-sm text-red-900 mb-2"><code class="font-mono">next@${r.version}</code>은 이 취약점의 영향을 받습니다.</p>
+            <p class="text-sm text-red-800 mb-2">영향 범위: <code class="font-mono">${r.range}</code></p>
+            <p class="text-sm text-red-800 mb-3">권장 패치: <code class="font-mono font-semibold">next@${r.patch}</code> 이상</p>
+            <div class="bg-slate-900 rounded-md p-3 text-xs text-slate-100 font-mono">npm install next@${r.patch}</div>
+          </div>`;
+      } else if (r.state === "SAFE") {
+        el.innerHTML = `
+          <div class="border border-green-200 bg-green-50 rounded-xl p-5">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-600 text-white text-xs font-bold" aria-hidden="true">✓</span>
+              <p class="font-bold text-green-900">안전함</p>
+            </div>
+            <p class="text-sm text-green-900"><code class="font-mono">next@${r.version}</code>는 이 취약점의 영향을 받지 않습니다.</p>
+          </div>`;
+      } else {
+        el.innerHTML = `
+          <div class="border border-gray-200 bg-gray-50 rounded-xl p-5">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-600 text-white text-xs font-bold" aria-hidden="true">i</span>
+              <p class="font-bold text-gray-900">입력 오류</p>
+            </div>
+            <p class="text-sm text-gray-700">${r.message} 예: <code class="font-mono">14.2.20</code></p>
+          </div>`;
+      }
+    }
+
+    document.getElementById('live-submit').addEventListener('click', () => {
+      render(diagnose(document.getElementById('live-version-input').value));
+    });
+    document.getElementById('live-version-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') render(diagnose(e.currentTarget.value));
+    });
+    document.getElementById('live-version-input').addEventListener('input', () => render(null));
+
+    document.getElementById('live-submit-pkg').addEventListener('click', () => {
+      const raw = document.getElementById('live-pkg-input').value;
+      try {
+        const json = JSON.parse(raw);
+        const v = (json.dependencies && json.dependencies[advisory.package])
+                || (json.devDependencies && json.devDependencies[advisory.package]);
+        if (!v) {
+          render({ state: "ERROR", message: `package.json에 ${advisory.package} 패키지가 없습니다.` });
+          return;
+        }
+        const cleaned = String(v).replace(/^[^\d]*/, '');
+        render(diagnose(cleaned));
+      } catch (e) {
+        render({ state: "ERROR", message: "유효한 JSON이 아닙니다." });
+      }
+    });
+
+    const ACTIVE_CLS = ['bg-white', 'text-blue-700', 'shadow-sm', 'ring-1', 'ring-blue-200'];
+    const INACTIVE_CLS = ['text-blue-900/70', 'hover:text-blue-900'];
+    document.querySelectorAll('.live-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.live-tab').forEach(b => {
+          b.setAttribute('aria-selected', 'false');
+          b.classList.remove(...ACTIVE_CLS);
+          b.classList.add(...INACTIVE_CLS);
+        });
+        btn.setAttribute('aria-selected', 'true');
+        btn.classList.remove(...INACTIVE_CLS);
+        btn.classList.add(...ACTIVE_CLS);
+        document.getElementById('live-panel-version').classList.toggle('hidden', btn.dataset.target !== 'live-panel-version');
+        document.getElementById('live-panel-pkg').classList.toggle('hidden', btn.dataset.target !== 'live-panel-pkg');
+        render(null);
+      });
+    });
+  </script>
+</body>
+</html>
