@@ -34,11 +34,15 @@ export interface ValidationResult {
  * 마크다운 frontmatter와 본문을 분리한다.
  * 단순 정규식 기반 — gray-matter 같은 라이브러리를 도입하지 않은 이유는
  * 검증 단계에서 frontmatter 필드 존재 여부만 보면 충분하기 때문이다.
+ *
+ * `\r?\n`을 사용해 LF(`\n`)와 CRLF(`\r\n`) 양쪽 환경의 파일을 모두 지원한다.
+ * Claude API 응답은 LF만 사용하지만, 에디터 자동 변환이나 OS 차이로 CRLF가
+ * 섞일 수 있어 방어적으로 처리한다.
  */
 const splitFrontmatter = (
   markdown: string,
 ): { frontmatter: string; body: string } => {
-  const match = markdown.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/)
+  const match = markdown.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/)
   if (!match) {
     return { frontmatter: '', body: markdown }
   }
