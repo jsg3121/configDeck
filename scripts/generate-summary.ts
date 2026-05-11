@@ -412,12 +412,16 @@ export const generateArticles = async (
  *  - 날짜 prefix 제거 (frontmatter pubDate가 권위 있는 출처)
  *  - 도구명 prefix 제거 (URL 경로의 [tool]이 이미 있음)
  *  - 최대 6단어, 앞뒤 하이픈 제거
+ *  - ASCII가 아닌 제목(한국어 등)으로 slug가 빈 문자열이 되는 경우, item.id의
+ *    URL-safe 해시 접미사를 fallback으로 사용해 빈 파일명/충돌을 방지한다.
  *
  * @example
  *   generateSlug({ title: 'Announcing TypeScript 7.0 Beta', ... }) // → 'announcing-typescript-7-0-beta'
+ *   generateSlug({ title: '타입스크립트 7.0 발표', id: 'https://.../?p=5152', ... })
+ *     // → 'article-{ASCII-safe id hash}' (한글 title이라 ASCII 추출 실패 시)
  */
 export const generateSlug = (article: GeneratedArticle): string => {
-  return article.title
+  const slug = article.title
     .toLowerCase()
     .replace(/[^a-z0-9\s-]/g, '')
     .replace(/\s+/g, '-')
@@ -427,4 +431,18 @@ export const generateSlug = (article: GeneratedArticle): string => {
     .filter(Boolean)
     .slice(0, 6)
     .join('-')
+
+  if (slug) return slug
+
+  // title이 비-ASCII만으로 구성된 케이스의 fallback.
+  // item.id(보통 URL 또는 GUID)에서 알파벳/숫자/하이픈만 남겨 짧은 식별자를 만든다.
+  const idFallback = article.id
+    .replace(/^https?:\/\//i, '')
+    .replace(/[^a-zA-Z0-9-]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .toLowerCase()
+    .slice(0, 40)
+
+  return idFallback ? `article-${idFallback}` : `article-${Date.now()}`
 }
