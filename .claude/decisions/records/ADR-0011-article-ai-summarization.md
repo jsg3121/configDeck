@@ -1,8 +1,10 @@
 # ADR-0011: 아티클 AI 요약 자동화 전략
 
-- 상태: 승인됨
+- 상태: 부분 대체됨 (요약 모델·분량 결정은 [ADR-0021](ADR-0021-article-editorial-commentary-model.md)에서 정정)
 - 날짜: 2026-04-13
 - 의사결정자: jsg3121
+
+> ⚠️ **2026-05-11 정정 안내**: 본 ADR의 결정 1(Gemini 모델 채택)과 결정 3(2-3문장 요약 프롬프트)은 실제 구현과 다르게 운영되어 왔으며, [ADR-0021](ADR-0021-article-editorial-commentary-model.md)에서 정식 정정되었다. RSS 수집·diff·GitHub Actions 파이프라인 구조 등 결정 2(파이프라인)와 결정 4(Fallback)는 그대로 유효하다.
 
 ## 맥락 (Context)
 
