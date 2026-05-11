@@ -243,8 +243,13 @@ const callClaudeAPI = async (client: Anthropic, prompt: string): Promise<APICall
 
     let markdown = textBlock.text.trim()
 
-    // 모델이 ```markdown ... ``` 코드펜스로 감싸 응답하는 케이스 정규화
-    const fencedMatch = markdown.match(/^```(?:markdown)?\s*\n([\s\S]*?)\n```\s*$/)
+    // 모델이 ```markdown ... ``` 코드펜스로 감싸 응답하는 케이스 정규화.
+    // CRLF/LF 양쪽 지원을 위해 `\r?\n` 사용.
+    // ^/$ 앵커를 유지하는 이유: 응답 전체가 코드펜스로 감싸진 경우만 매칭한다.
+    // 앵커를 제거하면 본문 안에 ``` 코드블록이 있는 경우(드물지만 가능) 오매칭
+    // 위험이 있다. 프롬프트가 "Output ONLY the markdown"을 명시하므로 앞뒤
+    // 설명 텍스트 케이스는 발생 가능성이 낮다.
+    const fencedMatch = markdown.match(/^```(?:markdown)?\s*\r?\n([\s\S]*?)\r?\n```\s*$/)
     if (fencedMatch) {
       markdown = fencedMatch[1].trim()
     }
