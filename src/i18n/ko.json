@@ -242,7 +242,10 @@
     "latestUpdates": "최신 업데이트",
     "allTools": "전체",
     "noArticles": "아직 아티클이 없습니다. 곧 업데이트 소식이 추가됩니다!",
-    "viewOriginal": "원문 보기",
+    "commentaryLabel": "{{source}} 발표에 대한 ConfigDeck 코멘터리",
+    "sourceCalloutNote": "이 글은 아래 발표에 대한 ConfigDeck 편집팀의 코멘터리입니다.",
+    "sourceCalloutLink": "{{source}}에서 원문 전체 보기",
+    "sourceCalloutAriaLabel": "원문 안내",
     "generateConfig": "설정 생성하기",
     "tools": {
       "eslint": "ESLint",

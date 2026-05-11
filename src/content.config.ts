@@ -4,8 +4,13 @@ import { glob } from 'astro/loaders'
 /**
  * 아티클 컬렉션 스키마
  *
- * RSS에서 수집한 개발 도구 업데이트를 저장한다.
- * AI가 생성한 요약, 상세 설명, 하이라이트 등을 포함한다.
+ * RSS에서 수집한 개발 도구 업데이트를 Editorial Commentary 형식으로 저장한다
+ * (SPEC-0007 / ADR-0021).
+ *
+ * 기존 124개의 환각 형식 아티클은 v1.6.0 페이즈 4(2026-05-11)에서 모두 삭제되었고,
+ * 이 시점부터 신규 발행되는 모든 article은 새 파이프라인(generate-summary)이 만든
+ * Editorial Commentary 형식이다. 따라서 `sourceName`/`sourceUrl`/`contentType`을
+ * required로 전환하여 누락 시 빌드 단계에서 즉시 차단한다.
  */
 const articlesCollection = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/articles' }),
@@ -32,6 +37,10 @@ const articlesCollection = defineCollection({
     link: z.string().url(),
     pubDate: z.coerce.date(),
     summary: z.string(),
+    // ↓ SPEC-0007 Editorial Commentary 모델 — 모두 required
+    sourceName: z.string(),
+    sourceUrl: z.string().url(),
+    contentType: z.enum(['commentary', 'original', 'tutorial']).default('commentary'),
   }),
 })
 

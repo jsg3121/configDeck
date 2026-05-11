@@ -1,16 +1,27 @@
 /**
  * 아티클 업데이트 메인 스크립트
  *
- * RSS 피드 수집 → 신규 항목 필터링 → AI 마크다운 생성 → 파일 저장
+ * RSS 피드 수집 → 신규 항목 필터링 → AI 마크다운 생성 (검증 포함) → 파일 저장
+ *
+ * v1.6.0 변경 사항 (SPEC-0007 / ADR-0021):
+ *  - generate-summary가 자동 검증을 거치므로 article은 통과한 것만 들어온다.
+ *  - 검증 실패한 결과물은 review queue 디렉토리로 격리해 본 콘텐츠 디렉토리에는
+ *    들어가지 않는다 (사이트 빌드에 영향 없음).
  */
 
 import * as fs from 'node:fs'
 import * as path from 'node:path'
 
-import { fetchAllFeeds, filterNewItems, selectBalanced, type Tool } from './fetch-rss'
-import { generateArticles, generateSlug, type GeneratedArticle } from './generate-summary'
+import { fetchAllFeeds, filterNewItems, selectBalanced, type RSSItem, type Tool } from './fetch-rss'
+import {
+  generateArticles,
+  generateSlug,
+  type GeneratedArticle,
+} from './generate-summary'
+import type { GenerationOutcome } from './generate-summary'
 
 const ARTICLES_DIR = path.join(process.cwd(), 'src/content/articles')
+const REVIEW_QUEUE_DIR = path.join(ARTICLES_DIR, '.review-queue')
 const DEPRIORITIZE_DAYS = 2
 
 /**
@@ -43,8 +54,6 @@ const getExistingArticleIds = (): Set<string> => {
 
 /**
  * 최근 N일간 저장된 아티클의 도구 목록을 추출한다.
- * 파일명 prefix({YYYY-MM-DD}-)와 cutoff 날짜를 문자열로 비교하여 타임존 영향을 제거한다.
- * frontmatter의 tool 필드를 읽어 도구 집합을 만든다.
  */
 const getRecentlyUsedTools = (days: number): Set<Tool> => {
   const tools = new Set<Tool>()
@@ -66,7 +75,6 @@ const getRecentlyUsedTools = (days: number): Set<Tool> => {
     for (const file of files) {
       const dateMatch = file.match(/^(\d{4}-\d{2}-\d{2})-/)
       if (!dateMatch) continue
-
       if (dateMatch[1] < cutoffStr) continue
 
       const content = fs.readFileSync(path.join(localeDir, file), 'utf-8')
@@ -81,20 +89,60 @@ const getRecentlyUsedTools = (days: number): Set<Tool> => {
 }
 
 /**
- * 아티클을 파일로 저장한다.
+ * 검증 통과한 아티클을 본 콘텐츠 디렉토리에 저장한다.
  */
 const saveArticle = (article: GeneratedArticle): void => {
   const localeDir = path.join(ARTICLES_DIR, article.locale)
-
   if (!fs.existsSync(localeDir)) {
     fs.mkdirSync(localeDir, { recursive: true })
   }
-
   const slug = generateSlug(article)
   const filePath = path.join(localeDir, `${slug}.md`)
-
   fs.writeFileSync(filePath, article.markdown, 'utf-8')
   console.log(`Saved: ${article.locale}/${slug}.md`)
+}
+
+/**
+ * 검증 실패한 결과물을 review queue로 격리한다 (SPEC-0007 §3.2.4).
+ *
+ * 본 콘텐츠 디렉토리(`src/content/articles/{locale}/`)에는 저장하지 않으므로
+ * Astro Content Collection의 빌드 대상에 포함되지 않는다. `.review-queue` 폴더는
+ * `src/content.config.ts`의 glob 패턴(`** /*.md`, base `articles`)이 매칭되지만,
+ * `.review-queue` 디렉토리 이름이 dotfile이라 glob 기본 동작이 무시한다.
+ *
+ * 파일명에 timestamp를 포함해 동일 item에 대한 재시도 결과가 겹치지 않게 한다.
+ */
+const saveFailureForReview = (
+  item: RSSItem,
+  locale: 'ko' | 'en',
+  outcome: GenerationOutcome,
+): void => {
+  if (!fs.existsSync(REVIEW_QUEUE_DIR)) {
+    fs.mkdirSync(REVIEW_QUEUE_DIR, { recursive: true })
+  }
+
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
+  const safeTool = item.tool.replace(/[^a-z0-9-]/gi, '')
+  const filename = `${timestamp}-${safeTool}-${locale}.md`
+  const filePath = path.join(REVIEW_QUEUE_DIR, filename)
+
+  const header = [
+    '<!--',
+    '  Generation queued for manual review.',
+    `  tool: ${item.tool}`,
+    `  locale: ${locale}`,
+    `  source: ${item.link}`,
+    `  reason: ${outcome.reason ?? 'unknown'}`,
+    outcome.lastValidation
+      ? `  issues:\n    - ${outcome.lastValidation.issues.join('\n    - ')}`
+      : '  issues: (no validation result — API failure)',
+    '-->',
+    '',
+  ].join('\n')
+
+  const body = outcome.lastMarkdown ?? '(API call produced no output)'
+  fs.writeFileSync(filePath, `${header}${body}`, 'utf-8')
+  console.log(`Queued for review: .review-queue/${filename}`)
 }
 
 /**
@@ -120,9 +168,8 @@ const main = async (): Promise<void> => {
     return
   }
 
-  console.log(`Found ${newItems.length} new articles. Generating summaries...`)
+  console.log(`Found ${newItems.length} new articles. Generating...`)
 
-  // 최근 N일간 사용된 도구는 디우선순위화하여 다양성 확보
   const recentlyUsedTools = getRecentlyUsedTools(DEPRIORITIZE_DAYS)
   if (recentlyUsedTools.size > 0) {
     console.log(
@@ -130,21 +177,25 @@ const main = async (): Promise<void> => {
     )
   }
 
-  // 각 도구에서 균등하게 2개 선택 (언어별 개별 호출로 API 비용 증가 고려)
   const itemsToProcess = selectBalanced(newItems, 2, { deprioritize: recentlyUsedTools })
 
-  const articles = await generateArticles(itemsToProcess, apiKey, {
+  const { articles, failures } = await generateArticles(itemsToProcess, apiKey, {
     delayMs: 1000,
-    maxRetries: 3,
+    maxRetries: 2,
   })
 
-  console.log(`Generated ${articles.length} articles. Saving...`)
+  console.log(`\nGenerated ${articles.length} article(s) passed validation.`)
+  console.log(`Failed ${failures.length} generation(s) → review queue.`)
 
   for (const article of articles) {
     saveArticle(article)
   }
 
-  console.log('Done!')
+  for (const { item, locale, outcome } of failures) {
+    saveFailureForReview(item, locale, outcome)
+  }
+
+  console.log('\nDone.')
 }
 
 main().catch((error) => {
