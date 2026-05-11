@@ -36,9 +36,7 @@ const getNestedValueByPath = (
  * 값에 없는 placeholder는 그대로 유지되어 누락 디버깅에 도움이 된다.
  */
 const interpolate = (template: string, values: Record<string, string>): string =>
-  template.replace(/\{\{(\w+)\}\}/g, (match, key: string) =>
-    key in values ? values[key] : match,
-  )
+  template.replace(/\{\{(\w+)\}\}/g, (match, key: string) => (key in values ? values[key] : match))
 
 /**
  * 번역 문자열을 키 경로로 가져온다 (예: "nav.generator").

@@ -122,13 +122,12 @@ const ogImageUrl = ogImage ?? defaultOgImage
     {
       // articleModifiedTime이 명시되지 않았으면 published를 fallback으로 사용한다.
       // 호출부 중복 제거 + 모든 article 페이지의 일관된 메타데이터 출력 보장.
-      ogType === 'article' &&
-        (articleModifiedTime || articlePublishedTime) && (
-          <meta
-            property="article:modified_time"
-            content={(articleModifiedTime ?? articlePublishedTime)!.toISOString()}
-          />
-        )
+      ogType === 'article' && (articleModifiedTime || articlePublishedTime) && (
+        <meta
+          property="article:modified_time"
+          content={(articleModifiedTime ?? articlePublishedTime)!.toISOString()}
+        />
+      )
     }
     {
       ogType === 'article' && articleSection && (
