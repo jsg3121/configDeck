@@ -45,6 +45,7 @@
 | [SPEC-0004](SPEC-0004-import-and-audit.md) | Import & Audit — 설정 분석/진단 | 구현 중 | ADR-0014 |
 | [SPEC-0005](SPEC-0005-ai-tool-config-and-skills.md) | AI 코딩 도구 설정 파일 + Agent Skills 생성기 | 검토 중 | ADR-0014, ADR-XXXX (2개 후속) |
 | [SPEC-0006](SPEC-0006-framework-advisory-landing.md) | 프레임워크 Advisory 이벤트성 랜딩 페이지 시리즈 | 검토 중 | ADR-0019, ADR-0020 |
+| [SPEC-0007](SPEC-0007-article-content-model-redesign.md) | Article 콘텐츠 모델 재설계 — Editorial Commentary 전환 | 승인됨 | ADR-0011 (부분 대체), ADR-0021 |
 
 ## 관리 에이전트
 
