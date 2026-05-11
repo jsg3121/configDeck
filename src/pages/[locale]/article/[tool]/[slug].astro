@@ -60,6 +60,12 @@ try {
 const siteUrl = Astro.site?.origin ?? 'https://configdeck.dev'
 const ogImageUrl = `${siteUrl}/og-image.png`
 
+// build.format: 'file' 환경에서 Astro.url.href는 ".html"을 포함하므로,
+// canonical URL과 일관되도록 .html 접미사를 제거한다. 이 변수는 JSON-LD
+// `mainEntityOfPage.@id`에 사용되며, Layout이 출력하는 <link rel="canonical">과
+// 정확히 동일한 URL이 된다 (Google의 페이지 식별 시그널 일관성).
+const canonicalHref = Astro.url.href.replace(/\.html$/, '')
+
 // SPEC-0007 §3.2.7 / ADR-0021 결정 8 — Editorial Commentary 모델의 BlogPosting.
 // `isBasedOn`/`citation`을 명시해 Google이 이 글을 derivative work로 정당하게
 // 인식하도록 한다. 페이즈 4에서 모든 글이 새 schema(sourceName/sourceUrl required)로
@@ -87,7 +93,7 @@ const articleJsonLd = {
   },
   mainEntityOfPage: {
     '@type': 'WebPage',
-    '@id': Astro.url.href,
+    '@id': canonicalHref,
   },
   about: {
     '@type': 'SoftwareApplication',
