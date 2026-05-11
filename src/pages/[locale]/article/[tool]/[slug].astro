@@ -58,20 +58,32 @@ try {
 
 // JSON-LD 구조화 데이터
 const siteUrl = Astro.site?.origin ?? 'https://configdeck.dev'
+const ogImageUrl = `${siteUrl}/og-image.png`
 
+// SPEC-0007 §3.2.7 / ADR-0021 결정 8 — Editorial Commentary 모델의 BlogPosting.
+// `isBasedOn`/`citation`을 명시해 Google이 이 글을 derivative work로 정당하게
+// 인식하도록 한다. 페이즈 4에서 모든 글이 새 schema(sourceName/sourceUrl required)로
+// 강제되므로 분기 없이 항상 commentary 블록을 출력한다.
 const articleJsonLd = {
-  '@type': 'Article',
+  '@type': 'BlogPosting',
   headline: article.data.title,
   description: article.data.summary,
+  image: ogImageUrl,
   datePublished: article.data.pubDate.toISOString(),
+  dateModified: article.data.pubDate.toISOString(),
   author: {
     '@type': 'Organization',
-    name: 'ConfigDeck',
+    name: 'ConfigDeck Editorial',
+    url: siteUrl,
   },
   publisher: {
     '@type': 'Organization',
     name: 'ConfigDeck',
     url: siteUrl,
+    logo: {
+      '@type': 'ImageObject',
+      url: `${siteUrl}/favicon.svg`,
+    },
   },
   mainEntityOfPage: {
     '@type': 'WebPage',
@@ -80,6 +92,16 @@ const articleJsonLd = {
   about: {
     '@type': 'SoftwareApplication',
     name: toolName,
+  },
+  isBasedOn: article.data.sourceUrl,
+  citation: {
+    '@type': 'CreativeWork',
+    name: article.data.title,
+    url: article.data.sourceUrl,
+    publisher: {
+      '@type': 'Organization',
+      name: article.data.sourceName,
+    },
   },
 }
 
@@ -115,6 +137,9 @@ const breadcrumbJsonLd = {
   currentPath="/article"
   ogType="article"
   articlePublishedTime={article.data.pubDate}
+  articleModifiedTime={article.data.pubDate}
+  articleSection={toolName}
+  articleTag={[tool]}
   jsonLd={[articleJsonLd, breadcrumbJsonLd]}
   noindex
 >
@@ -146,27 +171,30 @@ const breadcrumbJsonLd = {
         {article.data.title}
       </h1>
 
-      <div class="mt-4 flex items-center gap-4 text-sm text-gray-500">
+      <!-- SPEC-0007 §3.2.7: 상단에는 원문 직접 링크 대신 ConfigDeck의 역할이 -->
+      <!-- "코멘터리"임을 정직하게 명시한다. 외부 링크는 본문 하단의 강조 CTA로 -->
+      <!-- 자연스럽게 유도해 derivative work의 정당성을 살린다.                -->
+      <div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-500">
         <time datetime={article.data.pubDate.toISOString()}>
           {formatDate(article.data.pubDate)}
         </time>
-        <span>·</span>
-        <a
-          href={article.data.link}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="inline-flex items-center gap-1 text-primary hover:underline"
-        >
-          {locale === 'ko' ? '원문 보기' : 'View Original'}
-          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-            ></path>
-          </svg>
-        </a>
+        <span class="hidden sm:inline">·</span>
+        <span class="inline-flex items-center gap-1">
+          {
+            locale === 'ko' ? (
+              <>
+                <span class="font-medium text-gray-600">{article.data.sourceName}</span>
+                <span>발표에 대한 ConfigDeck 코멘터리</span>
+              </>
+            ) : (
+              <>
+                <span>Commentary on a</span>
+                <span class="font-medium text-gray-600">{article.data.sourceName}</span>
+                <span>announcement</span>
+              </>
+            )
+          }
+        </span>
       </div>
     </header>
 
@@ -184,6 +212,45 @@ const breadcrumbJsonLd = {
     <div class="prose-content mt-10">
       <Content />
     </div>
+
+    <!--
+      SPEC-0007 §3.2.7 — 원문 안내 CTA.
+      본문이 ConfigDeck 관점의 짧은 코멘터리이므로, 더 자세한 정보를 원하는 독자를
+      원문으로 자연스럽게 유도한다. Schema.org `isBasedOn`/`citation`과 함께
+      derivative work의 정직한 시그널 역할을 한다.
+    -->
+    <aside
+      class="mt-10 rounded-xl border border-gray-200 bg-gray-50 p-6"
+      aria-label={locale === 'ko' ? '원문 안내' : 'Original source'}
+    >
+      <p class="text-sm text-gray-500">
+        {
+          locale === 'ko'
+            ? '이 글은 아래 발표에 대한 ConfigDeck 편집팀의 코멘터리입니다.'
+            : 'This is ConfigDeck editorial commentary on the following announcement.'
+        }
+      </p>
+      <a
+        href={article.data.sourceUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="mt-2 inline-flex items-center gap-2 font-semibold text-primary hover:underline"
+      >
+        {
+          locale === 'ko'
+            ? `${article.data.sourceName}에서 원문 전체 보기`
+            : `Read the full announcement on ${article.data.sourceName}`
+        }
+        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+          ></path>
+        </svg>
+      </a>
+    </aside>
 
     <!-- 설정 생성 CTA (generator가 있는 도구만) -->
     {
