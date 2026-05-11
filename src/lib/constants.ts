@@ -94,3 +94,28 @@ export const TOOL_TO_GENERATOR: Record<ArticleTool, string | null> = {
   googlesearchcentral: null,
   javascriptweekly: null,
 }
+
+/**
+ * 도구/피드 식별자 → 사람이 읽는 출처명 매핑 (SPEC-0007 §3.2.3)
+ *
+ * Editorial Commentary 모델에서 본문과 JSON-LD `citation`/`isBasedOn`에 표시되는
+ * 출처 표기에 사용된다. 같은 도구라도 RSS 피드 출처에 따라 표기가 달라야 할 수
+ * 있으므로 도구명 자체와 분리해서 관리한다.
+ */
+export const SOURCE_NAME_MAP: Record<ArticleTool, string> = {
+  eslint: 'ESLint Blog',
+  prettier: 'Prettier Blog',
+  typescript: 'Microsoft TypeScript Blog',
+  nextjs: 'Next.js Blog',
+  react: 'React Blog',
+  astro: 'Astro Blog',
+  nodejs: 'Node.js Blog',
+  webdev: 'web.dev',
+  tailwindcss: 'Tailwind CSS Blog',
+  vite: 'Vite Blog',
+  smashingmagazine: 'Smashing Magazine',
+  csstricks: 'CSS-Tricks',
+  searchenginejournal: 'Search Engine Journal',
+  googlesearchcentral: 'Google Search Central',
+  javascriptweekly: 'JavaScript Weekly',
+}
