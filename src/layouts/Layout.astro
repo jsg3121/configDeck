@@ -38,7 +38,11 @@ interface Props {
   ogType?: 'website' | 'article'
   /** 아티클 발행일 (og:type이 article일 때 사용) */
   articlePublishedTime?: Date
-  /** 아티클 수정일 (SPEC-0007 §3.2.7). 미지정 시 published와 동일 처리 권장. */
+  /**
+   * 아티클 수정일 (SPEC-0007 §3.2.7).
+   * 미지정 시 Layout 내부에서 articlePublishedTime을 자동 fallback으로 사용한다.
+   * 호출부가 동일 값을 중복 전달할 필요가 없도록 단일 책임을 Layout에 둔다.
+   */
   articleModifiedTime?: Date
   /** 아티클 섹션/카테고리 — Google이 topic clustering에 사용. 예: "TypeScript" */
   articleSection?: string
@@ -116,9 +120,15 @@ const ogImageUrl = ogImage ?? defaultOgImage
       )
     }
     {
-      ogType === 'article' && articleModifiedTime && (
-        <meta property="article:modified_time" content={articleModifiedTime.toISOString()} />
-      )
+      // articleModifiedTime이 명시되지 않았으면 published를 fallback으로 사용한다.
+      // 호출부 중복 제거 + 모든 article 페이지의 일관된 메타데이터 출력 보장.
+      ogType === 'article' &&
+        (articleModifiedTime || articlePublishedTime) && (
+          <meta
+            property="article:modified_time"
+            content={(articleModifiedTime ?? articlePublishedTime)!.toISOString()}
+          />
+        )
     }
     {
       ogType === 'article' && articleSection && (
