@@ -21,7 +21,14 @@ export default defineConfig({
     },
   },
 
-  integrations: [svelte(), sitemap()],
+  integrations: [
+    svelte(),
+    sitemap({
+      // /article 경로는 자동 생성 콘텐츠 품질 이슈로 noindex 상태이므로
+      // sitemap에서도 제외해 도메인 권위 손실을 차단한다 (hotfix v1.5.2).
+      filter: (page) => !/\/article(\/|$)/.test(new URL(page).pathname),
+    }),
+  ],
 
   vite: {
     plugins: [tailwindcss()],
