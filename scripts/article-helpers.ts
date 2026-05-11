@@ -100,3 +100,19 @@ export const REQUIRED_SECTION_HEADERS_KO: readonly string[] = [
   '## 설정 파일에 어떤 의미인가',
   '## 다음 단계 제안',
 ] as const
+
+/**
+ * frontmatter 또는 본문에 절대 그대로 나타나면 안 되는 placeholder 문자열.
+ *
+ * generate-summary의 buildPrompt는 한국어 글의 frontmatter title 자리에
+ * '여기에 번역된 제목 작성'을 placeholder로 넣고 LLM이 번역하도록 유도한다.
+ * 만약 LLM이 지시를 누락해 placeholder를 그대로 반환하면, 검증에서 차단해
+ * 잘못된 글이 사이트에 노출되지 않도록 한다.
+ *
+ * 프롬프트의 placeholder 표현이 바뀌면 이 목록도 함께 갱신해야 한다.
+ */
+export const FORBIDDEN_PLACEHOLDERS: readonly string[] = [
+  '여기에 번역된 제목 작성',
+  '여기에 요약 작성',
+  '여기에', // 안전망 — 새 placeholder가 "여기에 X"로 추가되더라도 잡아냄
+] as const

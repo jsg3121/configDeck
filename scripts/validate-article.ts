@@ -10,6 +10,7 @@
 
 import {
   BANNED_PHRASES,
+  FORBIDDEN_PLACEHOLDERS,
   REQUIRED_CTA_PHRASES,
   REQUIRED_SECTION_HEADERS_EN,
   REQUIRED_SECTION_HEADERS_KO,
@@ -189,6 +190,16 @@ export const validateArticle = (markdown: string): ValidationResult => {
   ])
   for (const field of missingFields) {
     issues.push(`Missing frontmatter field: ${field}`)
+  }
+
+  // 6. placeholder 잔존 검증 — frontmatter와 본문 모두 검사한다.
+  //    한국어 글의 title placeholder('여기에 번역된 제목 작성')를 LLM이 번역
+  //    누락 시 그대로 남기는 케이스를 차단한다 (Gemini 리뷰 #5 대응).
+  const fullText = `${frontmatter}\n${body}`
+  for (const placeholder of FORBIDDEN_PLACEHOLDERS) {
+    if (fullText.includes(placeholder)) {
+      issues.push(`Forbidden placeholder remains in output: "${placeholder}"`)
+    }
   }
 
   return {
