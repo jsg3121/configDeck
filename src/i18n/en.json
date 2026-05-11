@@ -242,7 +242,10 @@
     "latestUpdates": "Latest Updates",
     "allTools": "All",
     "noArticles": "No articles yet. Updates will be added soon!",
-    "viewOriginal": "View Original",
+    "commentaryLabel": "Commentary on a {{source}} announcement",
+    "sourceCalloutNote": "This is ConfigDeck editorial commentary on the following announcement.",
+    "sourceCalloutLink": "Read the full announcement on {{source}}",
+    "sourceCalloutAriaLabel": "Original source",
     "generateConfig": "Generate Config",
     "tools": {
       "eslint": "ESLint",
