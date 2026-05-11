@@ -137,7 +137,6 @@ const breadcrumbJsonLd = {
   currentPath="/article"
   ogType="article"
   articlePublishedTime={article.data.pubDate}
-  articleModifiedTime={article.data.pubDate}
   articleSection={toolName}
   articleTag={[tool]}
   jsonLd={[articleJsonLd, breadcrumbJsonLd]}
@@ -179,21 +178,8 @@ const breadcrumbJsonLd = {
           {formatDate(article.data.pubDate)}
         </time>
         <span class="hidden sm:inline">·</span>
-        <span class="inline-flex items-center gap-1">
-          {
-            locale === 'ko' ? (
-              <>
-                <span class="font-medium text-gray-600">{article.data.sourceName}</span>
-                <span>발표에 대한 ConfigDeck 코멘터리</span>
-              </>
-            ) : (
-              <>
-                <span>Commentary on a</span>
-                <span class="font-medium text-gray-600">{article.data.sourceName}</span>
-                <span>announcement</span>
-              </>
-            )
-          }
+        <span>
+          {getTranslation(locale, 'article.commentaryLabel', { source: article.data.sourceName })}
         </span>
       </div>
     </header>
@@ -221,26 +207,16 @@ const breadcrumbJsonLd = {
     -->
     <aside
       class="mt-10 rounded-xl border border-gray-200 bg-gray-50 p-6"
-      aria-label={locale === 'ko' ? '원문 안내' : 'Original source'}
+      aria-label={getTranslation(locale, 'article.sourceCalloutAriaLabel')}
     >
-      <p class="text-sm text-gray-500">
-        {
-          locale === 'ko'
-            ? '이 글은 아래 발표에 대한 ConfigDeck 편집팀의 코멘터리입니다.'
-            : 'This is ConfigDeck editorial commentary on the following announcement.'
-        }
-      </p>
+      <p class="text-sm text-gray-500">{getTranslation(locale, 'article.sourceCalloutNote')}</p>
       <a
         href={article.data.sourceUrl}
         target="_blank"
         rel="noopener noreferrer"
         class="mt-2 inline-flex items-center gap-2 font-semibold text-primary hover:underline"
       >
-        {
-          locale === 'ko'
-            ? `${article.data.sourceName}에서 원문 전체 보기`
-            : `Read the full announcement on ${article.data.sourceName}`
-        }
+        {getTranslation(locale, 'article.sourceCalloutLink', { source: article.data.sourceName })}
         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path
             stroke-linecap="round"
