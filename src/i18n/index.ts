@@ -32,16 +32,33 @@ const getNestedValueByPath = (
 }
 
 /**
+ * 번역 문자열의 `{{name}}` placeholder를 values 객체로 치환한다.
+ * 값에 없는 placeholder는 그대로 유지되어 누락 디버깅에 도움이 된다.
+ */
+const interpolate = (template: string, values: Record<string, string>): string =>
+  template.replace(/\{\{(\w+)\}\}/g, (match, key: string) =>
+    key in values ? values[key] : match,
+  )
+
+/**
  * 번역 문자열을 키 경로로 가져온다 (예: "nav.generator").
  * 해당 locale에 없으면 영어 폴백, 영어에도 없으면 키 자체를 반환한다.
+ *
+ * 세 번째 인자 `values`를 전달하면 문자열 안의 `{{name}}` placeholder가 치환된다.
+ * 예: getTranslation('en', 'article.commentaryLabel', { source: 'Next.js Blog' })
+ *     → "Commentary on a Next.js Blog announcement"
  */
-export const getTranslation = (locale: Locale, translationKey: string): string => {
+export const getTranslation = (
+  locale: Locale,
+  translationKey: string,
+  values?: Record<string, string>,
+): string => {
   const translatedValue = getNestedValueByPath(
     translationsByLocale[locale] as unknown as Record<string, unknown>,
     translationKey,
   )
   if (typeof translatedValue === 'string') {
-    return translatedValue
+    return values ? interpolate(translatedValue, values) : translatedValue
   }
 
   const englishFallbackValue = getNestedValueByPath(
@@ -49,7 +66,7 @@ export const getTranslation = (locale: Locale, translationKey: string): string =
     translationKey,
   )
   if (typeof englishFallbackValue === 'string') {
-    return englishFallbackValue
+    return values ? interpolate(englishFallbackValue, values) : englishFallbackValue
   }
 
   return translationKey
