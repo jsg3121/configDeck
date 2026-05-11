@@ -5,7 +5,12 @@ import { glob } from 'astro/loaders'
  * 아티클 컬렉션 스키마
  *
  * RSS에서 수집한 개발 도구 업데이트를 저장한다.
- * AI가 생성한 요약, 상세 설명, 하이라이트 등을 포함한다.
+ * SPEC-0007 / ADR-0021부터 Editorial Commentary 모델로 전환되어,
+ * `sourceName`, `sourceUrl`, `contentType` 필드가 추가되었다.
+ *
+ * 신규 필드는 일시적으로 .optional()로 두어, 기존 124개 아티클이 삭제되기 전
+ * (페이즈 5)까지의 빌드 호환성을 유지한다. 페이즈 5 머지 후에는 신규 필드를
+ * required로 전환할 수 있다 (별도 후속 PR).
  */
 const articlesCollection = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/articles' }),
@@ -32,6 +37,10 @@ const articlesCollection = defineCollection({
     link: z.string().url(),
     pubDate: z.coerce.date(),
     summary: z.string(),
+    // ↓ SPEC-0007 신규 필드 — Editorial Commentary 모델
+    sourceName: z.string().optional(),
+    sourceUrl: z.string().url().optional(),
+    contentType: z.enum(['commentary', 'original', 'tutorial']).default('commentary'),
   }),
 })
 
