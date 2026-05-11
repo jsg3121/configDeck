@@ -1,11 +1,15 @@
 name: Update Articles
 
+# DISABLED until v1.6.0 release.
+# 콘텐츠 파이프라인 재설계 작업 기간(v1.6.0)에는 cron 자동 실행을 일시 중지한다.
+# 근거: SPEC-0007, ADR-0021. 환각 콘텐츠가 v1.6.0 작업 중에 추가로 누적되는 것을 차단.
+# 재활성화 조건: v1.6.0 페이즈 5 머지 + sample 발행 검증 통과 후.
 on:
-  schedule:
-    # 매일 23:37 UTC (한국 시간 08:37)
-    - cron: '37 23 * * *'
+  # schedule:
+  #   # 매일 23:37 UTC (한국 시간 08:37) — v1.6.0 작업 중 일시 중지
+  #   - cron: '37 23 * * *'
   workflow_dispatch:
-    # 수동 실행 가능
+    # 수동 실행은 유지 (v1.6.0 페이즈 5의 sample 발행 검증에서 사용)
 
 permissions:
   contents: write
