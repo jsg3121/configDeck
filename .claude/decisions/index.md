@@ -46,3 +46,4 @@
 | [0019](records/ADR-0019-ai-config-ia-redesign.md)          | AI Config IA 재설계: 카탈로그 + 통합 생성기 분리  | 승인됨 | 2026-05-01 |
 | [0020](records/ADR-0020-advisory-content-schema.md)        | Advisory 콘텐츠 스키마와 진단 룰셋 SSOT           | 제안됨 | 2026-05-09 |
 | [0021](records/ADR-0021-article-editorial-commentary-model.md) | Article Editorial Commentary 모델 전환            | 승인됨 | 2026-05-11 |
+| [0022](records/ADR-0022-article-reindex.md)                | Article 색인 재오픈 (v1.5.2 핫픽스 해제)          | 승인됨 | 2026-05-25 |

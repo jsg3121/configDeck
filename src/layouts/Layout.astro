@@ -22,6 +22,12 @@ interface Props {
   bare?: boolean
   /** hreflang 생성에 사용할 locale 제외 경로 (예: "/generator") */
   pagePath?: string
+  /**
+   * hreflang 출력을 제어할 alternate 목록. 미지정 시 모든 SUPPORTED_LOCALES를 출력한다.
+   * 일부 locale에만 콘텐츠가 존재하는 페이지(예: article 상세에서 한쪽 locale만 발행된 글)는
+   * 실제 존재하는 locale 배열을 전달해 404 URL을 가리키는 hreflang을 막는다.
+   */
+  hreflangAlternates?: ReadonlyArray<{ locale: Locale; href: string }>
   /** 현재 활성 네비게이션 경로 (예: "/generator") */
   currentPath?: string
   /** OG 이미지 URL */
@@ -56,6 +62,7 @@ const {
   locale = DEFAULT_LOCALE,
   bare = false,
   pagePath = '/',
+  hreflangAlternates,
   currentPath,
   ogImage,
   canonicalUrl: canonicalUrlOverride,
@@ -75,7 +82,12 @@ const siteUrl = Astro.site ?? new URL('https://configdeck.dev')
 const canonicalUrl = canonicalUrlOverride
   ? new URL(canonicalUrlOverride, siteUrl)
   : new URL(buildLocalizedPath(locale, pagePath), siteUrl)
-const localeAlternates = getAllLocaleAlternates(pagePath)
+// `x-default`는 localeAlternates[0]을 참조하므로(아래 <link rel="alternate" hreflang="x-default">),
+// 호출부 props 순서나 content collection 순회 순서에 의존하지 않도록 DEFAULT_LOCALE을 항상 선두로 둔다.
+// Google 가이드: x-default는 "사이트의 기본/대표 언어 URL"을 가리켜야 한다.
+const localeAlternates = [...(hreflangAlternates ?? getAllLocaleAlternates(pagePath))].sort(
+  (a, b) => (a.locale === DEFAULT_LOCALE ? -1 : b.locale === DEFAULT_LOCALE ? 1 : 0),
+)
 const ogLocaleMap: Record<Locale, string> = { en: 'en_US', ko: 'ko_KR' }
 const defaultOgImage = new URL('/og-image.png', siteUrl).href
 const ogImageUrl = ogImage ?? defaultOgImage
