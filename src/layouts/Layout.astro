@@ -82,7 +82,12 @@ const siteUrl = Astro.site ?? new URL('https://configdeck.dev')
 const canonicalUrl = canonicalUrlOverride
   ? new URL(canonicalUrlOverride, siteUrl)
   : new URL(buildLocalizedPath(locale, pagePath), siteUrl)
-const localeAlternates = hreflangAlternates ?? getAllLocaleAlternates(pagePath)
+// `x-default`는 localeAlternates[0]을 참조하므로(아래 <link rel="alternate" hreflang="x-default">),
+// 호출부 props 순서나 content collection 순회 순서에 의존하지 않도록 DEFAULT_LOCALE을 항상 선두로 둔다.
+// Google 가이드: x-default는 "사이트의 기본/대표 언어 URL"을 가리켜야 한다.
+const localeAlternates = [...(hreflangAlternates ?? getAllLocaleAlternates(pagePath))].sort(
+  (a, b) => (a.locale === DEFAULT_LOCALE ? -1 : b.locale === DEFAULT_LOCALE ? 1 : 0),
+)
 const ogLocaleMap: Record<Locale, string> = { en: 'en_US', ko: 'ko_KR' }
 const defaultOgImage = new URL('/og-image.png', siteUrl).href
 const ogImageUrl = ogImage ?? defaultOgImage
