@@ -8,29 +8,58 @@ import { TOOL_COLORS_DETAILED, TOOL_TO_GENERATOR, type ArticleTool } from '@/lib
 export const getStaticPaths = async () => {
   const paths = []
 
-  for (const locale of SUPPORTED_LOCALES) {
-    try {
-      const allArticles = await getCollection('articles')
+  try {
+    const allArticles = await getCollection('articles')
+
+    // 같은 slug에 대해 어떤 locale에 글이 존재하는지 미리 집계한다.
+    // article 발행 파이프라인이 한쪽 locale 검증 실패로 비대칭 발행할 수 있으므로,
+    // hreflang은 실제 존재하는 locale만 가리켜야 한다 (SPEC-0007 §6.3 M5 게이트).
+    // Astro content collection glob loader는 id에서 확장자를 제거한다 (예: "en/foo-bar").
+    const slugLocaleMap = new Map<string, Set<Locale>>()
+    for (const article of allArticles) {
+      const match = article.id.match(/^(en|ko)\/(.+)$/)
+      if (!match) continue
+      const [, articleLocale, articleSlug] = match
+      const existing = slugLocaleMap.get(articleSlug)
+      if (existing) {
+        existing.add(articleLocale as Locale)
+      } else {
+        slugLocaleMap.set(articleSlug, new Set([articleLocale as Locale]))
+      }
+    }
+
+    for (const locale of SUPPORTED_LOCALES) {
       const localeArticles = allArticles.filter((article) => article.id.startsWith(`${locale}/`))
 
       for (const article of localeArticles) {
-        const slug = article.id.replace(`${locale}/`, '').replace('.md', '')
+        const slug = article.id.replace(`${locale}/`, '')
         const { Content } = await render(article)
+        const availableLocales = Array.from(slugLocaleMap.get(slug) ?? new Set([locale]))
         paths.push({
           params: { locale, tool: article.data.tool, slug },
-          props: { article, Content },
+          props: { article, Content, availableLocales },
         })
       }
-    } catch {
-      // 컬렉션이 비어있는 경우
     }
+  } catch {
+    // 컬렉션이 비어있는 경우
   }
 
   return paths
 }
 
 const { locale, tool, slug } = Astro.params as { locale: Locale; tool: ArticleTool; slug: string }
-const { article, Content } = Astro.props
+const { article, Content, availableLocales } = Astro.props as {
+  article: Awaited<ReturnType<typeof getCollection<'articles'>>>[number]
+  Content: Awaited<ReturnType<typeof render>>['Content']
+  availableLocales: Locale[]
+}
+
+const pagePath = `/article/${tool}/${slug}`
+const hreflangAlternates = availableLocales.map((altLocale) => ({
+  locale: altLocale,
+  href: buildLocalizedPath(altLocale, pagePath),
+}))
 
 const formatDate = (date: Date): string => {
   return date.toLocaleDateString(locale === 'ko' ? 'ko-KR' : 'en-US', {
@@ -139,14 +168,14 @@ const breadcrumbJsonLd = {
   title={pageTitle}
   description={pageDescription}
   locale={locale}
-  pagePath={`/article/${tool}/${slug}`}
+  pagePath={pagePath}
+  hreflangAlternates={hreflangAlternates}
   currentPath="/article"
   ogType="article"
   articlePublishedTime={article.data.pubDate}
   articleSection={toolName}
   articleTag={[tool]}
   jsonLd={[articleJsonLd, breadcrumbJsonLd]}
-  noindex
 >
   <article class="mx-auto max-w-4xl px-6 py-16">
     <!-- 뒤로가기 -->

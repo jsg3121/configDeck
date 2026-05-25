@@ -76,6 +76,14 @@ const getPagePolicy = (pathname) => {
   if (/^\/(en|ko)\/advisory\/?$/.test(pathname)) {
     return { priority: 0.6, changefreq: ChangeFreqEnum.DAILY }
   }
+  // Article 상세 (Editorial Commentary)
+  if (/^\/(en|ko)\/article\/[^/]+\/[^/]+$/.test(pathname)) {
+    return { priority: 0.6, changefreq: ChangeFreqEnum.MONTHLY }
+  }
+  // Article 카테고리/목록
+  if (/^\/(en|ko)\/article(\/[^/]+)?\/?$/.test(pathname)) {
+    return { priority: 0.5, changefreq: ChangeFreqEnum.WEEKLY }
+  }
   // 기본값
   return { priority: 0.5, changefreq: ChangeFreqEnum.MONTHLY }
 }
@@ -111,11 +119,10 @@ export default defineConfig({
   integrations: [
     svelte(),
     sitemap({
-      // /article 경로는 자동 생성 콘텐츠 품질 이슈로 noindex 상태이므로
-      // sitemap에서도 제외해 도메인 권위 손실을 차단한다 (hotfix v1.5.2).
-      filter: (page) => !/\/article(\/|$)/.test(new URL(page).pathname),
       // 페이지 유형별로 lastmod/changefreq/priority를 부여한다 (SPEC-0007 페이즈 5).
       // lastmod는 Google이 실제 사용하며, advisory는 frontmatter updatedAt을 활용한다.
+      // v1.5.2 hotfix의 /article 제외 필터는 v1.6.2에서 Editorial Commentary 누적량
+      // (en 26 / ko 25)과 SPEC-0007 §6.3 M5 게이트 통과로 해제했다.
       serialize(item) {
         const pathname = new URL(item.url).pathname
         const policy = getPagePolicy(pathname)
