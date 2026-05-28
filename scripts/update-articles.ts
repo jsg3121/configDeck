@@ -22,7 +22,9 @@ import type { GenerationOutcome } from './generate-summary'
 
 const ARTICLES_DIR = path.join(process.cwd(), 'src/content/articles')
 const REVIEW_QUEUE_DIR = path.join(ARTICLES_DIR, '.review-queue')
-const DEPRIORITIZE_DAYS = 2
+const DEPRIORITIZE_DAYS = 3
+const MTIME_PREFILTER_MARGIN_DAYS = 1
+const FRONTMATTER_READ_BYTES = 512
 
 /**
  * 기존 아티클 ID 목록을 가져온다.
@@ -53,15 +55,49 @@ const getExistingArticleIds = (): Set<string> => {
 }
 
 /**
- * 최근 N일간 저장된 아티클의 도구 목록을 추출한다.
+ * 파일 헤드(처음 N바이트)만 읽어 frontmatter에서 `tool`과 `pubDate`를 추출한다.
+ *
+ * 본문(평균 3~4KB)을 건너뛰기 위해 fs.openSync + readSync로 부분 read한다.
+ * frontmatter는 `---` 구분자 안에 있고 보통 400바이트 이내이므로 512바이트면 충분하다.
+ */
+const readArticleHead = (filePath: string): { tool?: Tool; pubDate?: Date } => {
+  const fd = fs.openSync(filePath, 'r')
+  try {
+    const buf = Buffer.alloc(FRONTMATTER_READ_BYTES)
+    const bytesRead = fs.readSync(fd, buf, 0, FRONTMATTER_READ_BYTES, 0)
+    const head = buf.toString('utf-8', 0, bytesRead)
+
+    const toolMatch = head.match(/^tool:\s*["']?([^"'\n]+)["']?/m)
+    const pubDateMatch = head.match(/^pubDate:\s*["']?([^"'\n]+)["']?/m)
+
+    const pubDate = pubDateMatch ? new Date(pubDateMatch[1]) : undefined
+    return {
+      tool: toolMatch ? (toolMatch[1] as Tool) : undefined,
+      pubDate: pubDate && !Number.isNaN(pubDate.getTime()) ? pubDate : undefined,
+    }
+  } finally {
+    fs.closeSync(fd)
+  }
+}
+
+/**
+ * 최근 N일간 발행된 아티클의 도구 목록을 추출한다 (ADR-0023).
+ *
+ * - 1차: 파일 mtime이 `cutoff - margin` 이전이면 frontmatter를 안 읽고 스킵한다.
+ *   mtime은 git operation으로 흔들릴 수 있어 보수적으로 1일 마진을 둔다.
+ *   "이르게 컷오프"되어 누락되면 디우선 대상이 비어 효과만 약화될 뿐 사이트 빌드는 안전.
+ * - 2차: frontmatter `pubDate`로 최종 판정한다 (ADR-0021 결정 6: pubDate가 권위 출처).
+ *
+ * 옛 로직(파일명 `YYYY-MM-DD-` prefix 매칭)은 ADR-0021의 slug 단순화 이후
+ * 모든 파일에서 미스매치를 일으켜 디우선순위가 사일런트로 무력화되었다.
  */
 const getRecentlyUsedTools = (days: number): Set<Tool> => {
   const tools = new Set<Tool>()
   const locales = ['ko', 'en']
 
-  const cutoff = new Date()
-  cutoff.setDate(cutoff.getDate() - days)
-  const cutoffStr = `${cutoff.getFullYear()}-${String(cutoff.getMonth() + 1).padStart(2, '0')}-${String(cutoff.getDate()).padStart(2, '0')}`
+  const now = Date.now()
+  const cutoffMs = now - days * 24 * 60 * 60 * 1000
+  const mtimeFloorMs = cutoffMs - MTIME_PREFILTER_MARGIN_DAYS * 24 * 60 * 60 * 1000
 
   for (const locale of locales) {
     const localeDir = path.join(ARTICLES_DIR, locale)
@@ -73,15 +109,15 @@ const getRecentlyUsedTools = (days: number): Set<Tool> => {
     const files = fs.readdirSync(localeDir).filter((f) => f.endsWith('.md'))
 
     for (const file of files) {
-      const dateMatch = file.match(/^(\d{4}-\d{2}-\d{2})-/)
-      if (!dateMatch) continue
-      if (dateMatch[1] < cutoffStr) continue
+      const filePath = path.join(localeDir, file)
+      const stat = fs.statSync(filePath)
+      if (stat.mtimeMs < mtimeFloorMs) continue
 
-      const content = fs.readFileSync(path.join(localeDir, file), 'utf-8')
-      const toolMatch = content.match(/^tool:\s*["']?([^"'\n]+)["']?/m)
-      if (toolMatch) {
-        tools.add(toolMatch[1] as Tool)
-      }
+      const { tool, pubDate } = readArticleHead(filePath)
+      if (!tool || !pubDate) continue
+      if (pubDate.getTime() < cutoffMs) continue
+
+      tools.add(tool)
     }
   }
 
