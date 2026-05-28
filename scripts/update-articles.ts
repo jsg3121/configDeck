@@ -24,7 +24,7 @@ const ARTICLES_DIR = path.join(process.cwd(), 'src/content/articles')
 const REVIEW_QUEUE_DIR = path.join(ARTICLES_DIR, '.review-queue')
 const DEPRIORITIZE_DAYS = 3
 const MTIME_PREFILTER_MARGIN_DAYS = 1
-const FRONTMATTER_READ_BYTES = 512
+const FRONTMATTER_READ_BYTES = 2048
 
 /**
  * 기존 아티클 ID 목록을 가져온다.
@@ -58,7 +58,9 @@ const getExistingArticleIds = (): Set<string> => {
  * 파일 헤드(처음 N바이트)만 읽어 frontmatter에서 `tool`과 `pubDate`를 추출한다.
  *
  * 본문(평균 3~4KB)을 건너뛰기 위해 fs.openSync + readSync로 부분 read한다.
- * frontmatter는 `---` 구분자 안에 있고 보통 400바이트 이내이므로 512바이트면 충분하다.
+ * frontmatter는 `---` 구분자 안에 있고 현재 400바이트 이내지만,
+ * 향후 description/tags 확장 여지를 고려해 2048바이트로 잡는다.
+ * 디스크 I/O는 4KB 블록 단위라 단일 read 호출로 처리되어 오버헤드는 없다.
  */
 const readArticleHead = (filePath: string): { tool?: Tool; pubDate?: Date } => {
   const fd = fs.openSync(filePath, 'r')
@@ -72,6 +74,8 @@ const readArticleHead = (filePath: string): { tool?: Tool; pubDate?: Date } => {
 
     const pubDate = pubDateMatch ? new Date(pubDateMatch[1]) : undefined
     return {
+      // 정규식 캡처 그룹은 string으로만 추론되지만 frontmatter `tool` 필드 값은
+      // Tool union 중 하나임이 content collection 스키마로 보장되므로 단언한다.
       tool: toolMatch ? (toolMatch[1] as Tool) : undefined,
       pubDate: pubDate && !Number.isNaN(pubDate.getTime()) ? pubDate : undefined,
     }
