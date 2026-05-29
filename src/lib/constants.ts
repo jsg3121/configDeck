@@ -20,6 +20,11 @@ export const ARTICLE_TOOLS = [
   'searchenginejournal',
   'googlesearchcentral',
   'javascriptweekly',
+  // ADR-0024 (v1.7.0): AI 매체 4곳
+  'openainews',
+  'huggingface',
+  'googledeepmind',
+  'googleaiblog',
 ] as const
 
 export type ArticleTool = (typeof ARTICLE_TOOLS)[number]
@@ -41,8 +46,13 @@ export const TOOL_COLORS: Record<ArticleTool, string> = {
   smashingmagazine: 'bg-red-100 text-red-800',
   csstricks: 'bg-amber-100 text-amber-800',
   searchenginejournal: 'bg-emerald-100 text-emerald-800',
-  googlesearchcentral: 'bg-blue-100 text-blue-800',
+  googlesearchcentral: 'bg-zinc-100 text-zinc-800',
   javascriptweekly: 'bg-yellow-100 text-yellow-800',
+  // ADR-0024 (v1.7.0): AI 매체 4곳
+  openainews: 'bg-teal-100 text-teal-800',
+  huggingface: 'bg-rose-100 text-rose-800',
+  googledeepmind: 'bg-fuchsia-100 text-fuchsia-800',
+  googleaiblog: 'bg-slate-100 text-slate-800',
 }
 
 /**
@@ -69,8 +79,13 @@ export const TOOL_COLORS_DETAILED: Record<
     text: 'text-emerald-700',
     border: 'border-emerald-200',
   },
-  googlesearchcentral: { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200' },
+  googlesearchcentral: { bg: 'bg-zinc-50', text: 'text-zinc-700', border: 'border-zinc-200' },
   javascriptweekly: { bg: 'bg-yellow-50', text: 'text-yellow-700', border: 'border-yellow-200' },
+  // ADR-0024 (v1.7.0): AI 매체 4곳
+  openainews: { bg: 'bg-teal-50', text: 'text-teal-700', border: 'border-teal-200' },
+  huggingface: { bg: 'bg-rose-50', text: 'text-rose-700', border: 'border-rose-200' },
+  googledeepmind: { bg: 'bg-fuchsia-50', text: 'text-fuchsia-700', border: 'border-fuchsia-200' },
+  googleaiblog: { bg: 'bg-slate-50', text: 'text-slate-700', border: 'border-slate-200' },
 }
 
 /**
@@ -93,6 +108,11 @@ export const TOOL_TO_GENERATOR: Record<ArticleTool, string | null> = {
   searchenginejournal: null,
   googlesearchcentral: null,
   javascriptweekly: null,
+  // ADR-0024 (v1.7.0): AI 매체 4곳 — 설정 생성기 없음
+  openainews: null,
+  huggingface: null,
+  googledeepmind: null,
+  googleaiblog: null,
 }
 
 /**
@@ -118,4 +138,9 @@ export const SOURCE_NAME_MAP: Record<ArticleTool, string> = {
   searchenginejournal: 'Search Engine Journal',
   googlesearchcentral: 'Google Search Central',
   javascriptweekly: 'JavaScript Weekly',
+  // ADR-0024 (v1.7.0): AI 매체 4곳
+  openainews: 'OpenAI News',
+  huggingface: 'Hugging Face Blog',
+  googledeepmind: 'Google DeepMind Blog',
+  googleaiblog: 'Google AI Blog',
 }
