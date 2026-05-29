@@ -34,7 +34,7 @@
 | [0007](records/ADR-0007-page-structure-redesign.md)                 | 페이지 구조 재설계 (파일/스택별 생성기 통합)           | 승인됨                 | 2026-04-06 |
 | [0008](records/ADR-0008-option-schema-redesign.md)                  | 옵션 스키마 재설계 (입력 타입/옵션 정의 분리)          | 승인됨                 | 2026-04-09 |
 | [0009](records/ADR-0009-stack-generator-ux-pattern.md)              | 스택 생성기 UX 패턴 선정 (아코디언 인라인 옵션)        | 승인됨                 | 2026-04-13 |
-| [0010](records/ADR-0010-article-content-strategy.md)                | 아티클 콘텐츠 수집 및 갱신 전략                        | 승인됨                 | 2026-04-13 |
+| [0010](records/ADR-0010-article-content-strategy.md)                | 아티클 콘텐츠 수집 및 갱신 전략                        | 범위 확장 (→0024)      | 2026-04-13 |
 | [0011](records/ADR-0011-article-ai-summarization.md)                | 아티클 AI 요약 자동화 전략 (Gemini API)                | 부분 대체됨 (→0021)    | 2026-04-13 |
 | [0012](records/ADR-0012-create-pr-validation-optional.md)           | create-pr 스킬 검증 단계 선택적 실행                   | 승인됨                 | 2026-04-14 |
 | [0013](records/ADR-0013-article-ai-tool-evaluation.md)              | 아티클 AI 요약 도구 평가 및 전환 검토                  | 제안됨                 | 2026-04-15 |
@@ -48,3 +48,4 @@
 | [0021](records/ADR-0021-article-editorial-commentary-model.md)      | Article Editorial Commentary 모델 전환                 | 승인됨                 | 2026-05-11 |
 | [0022](records/ADR-0022-article-reindex.md)                         | Article 색인 재오픈 (v1.5.2 핫픽스 해제)               | 승인됨                 | 2026-05-25 |
 | [0023](records/ADR-0023-article-deprioritize-frontmatter-source.md) | 아티클 디우선순위 판정 기준 frontmatter pubDate로 이전 | 승인됨                 | 2026-05-28 |
+| [0024](records/ADR-0024-ai-feed-sources-and-scope-expansion.md)     | AI 매체 RSS 추가 및 콘텐츠 범위 확장 (v1.7.0)          | 승인됨                 | 2026-05-29 |
