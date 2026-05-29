@@ -32,6 +32,11 @@ const articlesCollection = defineCollection({
       'searchenginejournal',
       'googlesearchcentral',
       'javascriptweekly',
+      // ADR-0024 (v1.7.0): AI 매체 4곳
+      'openainews',
+      'huggingface',
+      'googledeepmind',
+      'googleaiblog',
     ]),
     title: z.string(),
     link: z.string().url(),
