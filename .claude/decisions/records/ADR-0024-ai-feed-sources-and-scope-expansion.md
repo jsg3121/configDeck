@@ -23,7 +23,7 @@
 
 | 매체 | RSS URL | Tool slug | 포맷 | 정렬도 |
 |---|---|---|---|---|
-| OpenAI News | `https://openai.com/blog/rss.xml` | `openainews` | RSS 2.0 | ★ (직접) |
+| OpenAI News | `https://openai.com/news/rss.xml` | `openainews` | RSS 2.0 | ★ (직접) |
 | Hugging Face Blog | `https://huggingface.co/blog/feed.xml` | `huggingface` | RSS 2.0+Atom ns | ★★ (최고) |
 | Google DeepMind Blog | `https://deepmind.google/blog/rss.xml` | `googledeepmind` | RSS 2.0 | ◐ (간접) |
 | Google AI Blog | `https://blog.google/technology/ai/rss/` | `googleaiblog` | RSS 2.0 | ◐ (간접, 노이즈 있음) |
@@ -32,6 +32,8 @@
 - 4곳 모두 **공식 RSS 제공**. ADR-0010이 채택한 "공식 채널 우선" 원칙 정합
 - OpenAI/HF는 ConfigDeck `/ai-config` 카탈로그가 다루는 "AI 도구 설정·운영" 토픽 직접 다룸 (★)
 - DeepMind/blog.google AI는 정렬도가 ◐이지만 다양성·SEO 가치 확보 목적
+
+> **URL 정정 (v1.7.0 P2, 2026-05-29):** RES-0007 §1.1과 본 ADR 초안은 OpenAI URL을 `https://openai.com/blog/rss.xml`로 적었으나, 구현 페이즈에서 OpenAI가 채널을 `/news`로 리브랜딩한 사실을 확인했다. 두 URL 모두 RSS 2.0을 반환하지만 `/news/rss.xml`이 채널명("OpenAI News")과 일치해 장기적으로 안정적이라 채택. 변경 사유 보존을 위해 표만 정정하고 초안 본문은 유지한다.
 
 ### 결정 2: Anthropic은 v1.7.0 채택 보류
 
