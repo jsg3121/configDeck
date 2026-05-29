@@ -1,5 +1,6 @@
 ---
 import { buildLocalizedPath, getTranslation, SUPPORTED_LOCALES, type Locale } from '@/i18n'
+import { ARTICLE_TOOLS, TOOL_COLORS } from '@/lib/constants'
 import { getCollection } from 'astro:content'
 
 import Layout from '@/layouts/Layout.astro'
@@ -9,53 +10,6 @@ export const getStaticPaths = () => {
 }
 
 const { locale } = Astro.params as { locale: Locale }
-
-const TOOLS = [
-  'eslint',
-  'prettier',
-  'typescript',
-  'nextjs',
-  'react',
-  'astro',
-  'nodejs',
-  'webdev',
-  'tailwindcss',
-  'vite',
-  'smashingmagazine',
-  'csstricks',
-  'searchenginejournal',
-  'googlesearchcentral',
-  'javascriptweekly',
-  // ADR-0024 (v1.7.0): AI 매체 4곳. src/lib/constants.ts의 ARTICLE_TOOLS와 동기 유지.
-  // TODO(v1.7.x): 본 파일의 TOOLS/toolColors 로컬 정의를 제거하고 constants.ts import로 통합.
-  'openainews',
-  'huggingface',
-  'googledeepmind',
-  'googleaiblog',
-] as const
-type Tool = (typeof TOOLS)[number]
-
-const toolColors: Record<Tool, string> = {
-  eslint: 'bg-purple-100 text-purple-800',
-  prettier: 'bg-pink-100 text-pink-800',
-  typescript: 'bg-blue-100 text-blue-800',
-  nextjs: 'bg-gray-100 text-gray-800',
-  react: 'bg-cyan-100 text-cyan-800',
-  astro: 'bg-orange-100 text-orange-800',
-  nodejs: 'bg-green-100 text-green-800',
-  webdev: 'bg-indigo-100 text-indigo-800',
-  tailwindcss: 'bg-sky-100 text-sky-800',
-  vite: 'bg-violet-100 text-violet-800',
-  smashingmagazine: 'bg-red-100 text-red-800',
-  csstricks: 'bg-amber-100 text-amber-800',
-  searchenginejournal: 'bg-emerald-100 text-emerald-800',
-  googlesearchcentral: 'bg-zinc-100 text-zinc-800',
-  javascriptweekly: 'bg-yellow-100 text-yellow-800',
-  openainews: 'bg-teal-100 text-teal-800',
-  huggingface: 'bg-rose-100 text-rose-800',
-  googledeepmind: 'bg-fuchsia-100 text-fuchsia-800',
-  googleaiblog: 'bg-slate-100 text-slate-800',
-}
 
 // 아티클 가져오기 (locale에 맞는 폴더에서)
 let articles: Awaited<ReturnType<typeof getCollection<'articles'>>> = []
@@ -121,7 +75,7 @@ const collectionJsonLd = {
         {getTranslation(locale, 'article.allTools')}
       </a>
       {
-        TOOLS.map((tool) => (
+        ARTICLE_TOOLS.map((tool) => (
           <a
             href={buildLocalizedPath(locale, `/article/${tool}`)}
             class="rounded-full bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
@@ -150,7 +104,7 @@ const collectionJsonLd = {
                   <article>
                     <div class="flex items-center justify-between">
                       <span
-                        class={`rounded-full px-3 py-1 text-xs font-medium ${toolColors[article.data.tool]}`}
+                        class={`rounded-full px-3 py-1 text-xs font-medium ${TOOL_COLORS[article.data.tool]}`}
                       >
                         {getTranslation(locale, `article.tools.${article.data.tool}`)}
                       </span>
