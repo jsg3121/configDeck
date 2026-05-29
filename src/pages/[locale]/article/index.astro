@@ -1,9 +1,9 @@
 ---
 import { buildLocalizedPath, getTranslation, SUPPORTED_LOCALES, type Locale } from '@/i18n'
-import { ARTICLE_TOOLS, TOOL_COLORS } from '@/lib/constants'
 import { getCollection } from 'astro:content'
 
 import Layout from '@/layouts/Layout.astro'
+import { ARTICLE_TOOLS, TOOL_COLORS } from '@/lib/constants'
 
 export const getStaticPaths = () => {
   return SUPPORTED_LOCALES.map((locale) => ({ params: { locale } }))
