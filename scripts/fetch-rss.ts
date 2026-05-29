@@ -30,6 +30,10 @@ export type Tool =
   | 'searchenginejournal'
   | 'googlesearchcentral'
   | 'javascriptweekly'
+  | 'openainews'
+  | 'huggingface'
+  | 'googledeepmind'
+  | 'googleaiblog'
 
 interface FeedConfig {
   tool: Tool
@@ -127,6 +131,31 @@ export const FEED_CONFIGS: FeedConfig[] = [
     tool: 'javascriptweekly',
     name: 'JavaScript Weekly',
     feedUrl: 'https://javascriptweekly.com/rss/',
+    type: 'rss',
+  },
+  // ADR-0024 (v1.7.0): AI 매체 4곳 추가. RES-0007 §1.1, §6 참조.
+  {
+    tool: 'openainews',
+    name: 'OpenAI News',
+    feedUrl: 'https://openai.com/news/rss.xml',
+    type: 'rss',
+  },
+  {
+    tool: 'huggingface',
+    name: 'Hugging Face Blog',
+    feedUrl: 'https://huggingface.co/blog/feed.xml',
+    type: 'rss',
+  },
+  {
+    tool: 'googledeepmind',
+    name: 'Google DeepMind Blog',
+    feedUrl: 'https://deepmind.google/blog/rss.xml',
+    type: 'rss',
+  },
+  {
+    tool: 'googleaiblog',
+    name: 'Google AI Blog',
+    feedUrl: 'https://blog.google/technology/ai/rss/',
     type: 'rss',
   },
 ]
