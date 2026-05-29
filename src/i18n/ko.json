@@ -262,7 +262,11 @@
       "csstricks": "CSS-Tricks",
       "searchenginejournal": "Search Engine Journal",
       "googlesearchcentral": "Google Search Central",
-      "javascriptweekly": "JavaScript Weekly"
+      "javascriptweekly": "JavaScript Weekly",
+      "openainews": "OpenAI News",
+      "huggingface": "Hugging Face",
+      "googledeepmind": "Google DeepMind",
+      "googleaiblog": "Google AI Blog"
     }
   },
   "advisory": {
