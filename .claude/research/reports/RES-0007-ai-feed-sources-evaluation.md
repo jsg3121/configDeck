@@ -21,12 +21,12 @@ ADR-0010 §22의 "혼합형(RSS + 편집자 주석)" 범위가 ConfigDeck의 `/a
 
 | 매체 | URL | 포맷 | 발행 빈도 (실측 2026-05) | 콘텐츠 성격 |
 |---|---|---|---|---|
-| **OpenAI News** | `https://openai.com/blog/rss.xml` | RSS 2.0 | 주 14~16건 (5/27~28만 7건) | 제품 출시·고객 사례·정책·연구 |
+| **OpenAI News** | `https://openai.com/news/rss.xml` | RSS 2.0 | 주 6~8건 (5/22~28 실측) | 제품 출시·고객 사례·정책·연구 |
 | **Google DeepMind** | `https://deepmind.google/blog/rss.xml` | RSS 2.0 | 약 22건 누적 (월 5~8건 추정) | 연구 논문 발표 중심 |
 | **Hugging Face Blog** | `https://huggingface.co/blog/feed.xml` | RSS 2.0 + Atom ns | 주 4~6건 | 모델 출시·튜토리얼·벤치마크 |
 | **blog.google (AI 카테고리)** | `https://blog.google/technology/ai/rss/` | RSS 2.0 | 약 150건 누적, 주 3~5건 | Google AI 제품·정책·연구 (혼합) |
 
-**OpenAI 검증 노트**: `/blog/rss/`(슬래시) 경로는 **403**, `/blog/rss.xml`이 유효. 과거 RSS 제공 중단 풍문이 있었으나 2026-05 현재 정상 동작. 다만 `/news/`로 리브랜딩된 채널 페이지는 403이라 RSS만 안정적으로 fetch 가능.
+**OpenAI 검증 노트**: 초안에서는 `/blog/rss.xml`을 채택 후보로 적었으나, v1.7.0 P2 구현 페이즈(2026-05-29) 확인 결과 OpenAI가 채널을 `/news`로 리브랜딩했고 `https://openai.com/news/rss.xml`이 같은 RSS 2.0을 반환한다. `/news/rss.xml`이 채널명("OpenAI News")과 일치해 장기적으로 안정적이라 본 ADR-0024가 후자를 채택. 두 경로 모두 현재 유효하나 사이트 채널 페이지(`openai.com/news`)와 정렬된 후자가 향후 리디렉션 위험이 적다.
 
 **Google DeepMind 검증 노트**: 사용자 메시지에 적힌 `deepmind.google/discover/blog/rss.xml`은 404였고, `deepmind.google/blog/rss.xml`이 정확한 경로.
 

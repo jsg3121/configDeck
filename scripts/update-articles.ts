@@ -18,9 +18,14 @@ import type { GenerationOutcome } from './generate-summary'
 
 const ARTICLES_DIR = path.join(process.cwd(), 'src/content/articles')
 const REVIEW_QUEUE_DIR = path.join(ARTICLES_DIR, '.review-queue')
-const DEPRIORITIZE_DAYS = 3
+// ADR-0024 (v1.7.0): AI 매체 4곳 추가로 활성 매체 풀이 ~5→~9개로 확장.
+// 회전 주기 유지를 위해 디우선 기간을 3→5일로 연장. ADR-0024 §3 결정 3 참조.
+const DEPRIORITIZE_DAYS = 5
 const MTIME_PREFILTER_MARGIN_DAYS = 1
 const FRONTMATTER_READ_BYTES = 2048
+// ADR-0024 (v1.7.0): 일일 발행 수량 K. 매체 풀 확장과 함께 2→3으로 증대.
+// 회전 주기 3.55→2.37일 개선, API 비용 ~+$6/월. ADR-0024 §4 결정 4 참조.
+const DAILY_ITEM_COUNT = 3
 
 /**
  * 기존 아티클 ID 목록을 가져온다.
@@ -213,7 +218,9 @@ const main = async (): Promise<void> => {
     )
   }
 
-  const itemsToProcess = selectBalanced(newItems, 2, { deprioritize: recentlyUsedTools })
+  const itemsToProcess = selectBalanced(newItems, DAILY_ITEM_COUNT, {
+    deprioritize: recentlyUsedTools,
+  })
 
   const { articles, failures } = await generateArticles(itemsToProcess, apiKey, {
     delayMs: 1000,
