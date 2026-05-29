@@ -1,8 +1,10 @@
 # ADR-0010: 아티클 콘텐츠 수집 및 갱신 전략
 
-- 상태: 승인됨
+- 상태: 승인됨 (콘텐츠 범위 확장: [ADR-0024](./ADR-0024-ai-feed-sources-and-scope-expansion.md))
 - 날짜: 2026-04-13
 - 의사결정자: jsg3121
+
+> **보완 안내 (2026-05-29):** 본 ADR은 7개 도구 매체로 시작했으나, v1.6.x에서 15개 매체로 확장됐고 v1.7.0에서 AI 매체 4곳이 추가됐다. [ADR-0024](./ADR-0024-ai-feed-sources-and-scope-expansion.md)가 콘텐츠 범위를 "프론트엔드·웹 개발·AI 도구의 설정·운영·연구"로 공식 확장했다. 본 ADR의 결정 1~3(혼합형 / GitHub Actions / Snippet 방식)은 모두 유효하며, 적용 도메인만 ADR-0024가 갱신한다.
 
 ## 맥락 (Context)
 

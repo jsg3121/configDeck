@@ -13,11 +13,7 @@ import * as fs from 'node:fs'
 import * as path from 'node:path'
 
 import { fetchAllFeeds, filterNewItems, selectBalanced, type RSSItem, type Tool } from './fetch-rss'
-import {
-  generateArticles,
-  generateSlug,
-  type GeneratedArticle,
-} from './generate-summary'
+import { generateArticles, generateSlug, type GeneratedArticle } from './generate-summary'
 import type { GenerationOutcome } from './generate-summary'
 
 const ARTICLES_DIR = path.join(process.cwd(), 'src/content/articles')
