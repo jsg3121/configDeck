@@ -1,6 +1,6 @@
 ---
 id: "https://www.searchenginejournal.com/ai-bots-keep-overloading-servers-should-website-owners-keep-paying/579018/"
-tool: "searchenginejourney"
+tool: "searchenginejournal"
 title: "AI 봇이 서버를 과부하시키고 있다 — 웹사이트 운영자가 그 비용을 계속 부담해야 하는가?"
 link: "https://www.searchenginejournal.com/ai-bots-keep-overloading-servers-should-website-owners-keep-paying/579018/"
 pubDate: 2026-06-11T23:53:14.000Z
