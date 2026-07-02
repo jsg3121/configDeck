@@ -1,29 +1,29 @@
 ---
-id: "https://blog.google/innovation-and-ai/technology/ai/google-ai-updates-may-2026/"
+id: "https://blog.google/innovation-and-ai/technology/ai/google-ai-updates-june-2026/"
 tool: "googleaiblog"
-title: "The latest AI news we announced in May 2026"
-link: "https://blog.google/innovation-and-ai/technology/ai/google-ai-updates-may-2026/"
-pubDate: 2026-06-05T14:45:00.000Z
+title: "The latest AI news we announced in June 2026"
+link: "https://blog.google/innovation-and-ai/technology/ai/google-ai-updates-june-2026/"
+pubDate: 2026-07-01T18:15:00.000Z
 sourceName: "Google AI Blog"
-sourceUrl: "https://blog.google/innovation-and-ai/technology/ai/google-ai-updates-may-2026/"
+sourceUrl: "https://blog.google/innovation-and-ai/technology/ai/google-ai-updates-june-2026/"
 contentType: "commentary"
-summary: "Google's May 2026 roundup covers Gemini 3.5 and Gemini Omni models, agentic capabilities baked into Search and Android, new hardware like the Googlebook, and expanded health/wellness tooling. This is a broad consumer-and-platform dump, but the agentic coding and Search integration pieces are worth attention from a developer-tooling perspective."
+summary: "Google's June 2026 roundup covers Gemma 4 12B for local inference, computer use in Gemini 3.5 Flash, new multimodal API previews, and upgrades to NotebookLM — a dense batch with several items relevant to developers building on Google's AI stack."
 ---
 
-Google's AI Blog published its monthly recap covering announcements from Google I/O 2026, the Android Show, and Google Health. The headline items are two new models — Gemini 3.5 and Gemini Omni — plus a wave of "agentic" features woven into Search, Android, and new first-party hardware.
+Google AI Blog published its monthly recap for June 2026, bundling consumer features (Android 17, a new Home Speaker) alongside developer-facing launches that deserve separate attention. There's a lot in here, so let's pull out what matters if you're building things.
 
 ## What's actually new
 
-The two model launches anchor the update. **Gemini 3.5** is positioned for "frontier intelligence" with a focus on multi-step agentic workflows and coding tasks. **Gemini Omni** accepts mixed-modality input (images, audio, video, text) and generates video output grounded in real-world knowledge. On the product side, Google Search now includes "information agents" that run in the background, monitoring topics on your behalf and pushing updates. Search also gains what Google calls agentic coding capabilities via Gemini 3.5 Flash — the example given is asking Search to generate a custom fitness tracker dashboard pulling in live data. A new surface called **Android Halo** gives users a single pane to monitor running agents. Hardware additions include the Googlebook (a Gemini-native laptop built by OEM partners like Acer, Dell, HP, Lenovo, and Asus), Fitbit Air, and upcoming intelligent eyewear. The Gemini app itself gets a UI refresh, personalized daily briefs, and a feature called Gemini Spark for proactive task management.
+The developer-relevant highlights break into a few buckets. **Gemma 4 12B** is a new open model that runs locally in 16GB of memory, combining vision and native voice processing in a single architecture — useful if you're looking at on-device agent workflows without cloud round-trips. **Gemini 3.5 Flash** now supports "computer use," meaning agents that can see and interact with desktop, mobile, and browser environments; Google positions this for long-horizon enterprise automation like continuous software testing. On the API side, **Nano Banana 2 Lite** (their fastest Gemini Image model) is now available, and **Gemini Omni Flash** is in public preview for building multimodal video workflows. **Gemini 3.5 Live Translate** handles speech-to-speech translation across 70+ languages with natural intonation, accessible via the Gemini Live API and Google AI Studio. Finally, **NotebookLM** got upgraded with a secure cloud computer for running code and generating charts, spreadsheets, and slide decks — available to Google AI Ultra subscribers and specific Workspace accounts.
 
 ## What it means for your config
 
-This roundup is heavy on consumer product announcements and light on developer-facing configuration details. There are no published API changes, SDK updates, model endpoint deprecations, or config-file format shifts mentioned in the source material. If you're building on the Gemini API today, nothing here signals a breaking change — but nothing confirms backward compatibility either. The "agentic coding in Search" capability and Gemini 3.5's action-taking features hint at new API surfaces that would eventually require config or integration work, but Google hasn't released documentation for those yet. We'll revisit once SDK docs, model cards, or migration guides actually land. If you maintain toolchains that call Gemini models by version (e.g., specifying a model identifier in your config), keep an eye on whether 3.5 and Omni introduce new endpoint names or deprecate older ones — the announcement doesn't say.
+This is a kitchen-sink announcement, so let's be honest about what's actionable today. If you're integrating with Google's AI APIs, the Gemini Omni Flash public preview and the Gemini Live API for translation are the two items most likely to require new API keys, endpoint configurations, or SDK version bumps — but the blog post doesn't specify SDK versions, API endpoint URLs, or breaking changes to existing Gemini API configs. If you're running Gemma models locally, the 16GB memory requirement for Gemma 4 12B is a concrete spec worth noting for your hardware provisioning or container memory limits, but the post doesn't detail model download commands or runtime config files. The computer use integration in Gemini 3.5 Flash could affect how you configure automation pipelines, but again, no config schema or migration path is described here. The announcement doesn't detail interaction with existing API configurations or flag deprecations — we'll revisit once the actual SDK docs and migration guides land.
 
 ## Recommended next step
 
-Treat this as a radar ping, not an action item. The most developer-relevant bits — Gemini 3.5's agentic coding capabilities and the new Search integrations — lack published technical docs at this point. Bookmark the original post for reference links as they populate, and watch for Gemini API changelog updates in the coming weeks. If you're currently using Gemini models in production pipelines, now is a reasonable time to audit which model version strings your configs reference so you're ready to evaluate an upgrade path once the specifics are documented.
+If you're building on Google's AI APIs, the most practical move is to check the Gemini Live API and Gemini Omni Flash preview docs directly — the blog post is a signpost, not a spec sheet. For local inference work, look into Gemma 4 12B's model card and runtime requirements before committing to an integration. For everything else (Android 17, Home Speaker, Google Finance), these are consumer-facing and unlikely to touch your toolchain configs unless you're building Android apps or Home integrations specifically. Skim the full post to see if any of the education or Workspace features affect your org's setup.
 
 ---
 
-**Read the full announcement on Google AI Blog** → [The latest AI news we announced in May 2026](https://blog.google/innovation-and-ai/technology/ai/google-ai-updates-may-2026/)
+**Read the full announcement on Google AI Blog** → [The latest AI news we announced in June 2026](https://blog.google/innovation-and-ai/technology/ai/google-ai-updates-june-2026/)
